@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Configure base API URL - update this to your actual backend URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// Configure base API URL - production backend
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://nes.newnepal.org/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
