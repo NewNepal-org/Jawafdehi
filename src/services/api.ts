@@ -150,9 +150,9 @@ export const searchEntities = async (query: string, params?: {
   limit?: number;
 }) => {
   try {
-    // Correct backend endpoint: /entity with q param
+    // Correct backend endpoint: /entity with query param
     const response = await api.get('/entity', { 
-      params: { q: query, ...params } 
+      params: { query: query, ...params } 
     });
     return response.data;
   } catch (error) {
