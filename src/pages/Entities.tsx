@@ -6,6 +6,8 @@ import EntityCard from "@/components/EntityCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Filter } from "lucide-react";
@@ -17,10 +19,20 @@ const Entities = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [entities, setEntities] = useState<Entity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const [typeFilter, setTypeFilter] = useState(searchParams.get("type") || "all");
-  const [organizationFilter, setOrganizationFilter] = useState(searchParams.get("org") || "all");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "rabi");
+  const [entityTypeFilter, setEntityTypeFilter] = useState(searchParams.get("entityType") || "person");
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "name");
+
+
+  useEffect(() => {
+    // Set default search params on initial load if not present
+    if (!searchParams.has("search") && !searchParams.has("entityType")) {
+      const params = new URLSearchParams();
+      params.set("search", "rabi");
+      params.set("entityType", "person");
+      setSearchParams(params, { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     fetchEntities();
@@ -29,10 +41,19 @@ const Entities = () => {
   const fetchEntities = async () => {
     setLoading(true);
     try {
-      const params: any = {};
+      const params: any = {
+        limit: 100,
+        offset: 0
+      };
       
-      if (typeFilter !== "all") params.type = typeFilter;
-      if (searchParams.get("page")) params.page = searchParams.get("page");
+      // Set entity_type and sub_type based on filter
+      if (entityTypeFilter === "person") {
+        params.entity_type = "person";
+        // sub_type is null/undefined for persons
+      } else if (entityTypeFilter === "political_party") {
+        params.entity_type = "organization";
+        params.sub_type = "political_party";
+      }
       
       let data;
       if (searchQuery) {
@@ -56,18 +77,19 @@ const Entities = () => {
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
-    if (typeFilter !== "all") params.set("type", typeFilter);
-    if (organizationFilter !== "all") params.set("org", organizationFilter);
+    if (entityTypeFilter) params.set("entityType", entityTypeFilter);
     if (sortBy !== "name") params.set("sort", sortBy);
     setSearchParams(params);
   };
 
   const handleReset = () => {
-    setSearchQuery("");
-    setTypeFilter("all");
-    setOrganizationFilter("all");
+    setSearchQuery("rabi");
+    setEntityTypeFilter("person");
     setSortBy("name");
-    setSearchParams({});
+    const params = new URLSearchParams();
+    params.set("search", "rabi");
+    params.set("entityType", "person");
+    setSearchParams(params);
   };
 
   // Sort entities
@@ -86,11 +108,6 @@ const Entities = () => {
     // For now, maintain original order
     return 0;
   });
-
-  // Filter by organization
-  const filteredEntities = organizationFilter === "all" 
-    ? sortedEntities 
-    : sortedEntities.filter(e => e.attributes?.organization === organizationFilter);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -131,33 +148,17 @@ const Entities = () => {
                 {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
-                    <label className="text-sm font-medium mb-2 block">Entity Type</label>
-                    <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Types</SelectItem>
-                        <SelectItem value="person">Person</SelectItem>
-                        <SelectItem value="organization">Organization</SelectItem>
-                        <SelectItem value="location">Location</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex-1">
-                    <label className="text-sm font-medium mb-2 block">Organization</label>
-                    <Select value={organizationFilter} onValueChange={setOrganizationFilter}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Organizations</SelectItem>
-                        <SelectItem value="Ministry">Ministry</SelectItem>
-                        <SelectItem value="Police">Police</SelectItem>
-                        <SelectItem value="Government Body">Government Body</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <label className="text-sm font-medium mb-3 block">Entity Type</label>
+                    <RadioGroup value={entityTypeFilter} onValueChange={setEntityTypeFilter} className="flex gap-4">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="person" id="person" />
+                        <Label htmlFor="person" className="cursor-pointer">Persons</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="political_party" id="political_party" />
+                        <Label htmlFor="political_party" className="cursor-pointer">Political Parties</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
 
                   <div className="flex-1">
@@ -188,7 +189,7 @@ const Entities = () => {
           {/* Results Count */}
           <div className="mb-4">
             <p className="text-sm text-muted-foreground">
-              {loading ? "Loading..." : `${filteredEntities.length} entities found`}
+              {loading ? "Loading..." : `${sortedEntities.length} entities found`}
             </p>
           </div>
 
@@ -211,7 +212,7 @@ const Entities = () => {
                 </Card>
               ))}
             </div>
-          ) : filteredEntities.length === 0 ? (
+          ) : sortedEntities.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
                 <p className="text-muted-foreground">
@@ -221,7 +222,7 @@ const Entities = () => {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEntities.map((entity) => (
+              {sortedEntities.map((entity) => (
                 <EntityCard
                   key={entity.id}
                   entity={entity}
