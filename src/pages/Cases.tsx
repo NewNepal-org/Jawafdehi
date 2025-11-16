@@ -1,87 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CaseCard } from "@/components/CaseCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Filter } from "lucide-react";
+import { getAllegations } from "@/services/jds-api";
+import type { Allegation } from "@/types/jds";
+import { toast } from "sonner";
 
 const Cases = () => {
+  const [cases, setCases] = useState<Allegation[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [severityFilter, setSeverityFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
 
-  const allCases = [
-    {
-      id: "1",
-      title: "Alleged Misappropriation of Public Funds in Highway Construction",
-      entity: "Department of Roads, Ministry of Physical Infrastructure",
-      location: "Kathmandu Valley",
-      date: "March 15, 2024",
-      status: "under-investigation" as const,
-      severity: "high" as const,
-      description: "Investigation into alleged irregularities in the bidding process and fund allocation for the Ring Road expansion project.",
-    },
-    {
-      id: "2",
-      title: "Corruption in Medical Equipment Procurement",
-      entity: "Ministry of Health and Population",
-      location: "Province 1",
-      date: "February 28, 2024",
-      status: "ongoing" as const,
-      severity: "critical" as const,
-      description: "Reports of overpriced medical equipment purchases during the pandemic response, with potential kickbacks to officials.",
-    },
-    {
-      id: "3",
-      title: "Land Grab Case - Public Park Converted to Private Property",
-      entity: "Metropolitan City Development Committee",
-      location: "Lalitpur",
-      date: "January 10, 2024",
-      status: "resolved" as const,
-      severity: "medium" as const,
-      description: "Public park land illegally transferred to private developers. Case resolved with land returned to public ownership.",
-    },
-    {
-      id: "4",
-      title: "Embezzlement in Education Budget Allocation",
-      entity: "Ministry of Education, Science and Technology",
-      location: "Province 2",
-      date: "March 5, 2024",
-      status: "ongoing" as const,
-      severity: "high" as const,
-      description: "Funds allocated for school infrastructure diverted to personal accounts of education officials.",
-    },
-    {
-      id: "5",
-      title: "Irregularities in Agricultural Subsidy Distribution",
-      entity: "Ministry of Agriculture and Livestock Development",
-      location: "Karnali Province",
-      date: "February 15, 2024",
-      status: "under-investigation" as const,
-      severity: "medium" as const,
-      description: "Complaints of favoritism and ghost beneficiaries in the distribution of agricultural subsidies.",
-    },
-    {
-      id: "6",
-      title: "Kickbacks in Public Building Construction Project",
-      entity: "Department of Urban Development",
-      location: "Pokhara",
-      date: "January 20, 2024",
-      status: "ongoing" as const,
-      severity: "critical" as const,
-      description: "Evidence of contractors paying kickbacks to secure government building construction contracts with inflated budgets.",
-    },
-  ];
+  useEffect(() => {
+    fetchCases();
+  }, []);
 
-  const filteredCases = allCases.filter((caseItem) => {
-    const matchesSearch = caseItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         caseItem.entity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         caseItem.location.toLowerCase().includes(searchQuery.toLowerCase());
+  const fetchCases = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllegations({
+        state: 'current', // Only show current/active cases
+        page: 1
+      });
+      setCases(response.results);
+    } catch (error) {
+      console.error("Failed to fetch cases:", error);
+      toast.error("Failed to load cases. Please try again.");
+      setCases([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredCases = cases.filter((caseItem) => {
+    const matchesSearch = 
+      caseItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      caseItem.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || caseItem.status === statusFilter;
-    const matchesSeverity = severityFilter === "all" || caseItem.severity === severityFilter;
-    return matchesSearch && matchesStatus && matchesSeverity;
+    const matchesType = typeFilter === "all" || caseItem.allegation_type === typeFilter;
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   return (
@@ -123,16 +87,17 @@ const Cases = () => {
               </div>
 
               <div className="flex-1">
-                <Select value={severityFilter} onValueChange={setSeverityFilter}>
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Filter by severity" />
+                    <SelectValue placeholder="Filter by type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Severity Levels</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="corruption">Corruption</SelectItem>
+                    <SelectItem value="misconduct">Misconduct</SelectItem>
+                    <SelectItem value="breach_of_trust">Breach of Trust</SelectItem>
+                    <SelectItem value="broken_promise">Broken Promise</SelectItem>
+                    <SelectItem value="media_trial">Media Trial</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -141,8 +106,9 @@ const Cases = () => {
                 variant="outline" 
                 onClick={() => {
                   setStatusFilter("all");
-                  setSeverityFilter("all");
+                  setTypeFilter("all");
                   setSearchQuery("");
+                  fetchCases();
                 }}
               >
                 <Filter className="mr-2 h-4 w-4" />
@@ -154,15 +120,38 @@ const Cases = () => {
           {/* Results Count */}
           <div className="mb-6">
             <p className="text-sm text-muted-foreground">
-              Showing {filteredCases.length} of {allCases.length} cases
+              {loading ? "Loading..." : `Showing ${filteredCases.length} of ${cases.length} cases`}
             </p>
           </div>
 
           {/* Cases Grid */}
-          {filteredCases.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="border rounded-lg p-6 space-y-4">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-8 w-24" />
+                </div>
+              ))}
+            </div>
+          ) : filteredCases.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCases.map((caseItem) => (
-                <CaseCard key={caseItem.id} {...caseItem} />
+                <CaseCard 
+                  key={caseItem.id} 
+                  id={caseItem.id.toString()}
+                  title={caseItem.title}
+                  entity={Array.isArray(caseItem.alleged_entities) 
+                    ? caseItem.alleged_entities.join(', ') 
+                    : String(caseItem.alleged_entities || 'Unknown Entity')}
+                  location={caseItem.location_id || 'Unknown Location'}
+                  date={new Date(caseItem.created_at).toLocaleDateString()}
+                  status={caseItem.status === 'under_investigation' ? 'under-investigation' : caseItem.status === 'closed' ? 'resolved' : 'ongoing'}
+                  severity={caseItem.allegation_type === 'corruption' || caseItem.allegation_type === 'breach_of_trust' ? 'critical' : 'high'}
+                  description={caseItem.key_allegations}
+                />
               ))}
             </div>
           ) : (
@@ -172,8 +161,9 @@ const Cases = () => {
                 variant="outline" 
                 onClick={() => {
                   setStatusFilter("all");
-                  setSeverityFilter("all");
+                  setTypeFilter("all");
                   setSearchQuery("");
+                  fetchCases();
                 }}
               >
                 Clear All Filters
