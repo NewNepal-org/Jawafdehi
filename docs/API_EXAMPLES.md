@@ -7,12 +7,12 @@ This document provides practical examples for testing the NES API integration.
 Set your API base URL in `.env`:
 
 ```env
-VITE_API_BASE_URL=https://nes.newnepal.org/api
+VITE_NES_API_BASE_URL=https://nes.newnepal.org/api
 ```
 
 For local development:
 ```env
-VITE_API_BASE_URL=http://localhost:8000/api
+VITE_NES_API_BASE_URL=http://localhost:8000/api
 ```
 
 ---
@@ -390,7 +390,7 @@ Save this as `NES_API.postman_collection.json` and import into Postman.
 **Solution:** Verify the entity slug is correct. Use search to find the correct slug first.
 
 ### Issue: "Network Error"
-**Solution:** Check that `VITE_API_BASE_URL` is set correctly and the backend is accessible.
+**Solution:** Check that `VITE_NES_API_BASE_URL` is set correctly and the backend is accessible.
 
 ### Issue: "TypeError: Cannot read property 'names'"
 **Solution:** Ensure you're using helper functions like `getPrimaryName()` instead of direct property access.

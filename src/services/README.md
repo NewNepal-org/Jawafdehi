@@ -13,10 +13,15 @@ This directory contains the API client and adapters for the Nepal Entity Service
 Set the backend API URL in your `.env` file:
 
 ```env
-VITE_API_BASE_URL=https://nes.newnepal.org/api
+VITE_NES_API_BASE_URL=https://nes.newnepal.org/api
 ```
 
-**Default:** `http://localhost:8000/api` (for local development)
+**Default:** `https://nes.newnepal.org/api`
+
+For local development:
+```env
+VITE_NES_API_BASE_URL=http://localhost:8000/api
+```
 
 ## API Reference
 

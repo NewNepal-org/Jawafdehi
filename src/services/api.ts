@@ -9,7 +9,7 @@
  * - Core NES: https://github.com/NewNepal-org/NepalEntityService
  * 
  * Environment Variables:
- * - VITE_API_BASE_URL: Base URL for the NES API (default: http://localhost:8000/api)
+ * - VITE_NES_API_BASE_URL: Base URL for the NES API (default: https://nes.newnepal.org/api)
  */
 
 import axios, { AxiosInstance, AxiosError } from 'axios';
@@ -26,7 +26,7 @@ import type {
 // API Configuration
 // ============================================================================
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_NES_API_BASE_URL || 'https://nes.newnepal.org/api';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,

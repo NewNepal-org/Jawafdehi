@@ -57,7 +57,7 @@ export default function EntityProfile() {
 
         // Fetch version history
         const versionsData = await getEntityVersions(id);
-        setVersions(versionsData.versions || versionsData || []);
+        setVersions(versionsData.versions || []);
       } catch (error) {
         console.error("Failed to fetch entity data:", error);
         toast.error("Failed to load entity data. Please try again.");
