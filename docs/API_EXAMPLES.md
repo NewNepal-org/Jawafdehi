@@ -19,33 +19,45 @@ VITE_NES_API_BASE_URL=http://localhost:8000/api
 
 ## cURL Examples
 
-### 1. Search Entities
+### 1. List/Search Entities
 
-**Search for entities named "Ram":**
+**List all entities:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/entity?q=ram&page=1&limit=10" \
+curl -X GET "https://nes.newnepal.org/api/entities?limit=10&offset=0" \
+  -H "Content-Type: application/json"
+```
+
+**Search for entities named "poudel":**
+```bash
+curl -X GET "https://nes.newnepal.org/api/entities?query=poudel&limit=10&offset=0" \
   -H "Content-Type: application/json"
 ```
 
 **Search for person entities:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/entity?q=pushpa&type=person&page=1&limit=10" \
+curl -X GET "https://nes.newnepal.org/api/entities?query=pushpa&entity_type=person&limit=10" \
   -H "Content-Type: application/json"
 ```
 
-**Search for organizations:**
+**Filter by type and subtype:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/entity?type=organization&page=1&limit=20" \
+curl -X GET "https://nes.newnepal.org/api/entities?entity_type=organization&sub_type=political_party&limit=20" \
+  -H "Content-Type: application/json"
+```
+
+**Filter by attributes:**
+```bash
+curl -X GET "https://nes.newnepal.org/api/entities?attributes=%7B%22party%22%3A%22nepali-congress%22%7D" \
   -H "Content-Type: application/json"
 ```
 
 ---
 
-### 2. Get Entity by Slug
+### 2. Get Entity by ID
 
 **Get specific entity:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/entity/pushpa-kamal-dahal-prachanda" \
+curl -X GET "https://nes.newnepal.org/api/entities/pushpa-kamal-dahal-prachanda" \
   -H "Content-Type: application/json"
 ```
 
@@ -55,7 +67,7 @@ curl -X GET "https://nes.newnepal.org/api/entity/pushpa-kamal-dahal-prachanda" \
 
 **Get version history:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/entity/pushpa-kamal-dahal-prachanda/versions" \
+curl -X GET "https://nes.newnepal.org/api/entities/pushpa-kamal-dahal-prachanda/versions" \
   -H "Content-Type: application/json"
 ```
 
@@ -65,19 +77,19 @@ curl -X GET "https://nes.newnepal.org/api/entity/pushpa-kamal-dahal-prachanda/ve
 
 **Get relationships where entity is the source:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/relationship?source_id=pushpa-kamal-dahal-prachanda" \
+curl -X GET "https://nes.newnepal.org/api/relationships?source_id=pushpa-kamal-dahal-prachanda" \
   -H "Content-Type: application/json"
 ```
 
 **Get relationships where entity is the target:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/relationship?target_id=cpn-maoist-centre" \
+curl -X GET "https://nes.newnepal.org/api/relationships?target_id=cpn-maoist-centre" \
   -H "Content-Type: application/json"
 ```
 
 **Filter relationships by type:**
 ```bash
-curl -X GET "https://nes.newnepal.org/api/relationship?source_id=pushpa-kamal-dahal-prachanda&type=MEMBER_OF" \
+curl -X GET "https://nes.newnepal.org/api/relationships?source_id=pushpa-kamal-dahal-prachanda&type=MEMBER_OF" \
   -H "Content-Type: application/json"
 ```
 
@@ -102,10 +114,11 @@ import { getPrimaryName } from '@/utils/nes-helpers';
 
 async function searchAndDisplay(query: string) {
   try {
-    const results = await searchEntities(query, {
+    const results = await searchEntities({
+      query,
       type: 'person',
-      page: 1,
-      limit: 10
+      limit: 10,
+      offset: 0
     });
 
     console.log(`Found ${results.total || 0} entities`);
@@ -119,7 +132,7 @@ async function searchAndDisplay(query: string) {
   }
 }
 
-searchAndDisplay('ram');
+searchAndDisplay('poudel');
 ```
 
 ---
@@ -271,26 +284,26 @@ Import this JSON into Postman for quick API testing:
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/entity?q=ram&page=1&limit=10",
+          "raw": "{{base_url}}/entities?query=poudel&limit=10&offset=0",
           "host": ["{{base_url}}"],
-          "path": ["entity"],
+          "path": ["entities"],
           "query": [
-            {"key": "q", "value": "ram"},
-            {"key": "page", "value": "1"},
-            {"key": "limit", "value": "10"}
+            {"key": "query", "value": "poudel"},
+            {"key": "limit", "value": "10"},
+            {"key": "offset", "value": "0"}
           ]
         }
       }
     },
     {
-      "name": "Get Entity by Slug",
+      "name": "Get Entity by ID",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/entity/pushpa-kamal-dahal-prachanda",
+          "raw": "{{base_url}}/entities/pushpa-kamal-dahal-prachanda",
           "host": ["{{base_url}}"],
-          "path": ["entity", "pushpa-kamal-dahal-prachanda"]
+          "path": ["entities", "pushpa-kamal-dahal-prachanda"]
         }
       }
     },
@@ -300,9 +313,9 @@ Import this JSON into Postman for quick API testing:
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/entity/pushpa-kamal-dahal-prachanda/versions",
+          "raw": "{{base_url}}/entities/pushpa-kamal-dahal-prachanda/versions",
           "host": ["{{base_url}}"],
-          "path": ["entity", "pushpa-kamal-dahal-prachanda", "versions"]
+          "path": ["entities", "pushpa-kamal-dahal-prachanda", "versions"]
         }
       }
     },
@@ -312,9 +325,9 @@ Import this JSON into Postman for quick API testing:
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/relationship?source_id=pushpa-kamal-dahal-prachanda",
+          "raw": "{{base_url}}/relationships?source_id=pushpa-kamal-dahal-prachanda",
           "host": ["{{base_url}}"],
-          "path": ["relationship"],
+          "path": ["relationships"],
           "query": [
             {"key": "source_id", "value": "pushpa-kamal-dahal-prachanda"}
           ]
@@ -327,9 +340,9 @@ Import this JSON into Postman for quick API testing:
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/relationship?target_id=cpn-maoist-centre",
+          "raw": "{{base_url}}/relationships?target_id=cpn-maoist-centre",
           "host": ["{{base_url}}"],
-          "path": ["relationship"],
+          "path": ["relationships"],
           "query": [
             {"key": "target_id", "value": "cpn-maoist-centre"}
           ]

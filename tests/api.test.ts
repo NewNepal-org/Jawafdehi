@@ -35,7 +35,7 @@ describe('NES API Client', () => {
   });
 
   describe('getEntities', () => {
-    it('should call /entity endpoint with correct params', async () => {
+    it('should call /entities endpoint with correct params', async () => {
       const mockResponse = {
         data: {
           entities: [
@@ -56,15 +56,36 @@ describe('NES API Client', () => {
       mockedAxios.create.mockReturnValue(mockApi);
 
       const result = await getEntities({ 
-        type: 'person', 
-        page: 1, 
-        limit: 20 
+        entity_type: 'person', 
+        limit: 20,
+        offset: 0
       });
 
-      expect(mockApi.get).toHaveBeenCalledWith('/entity', {
-        params: { type: 'person', page: 1, limit: 20 }
+      expect(mockApi.get).toHaveBeenCalledWith('/entities', {
+        params: { entity_type: 'person', limit: 20, offset: 0 }
       });
       expect(result.entities).toHaveLength(1);
+    });
+
+    it('should handle search queries', async () => {
+      const mockResponse = {
+        data: { entities: [], total: 0 }
+      };
+
+      const mockApi = {
+        get: vi.fn().mockResolvedValue(mockResponse)
+      };
+      mockedAxios.create.mockReturnValue(mockApi);
+
+      await getEntities({ 
+        query: 'poudel',
+        entity_type: 'person', 
+        limit: 10 
+      });
+
+      expect(mockApi.get).toHaveBeenCalledWith('/entities', {
+        params: { query: 'poudel', entity_type: 'person', limit: 10 }
+      });
     });
 
     it('should handle errors gracefully', async () => {
@@ -79,7 +100,7 @@ describe('NES API Client', () => {
   });
 
   describe('searchEntities', () => {
-    it('should map query to q parameter', async () => {
+    it('should map query parameter correctly', async () => {
       const mockResponse = {
         data: {
           entities: [],
@@ -93,18 +114,12 @@ describe('NES API Client', () => {
       mockedAxios.create.mockReturnValue(mockApi);
 
       await searchEntities('ram bahadur', { 
-        type: 'person', 
-        page: 1, 
+        entity_type: 'person', 
         limit: 10 
       });
 
-      expect(mockApi.get).toHaveBeenCalledWith('/entity', {
-        params: { 
-          q: 'ram bahadur',
-          type: 'person', 
-          page: 1, 
-          limit: 10 
-        }
+      expect(mockApi.get).toHaveBeenCalledWith('/entities', {
+        params: { query: 'ram bahadur', entity_type: 'person', limit: 10 }
       });
     });
 
@@ -120,14 +135,14 @@ describe('NES API Client', () => {
 
       await searchEntities('');
 
-      expect(mockApi.get).toHaveBeenCalledWith('/entity', {
-        params: { q: '' }
+      expect(mockApi.get).toHaveBeenCalledWith('/entities', {
+        params: { query: '' }
       });
     });
   });
 
   describe('getEntityById', () => {
-    it('should call /entity/{id} endpoint', async () => {
+    it('should call /entities/{id} endpoint', async () => {
       const mockResponse = {
         data: {
           id: 'test-entity',
@@ -144,7 +159,7 @@ describe('NES API Client', () => {
 
       const result = await getEntityById('test-entity');
 
-      expect(mockApi.get).toHaveBeenCalledWith('/entity/test-entity');
+      expect(mockApi.get).toHaveBeenCalledWith('/entities/test-entity');
       expect(result.slug).toBe('test-entity');
     });
 
@@ -165,7 +180,7 @@ describe('NES API Client', () => {
   });
 
   describe('getEntityVersions', () => {
-    it('should call /entity/{id}/versions endpoint', async () => {
+    it('should call /entities/{id}/versions endpoint', async () => {
       const mockResponse = {
         data: {
           versions: [
@@ -185,7 +200,7 @@ describe('NES API Client', () => {
 
       const result = await getEntityVersions('test-entity');
 
-      expect(mockApi.get).toHaveBeenCalledWith('/entity/test-entity/versions');
+      expect(mockApi.get).toHaveBeenCalledWith('/entities/test-entity/versions');
       expect(result.versions).toHaveLength(1);
     });
 
@@ -204,7 +219,7 @@ describe('NES API Client', () => {
   });
 
   describe('getRelationships', () => {
-    it('should call /relationship endpoint with source_id', async () => {
+    it('should call /relationships endpoint with source_id', async () => {
       const mockResponse = {
         data: {
           relationships: [
@@ -224,13 +239,13 @@ describe('NES API Client', () => {
 
       const result = await getRelationships({ source_id: 'entity-1' });
 
-      expect(mockApi.get).toHaveBeenCalledWith('/relationship', {
+      expect(mockApi.get).toHaveBeenCalledWith('/relationships', {
         params: { source_id: 'entity-1' }
       });
       expect(result.relationships).toHaveLength(1);
     });
 
-    it('should call /relationship endpoint with target_id', async () => {
+    it('should call /relationships endpoint with target_id', async () => {
       const mockResponse = {
         data: { relationships: [] }
       };
@@ -242,7 +257,7 @@ describe('NES API Client', () => {
 
       await getRelationships({ target_id: 'entity-2' });
 
-      expect(mockApi.get).toHaveBeenCalledWith('/relationship', {
+      expect(mockApi.get).toHaveBeenCalledWith('/relationships', {
         params: { target_id: 'entity-2' }
       });
     });

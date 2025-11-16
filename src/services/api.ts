@@ -33,7 +33,7 @@ const api: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 second timeout
+  timeout: 30000,
 });
 
 // ============================================================================
@@ -63,17 +63,20 @@ export interface VersionListResponse {
 // ============================================================================
 
 export interface EntitySearchParams {
-  q?: string;           // Search query (mapped from 'query' or 'search')
-  type?: string;        // Entity type: person, organization, location
+  query?: string;       // Search query
+  entity_type?: string; // Entity type: person, organization, location
   sub_type?: string;    // Entity subtype
-  page?: number;        // Page number (1-indexed)
-  limit?: number;       // Results per page (default: 20)
+  attributes?: Record<string, any>; // Filter by attributes (JSON object)
+  limit?: number;       // Maximum number of results (default: 100, max: 1000)
+  offset?: number;      // Number of results to skip (default: 0)
 }
 
 export interface RelationshipSearchParams {
   source_id?: string;   // Source entity ID
   target_id?: string;   // Target entity ID  
   type?: string;        // Relationship type
+  limit?: number;       // Maximum number of results
+  offset?: number;      // Number of results to skip
 }
 
 // ============================================================================
@@ -153,27 +156,48 @@ function handleApiError(error: unknown, endpoint: string): never {
 /**
  * Get list of entities with optional filters
  * 
+ * Backend endpoint: GET /entities?query={query}&entity_type={type}&limit={limit}&offset={offset}
+ * 
  * @param params - Search and filter parameters
  * @returns Promise<EntityListResponse>
  * 
  * @example
  * ```typescript
- * const result = await getEntities({ type: 'person', page: 1, limit: 20 });
+ * // List all entities
+ * const all = await getEntities();
+ * 
+ * // Search for entities
+ * const results = await getEntities({ query: 'poudel', entity_type: 'person', limit: 10 });
+ * 
+ * // Filter by type and subtype
+ * const parties = await getEntities({
+ *   entity_type: 'organization',
+ *   sub_type: 'political_party'
+ * });
  * ```
  */
 export async function getEntities(params?: EntitySearchParams): Promise<EntityListResponse> {
   try {
-    const response = await api.get<EntityListResponse>('/entity', { params });
+    const queryParams: Record<string, any> = {};
+    
+    if (params?.query) queryParams.query = params.query;
+    if (params?.entity_type) queryParams.entity_type = params.entity_type;
+    if (params?.sub_type) queryParams.sub_type = params.sub_type;
+    if (params?.attributes) queryParams.attributes = JSON.stringify(params.attributes);
+    if (params?.limit) queryParams.limit = params.limit;
+    if (params?.offset !== undefined) queryParams.offset = params.offset;
+    
+    const response = await api.get<EntityListResponse>('/entities', { 
+      params: queryParams 
+    });
     return response.data;
   } catch (error) {
-    handleApiError(error, '/entity');
+    handleApiError(error, '/entities');
   }
 }
 
 /**
- * Search entities using query string
- * 
- * Backend endpoint: GET /entity?q={query}&type={type}&page={page}&limit={limit}
+ * Search entities using query string (convenience wrapper around getEntities)
  * 
  * @param query - Search query string
  * @param params - Additional filter parameters
@@ -182,31 +206,23 @@ export async function getEntities(params?: EntitySearchParams): Promise<EntityLi
  * @example
  * ```typescript
  * // Search for entities named "Ram"
- * const results = await searchEntities('ram', { type: 'person', page: 1, limit: 10 });
+ * const results = await searchEntities('ram', { entity_type: 'person', limit: 10 });
  * ```
  */
 export async function searchEntities(
   query: string, 
-  params?: Omit<EntitySearchParams, 'q'>
+  params?: Omit<EntitySearchParams, 'query'>
 ): Promise<EntityListResponse> {
-  try {
-    const searchParams: EntitySearchParams = {
-      q: query,
-      ...params
-    };
-    
-    const response = await api.get<EntityListResponse>('/entity', { 
-      params: searchParams 
-    });
-    
-    return response.data;
-  } catch (error) {
-    handleApiError(error, '/entity (search)');
-  }
+  return getEntities({
+    query,
+    ...params
+  });
 }
 
 /**
  * Get single entity by ID or slug
+ * 
+ * Backend endpoint: GET /entities/{id}
  * 
  * @param idOrSlug - Entity ID or slug
  * @returns Promise<Entity>
@@ -218,10 +234,10 @@ export async function searchEntities(
  */
 export async function getEntityById(idOrSlug: string): Promise<Entity> {
   try {
-    const response = await api.get<Entity>(`/entity/${idOrSlug}`);
+    const response = await api.get<Entity>(`/entities/${idOrSlug}`);
     return response.data;
   } catch (error) {
-    handleApiError(error, `/entity/${idOrSlug}`);
+    handleApiError(error, `/entities/${idOrSlug}`);
   }
 }
 
@@ -238,6 +254,8 @@ export async function getEntityBySlug(slug: string): Promise<Entity> {
 /**
  * Get version history for an entity
  * 
+ * Backend endpoint: GET /entities/{id}/versions
+ * 
  * @param idOrSlug - Entity ID or slug
  * @returns Promise<VersionListResponse>
  * 
@@ -248,7 +266,7 @@ export async function getEntityBySlug(slug: string): Promise<Entity> {
  */
 export async function getEntityVersions(idOrSlug: string): Promise<VersionListResponse> {
   try {
-    const response = await api.get<VersionListResponse>(`/entity/${idOrSlug}/versions`);
+    const response = await api.get<VersionListResponse>(`/entities/${idOrSlug}/versions`);
     return response.data;
   } catch (error) {
     console.warn(`Version history not available for entity ${idOrSlug}`);
@@ -262,6 +280,8 @@ export async function getEntityVersions(idOrSlug: string): Promise<VersionListRe
 
 /**
  * Get relationships with optional filters
+ * 
+ * Backend endpoint: GET /relationships?source_id={id}&target_id={id}&type={type}
  * 
  * @param params - Relationship search parameters
  * @returns Promise<RelationshipListResponse>
@@ -279,7 +299,7 @@ export async function getRelationships(
   params?: RelationshipSearchParams
 ): Promise<RelationshipListResponse> {
   try {
-    const response = await api.get<RelationshipListResponse>('/relationship', { params });
+    const response = await api.get<RelationshipListResponse>('/relationships', { params });
     return response.data;
   } catch (error) {
     console.warn('Relationships endpoint returned error, returning empty list');
@@ -288,67 +308,33 @@ export async function getRelationships(
 }
 
 // ============================================================================
-// PAP-Specific Endpoints (Allegations & Cases)
+// Allegation & Case API Functions
 // ============================================================================
+// Note: NES API provides entity data only. Allegations and cases will be
+// handled by a separate API (Jawafdehi) to be integrated later.
+//
+// These functions are currently not implemented and return empty arrays.
 
 /**
  * Get allegations for an entity
  * 
- * TODO: This endpoint is not yet implemented in the backend.
- * Currently returns mock data. Update when backend endpoint is available.
- * 
  * @param idOrSlug - Entity ID or slug
- * @returns Promise<Allegation[]>
+ * @returns Promise<Allegation[]> - Always returns empty array (not implemented)
  */
 export async function getEntityAllegations(idOrSlug: string): Promise<Allegation[]> {
-  // TODO: Replace with actual backend endpoint when available
-  // Expected endpoint: GET /entity/{id}/allegations
-  
-  console.warn(`Allegations endpoint not implemented, returning mock data for ${idOrSlug}`);
-  
-  return [
-    {
-      id: '1',
-      entity_id: idOrSlug,
-      title: 'Procurement Irregularities',
-      status: 'Under Investigation',
-      severity: 'High',
-      summary: 'Investigation ongoing regarding procurement process violations.',
-      evidence: ['Document A', 'Witness Statement B'],
-      date: '2024-03-15',
-    },
-  ];
+  console.warn(`Allegations not available from NES API (entity: ${idOrSlug})`);
+  return [];
 }
 
 /**
  * Get cases for an entity
  * 
- * TODO: This endpoint is not yet implemented in the backend.
- * Currently returns mock data. Update when backend endpoint is available.
- * 
  * @param idOrSlug - Entity ID or slug
- * @returns Promise<Case[]>
+ * @returns Promise<Case[]> - Always returns empty array (not implemented)
  */
 export async function getEntityCases(idOrSlug: string): Promise<Case[]> {
-  // TODO: Replace with actual backend endpoint when available
-  // Expected endpoint: GET /entity/{id}/cases
-  
-  console.warn(`Cases endpoint not implemented, returning mock data for ${idOrSlug}`);
-  
-  return [
-    {
-      id: '1',
-      entity_id: idOrSlug,
-      name: 'Case #2024-001',
-      description: 'Investigation into alleged misconduct.',
-      documents: ['Report.pdf', 'Evidence.pdf'],
-      timeline: [
-        { date: '2024-01-15', event: 'Case Filed' },
-        { date: '2024-02-20', event: 'Investigation Started' },
-      ],
-      status: 'Active',
-    },
-  ];
+  console.warn(`Cases not available from NES API (entity: ${idOrSlug})`);
+  return [];
 }
 
 // ============================================================================
