@@ -27,91 +27,93 @@ VITE_NES_API_BASE_URL=http://localhost:8000/api
 
 ### Entity Endpoints
 
+## API Reference
+
+### Entity Endpoints
+
 #### `getEntities(params?)`
-Get list of entities with optional filters.
+List or search entities with optional filters.
 
-```typescript
-import { getEntities } from '@/services/api';
-
-const result = await getEntities({
-  type: 'person',
-  page: 1,
-  limit: 20
-});
-```
+**Backend Endpoint:** `GET /entities`
 
 **Parameters:**
-- `type?: string` - Filter by entity type (person, organization, location)
+- `query?: string` - Text query to search in entity names
+- `entity_type?: string` - Filter by entity type (person, organization, location)
 - `sub_type?: string` - Filter by entity subtype
-- `page?: number` - Page number (1-indexed)
-- `limit?: number` - Results per page (default: 20)
+- `attributes?: Record<string, any>` - Filter by attributes (JSON object)
+- `limit?: number` - Maximum number of results (default: 100, max: 1000)
+- `offset?: number` - Number of results to skip (default: 0)
 
-**Response:** `EntityListResponse`
+**Returns:** `Promise<EntityListResponse>`
+
+**Examples:**
 ```typescript
-{
-  entities: Entity[],
-  total?: number,
-  page?: number,
-  limit?: number,
-  has_more?: boolean
-}
+// List all entities
+const all = await getEntities();
+
+// Search for entities
+const results = await getEntities({
+  query: 'poudel',
+  entity_type: 'person',
+  limit: 10,
+  offset: 0
+});
+
+// Filter by type and subtype
+const parties = await getEntities({
+  entity_type: 'organization',
+  sub_type: 'political_party',
+  limit: 20
+});
+
+// Filter by attributes
+const ncMembers = await getEntities({
+  attributes: { party: 'nepali-congress' }
+});
 ```
 
 ---
 
 #### `searchEntities(query, params?)`
-Search entities by query string.
-
-```typescript
-const results = await searchEntities('ram bahadur', {
-  type: 'person',
-  page: 1,
-  limit: 10
-});
-```
+Search entities by query string (convenience wrapper around getEntities).
 
 **Parameters:**
 - `query: string` - Search query
-- `params?: EntitySearchParams` - Additional filters (type, sub_type, page, limit)
+- `params?: EntitySearchParams` - Additional filters
 
-**Backend Request:**
+**Example:**
+```typescript
+const results = await searchEntities('ram', { 
+  entity_type: 'person', 
+  limit: 10 
+});
 ```
-GET /entity?q=ram+bahadur&type=person&page=1&limit=10
-```
-
-**Response:** `EntityListResponse`
 
 ---
 
 #### `getEntityById(idOrSlug)`
 Get single entity by ID or slug.
 
+**Backend Endpoint:** `GET /entities/{id}`
+
+**Example:**
 ```typescript
 const entity = await getEntityById('pushpa-kamal-dahal-prachanda');
 ```
 
-**Backend Request:**
-```
-GET /entity/pushpa-kamal-dahal-prachanda
-```
-
-**Response:** `Entity`
+**Throws:** `NESApiError` with status 404 if entity not found
 
 ---
 
 #### `getEntityVersions(idOrSlug)`
 Get version history for an entity.
 
+**Backend Endpoint:** `GET /entities/{id}/versions`
+
+**Example:**
 ```typescript
 const versions = await getEntityVersions('pushpa-kamal-dahal-prachanda');
 ```
-
-**Backend Request:**
-```
-GET /entity/pushpa-kamal-dahal-prachanda/versions
-```
-
-**Response:** `VersionListResponse`
 
 ---
 
@@ -120,6 +122,16 @@ GET /entity/pushpa-kamal-dahal-prachanda/versions
 #### `getRelationships(params?)`
 Get relationships with optional filters.
 
+**Backend Endpoint:** `GET /relationships`
+
+**Parameters:**
+- `source_id?: string` - Filter by source entity
+- `target_id?: string` - Filter by target entity
+- `type?: string` - Filter by relationship type
+- `limit?: number` - Maximum number of results
+- `offset?: number` - Number of results to skip
+
+**Example:**
 ```typescript
 // Get relationships where entity is source
 const sourceRels = await getRelationships({
@@ -138,27 +150,11 @@ const allRels = [
 ];
 ```
 
-**Parameters:**
-- `source_id?: string` - Filter by source entity
-- `target_id?: string` - Filter by target entity
-- `type?: string` - Filter by relationship type
-
-**Backend Request:**
-```
-GET /relationship?source_id=entity-slug
-GET /relationship?target_id=entity-slug
-```
-
-**Response:** `RelationshipListResponse`
-
 ---
 
-### PAP-Specific Endpoints
+### Allegation & Case Endpoints
 
-#### `getEntityAllegations(idOrSlug)`
-Get allegations for an entity.
-
-**⚠️ Note:** This endpoint is not yet implemented in the backend. Currently returns mock data.
+**Note:** The NES API provides entity data only. Allegations and cases will be handled by a separate API (Jawafdehi) to be integrated later.
 
 ```typescript
 const allegations = await getEntityAllegations('entity-slug');
