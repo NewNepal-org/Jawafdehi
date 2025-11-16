@@ -20,7 +20,7 @@ const EntityCard = ({ entity, allegationCount = 0, caseCount = 0 }: EntityCardPr
   const isOrganization = entity.type === 'organization';
 
   return (
-    <Link to={`/entity/${entity.id}`}>
+    <Link to={`/entity/${encodeURIComponent(entity.id)}`}>
       <Card className="hover:shadow-lg transition-shadow duration-200 h-full">
         <CardHeader className="pb-3">
           <div className="flex items-start gap-4">

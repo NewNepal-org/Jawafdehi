@@ -17,13 +17,16 @@ import { getEntityById, getEntityAllegations, getEntityCases, getRelationships, 
 import { toast } from "sonner";
 
 export default function EntityProfile() {
-  const { id } = useParams();
+  const { id: encodedId } = useParams();
   const [entity, setEntity] = useState<Entity | null>(null);
   const [allegations, setAllegations] = useState<Allegation[]>([]);
   const [cases, setCases] = useState<Case[]>([]);
   const [relationships, setRelationships] = useState<Relationship[]>([]);
   const [versions, setVersions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Decode the entity ID from the URL
+  const id = encodedId ? decodeURIComponent(encodedId) : '';
 
   useEffect(() => {
     if (!id) return;
