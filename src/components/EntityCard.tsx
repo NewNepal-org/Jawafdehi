@@ -3,6 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Building2, User, MapPin } from "lucide-react";
 import { Entity } from "@/services/api";
+import { getPrimaryName, getAttribute } from "@/utils/nes-helpers";
 
 interface EntityCardProps {
   entity: Entity;
@@ -11,10 +12,11 @@ interface EntityCardProps {
 }
 
 const EntityCard = ({ entity, allegationCount = 0, caseCount = 0 }: EntityCardProps) => {
-  const primaryName = entity.names?.PRIMARY || entity.names?.ENGLISH || 'Unknown';
-  const position = entity.attributes?.position || entity.attributes?.role || 'N/A';
-  const organization = entity.attributes?.organization || 'N/A';
-  const province = entity.attributes?.province || entity.attributes?.location;
+  const primaryName = getPrimaryName(entity.names, 'en') || 'Unknown';
+  const primaryNameNe = getPrimaryName(entity.names, 'ne');
+  const position = getAttribute(entity, 'position') || getAttribute(entity, 'role') || 'N/A';
+  const organization = getAttribute(entity, 'organization') || 'N/A';
+  const province = getAttribute(entity, 'province') || getAttribute(entity, 'location');
   const isOrganization = entity.type === 'organization';
 
   return (
@@ -33,9 +35,9 @@ const EntityCard = ({ entity, allegationCount = 0, caseCount = 0 }: EntityCardPr
               <h3 className="font-semibold text-lg leading-tight mb-1 truncate">
                 {primaryName}
               </h3>
-              <p className="text-sm text-muted-foreground truncate">{position}</p>
-              {entity.names?.NEPALI && (
-                <p className="text-sm text-muted-foreground mt-1">{entity.names.NEPALI}</p>
+              <p className="text-sm text-muted-foreground truncate">{String(position)}</p>
+              {primaryNameNe && (
+                <p className="text-sm text-muted-foreground mt-1">{primaryNameNe}</p>
               )}
             </div>
           </div>
@@ -45,13 +47,13 @@ const EntityCard = ({ entity, allegationCount = 0, caseCount = 0 }: EntityCardPr
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm">
               <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <span className="text-muted-foreground truncate">{organization}</span>
+              <span className="text-muted-foreground truncate">{String(organization)}</span>
             </div>
             
             {province && (
               <div className="flex items-center gap-2 text-sm">
                 <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground truncate">{province}</span>
+                <span className="text-muted-foreground truncate">{String(province)}</span>
               </div>
             )}
 

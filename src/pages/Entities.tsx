@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Filter } from "lucide-react";
 import { getEntities, searchEntities, Entity } from "@/services/api";
+import { getPrimaryName } from "@/utils/nes-helpers";
 import { toast } from "sonner";
 
 const Entities = () => {
@@ -72,13 +73,13 @@ const Entities = () => {
   // Sort entities
   const sortedEntities = [...entities].sort((a, b) => {
     if (sortBy === "name") {
-      const nameA = a.names?.PRIMARY || a.names?.ENGLISH || "";
-      const nameB = b.names?.PRIMARY || b.names?.ENGLISH || "";
+      const nameA = getPrimaryName(a.names, 'en');
+      const nameB = getPrimaryName(b.names, 'en');
       return nameA.localeCompare(nameB);
     }
     if (sortBy === "updated") {
-      const dateA = a.version_summary?.updated_at || a.version_summary?.created_at || "";
-      const dateB = b.version_summary?.updated_at || b.version_summary?.created_at || "";
+      const dateA = a.version_summary?.created_at || "";
+      const dateB = b.version_summary?.created_at || "";
       return dateB.localeCompare(dateA); // Most recent first
     }
     // For "allegations" sort, we'd need allegation counts from backend

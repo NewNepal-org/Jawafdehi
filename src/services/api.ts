@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { Person, Organization, Location, Entity, Relationship } from '@/types/nes';
 
 // Configure base API URL - production backend
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://nes.newnepal.org/api';
@@ -10,50 +11,10 @@ const api = axios.create({
   },
 });
 
-// Entity Types
-export interface Entity {
-  id: string;
-  slug: string;
-  type: string;
-  subtype?: string;
-  names: {
-    [key: string]: string; // PRIMARY, ALIAS, etc.
-  };
-  identifiers?: {
-    [key: string]: string;
-  };
-  attributes?: {
-    [key: string]: any;
-  };
-  contacts?: {
-    email?: string;
-    phone?: string;
-    website?: string;
-    address?: string;
-  };
-  descriptions?: {
-    [key: string]: string;
-  };
-  version_summary?: {
-    version: number;
-    created_at: string;
-    updated_at: string;
-    author_id: string;
-  };
-}
+// Re-export NES types for convenience
+export type { Person, Organization, Location, Entity, Relationship };
 
-export interface Relationship {
-  id: string;
-  source_id: string;
-  target_id: string;
-  type: string;
-  start_date?: string;
-  end_date?: string;
-  attributes?: {
-    [key: string]: any;
-  };
-}
-
+// PAP-specific types (not part of NES core)
 export interface Allegation {
   id: string;
   entity_id: string;
@@ -81,21 +42,33 @@ export interface TimelineEvent {
   description?: string;
 }
 
+// API response wrappers
+export interface EntityListResponse {
+  entities: Entity[];
+  total?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface RelationshipListResponse {
+  relationships: Relationship[];
+  total?: number;
+}
+
 // =============================
-// CORRECTED API ENDPOINTS HERE
+// NES API ENDPOINTS
 // =============================
 
 // Fetch all entities
 export const getEntities = async (params?: {
   type?: string;
-  subtype?: string;
-  search?: string;
+  sub_type?: string;
+  query?: string;
   page?: number;
   limit?: number;
-}) => {
+}): Promise<EntityListResponse> => {
   try {
-    // Correct backend endpoint: /entity
-    const response = await api.get('/entity', { params });
+    const response = await api.get<EntityListResponse>('/entity', { params });
     return response.data;
   } catch (error) {
     console.error('Failed to fetch entities:', error);
@@ -103,14 +76,24 @@ export const getEntities = async (params?: {
   }
 };
 
-// Fetch single entity
+// Fetch single entity by ID
 export const getEntityById = async (id: string): Promise<Entity> => {
   try {
-    // Correct backend endpoint: /entity/{id}
-    const response = await api.get(`/entity/${id}`);
+    const response = await api.get<Entity>(`/entity/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch entity ${id}:`, error);
+    throw error;
+  }
+};
+
+// Fetch single entity by slug
+export const getEntityBySlug = async (slug: string): Promise<Entity> => {
+  try {
+    const response = await api.get<Entity>(`/entity/slug/${slug}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch entity with slug ${slug}:`, error);
     throw error;
   }
 };
@@ -131,10 +114,9 @@ export const getRelationships = async (params?: {
   source_id?: string;
   target_id?: string;
   type?: string;
-}) => {
+}): Promise<RelationshipListResponse> => {
   try {
-    // Correct backend endpoint: /relationship
-    const response = await api.get('/relationship', { params });
+    const response = await api.get<RelationshipListResponse>('/relationship', { params });
     return response.data;
   } catch (error) {
     console.warn('Relationships endpoint not available');
@@ -145,14 +127,13 @@ export const getRelationships = async (params?: {
 // Search entities
 export const searchEntities = async (query: string, params?: {
   type?: string;
-  subtype?: string;
+  sub_type?: string;
   page?: number;
   limit?: number;
-}) => {
+}): Promise<EntityListResponse> => {
   try {
-    // Correct backend endpoint: /entity with query param
-    const response = await api.get('/entity', { 
-      params: { query: query, ...params } 
+    const response = await api.get<EntityListResponse>('/entity', { 
+      params: { query, ...params } 
     });
     return response.data;
   } catch (error) {

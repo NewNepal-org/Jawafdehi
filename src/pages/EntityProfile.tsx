@@ -43,12 +43,16 @@ export default function EntityProfile() {
         const casesData = await getEntityCases(id);
         setCases(casesData);
 
+
         // Fetch relationships (both as source and target)
         const [sourceRels, targetRels] = await Promise.all([
           getRelationships({ source_id: id }),
           getRelationships({ target_id: id })
         ]);
-        const allRelationships = [...(sourceRels.relationships || sourceRels || []), ...(targetRels.relationships || targetRels || [])];
+        const allRelationships = [
+          ...(sourceRels.relationships || []), 
+          ...(targetRels.relationships || [])
+        ];
         setRelationships(allRelationships);
 
         // Fetch version history

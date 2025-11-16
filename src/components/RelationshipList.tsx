@@ -29,12 +29,12 @@ const RelationshipList = ({ relationships, entityId }: RelationshipListProps) =>
   return (
     <div className="space-y-4">
       {relationships.map((rel) => {
-        const isSource = rel.source_id === entityId;
-        const relatedEntityId = isSource ? rel.target_id : rel.source_id;
+        const isSource = rel.source_entity_id === entityId;
+        const relatedEntityId = isSource ? rel.target_entity_id : rel.source_entity_id;
         const Icon = getRelationshipIcon(rel.type);
 
         return (
-          <Card key={rel.id} className="hover:shadow-md transition-shadow">
+          <Card key={`${rel.source_entity_id}-${rel.target_entity_id}-${rel.type}`} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
