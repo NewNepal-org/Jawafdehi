@@ -2,27 +2,20 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import EntityCard from "@/components/EntityCard";
+import { EntityListContainer } from "@/components/EntityListContainer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Filter } from "lucide-react";
-import { getEntities, searchEntities, Entity } from "@/services/api";
-import { getPrimaryName } from "@/utils/nes-helpers";
-import { toast } from "sonner";
 
 const Entities = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [entities, setEntities] = useState<Entity[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "rabi");
   const [entityTypeFilter, setEntityTypeFilter] = useState(searchParams.get("entityType") || "person");
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "name");
-
 
   useEffect(() => {
     // Set default search params on initial load if not present
@@ -33,46 +26,6 @@ const Entities = () => {
       setSearchParams(params, { replace: true });
     }
   }, []);
-
-  useEffect(() => {
-    fetchEntities();
-  }, [searchParams]);
-
-  const fetchEntities = async () => {
-    setLoading(true);
-    try {
-      const params: any = {
-        limit: 100,
-        offset: 0
-      };
-      
-      // Set entity_type and sub_type based on filter
-      if (entityTypeFilter === "person") {
-        params.entity_type = "person";
-        // sub_type is null/undefined for persons
-      } else if (entityTypeFilter === "political_party") {
-        params.entity_type = "organization";
-        params.sub_type = "political_party";
-      }
-      
-      let data;
-      if (searchQuery) {
-        // Use search endpoint when there's a query
-        data = await searchEntities(searchQuery, params);
-      } else {
-        // Use regular entities endpoint
-        data = await getEntities(params);
-      }
-      
-      setEntities(data.entities || data || []);
-    } catch (error) {
-      console.error("Failed to fetch entities:", error);
-      toast.error("Failed to load entities. Please try again.");
-      setEntities([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -92,22 +45,15 @@ const Entities = () => {
     setSearchParams(params);
   };
 
-  // Sort entities
-  const sortedEntities = [...entities].sort((a, b) => {
-    if (sortBy === "name") {
-      const nameA = getPrimaryName(a.names, 'en');
-      const nameB = getPrimaryName(b.names, 'en');
-      return nameA.localeCompare(nameB);
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
     }
-    if (sortBy === "updated") {
-      const dateA = a.version_summary?.created_at || "";
-      const dateB = b.version_summary?.created_at || "";
-      return dateB.localeCompare(dateA); // Most recent first
-    }
-    // For "allegations" sort, we'd need allegation counts from backend
-    // For now, maintain original order
-    return 0;
-  });
+  };
+
+  // Calculate entity_type and sub_type for API
+  const apiEntityType = entityTypeFilter === "person" ? "person" : "organization";
+  const apiSubType = entityTypeFilter === "political_party" ? "political_party" : undefined;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -135,7 +81,7 @@ const Entities = () => {
                       placeholder="Search by name..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      onKeyDown={handleKeyPress}
                       className="pl-10"
                     />
                   </div>
@@ -186,52 +132,14 @@ const Entities = () => {
             </CardContent>
           </Card>
 
-          {/* Results Count */}
-          <div className="mb-4">
-            <p className="text-sm text-muted-foreground">
-              {loading ? "Loading..." : `${sortedEntities.length} entities found`}
-            </p>
-          </div>
-
-          {/* Entity Grid */}
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Card key={i}>
-                  <CardContent className="p-6">
-                    <div className="flex gap-4 mb-4">
-                      <Skeleton className="w-16 h-16 rounded-full" />
-                      <div className="flex-1 space-y-2">
-                        <Skeleton className="h-5 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                      </div>
-                    </div>
-                    <Skeleton className="h-4 w-full mb-2" />
-                    <Skeleton className="h-4 w-2/3" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : sortedEntities.length === 0 ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-muted-foreground">
-                  No entities found. Try adjusting your search criteria.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedEntities.map((entity) => (
-                <EntityCard
-                  key={entity.id}
-                  entity={entity}
-                  allegationCount={Math.floor(Math.random() * 10)}
-                  caseCount={Math.floor(Math.random() * 5)}
-                />
-              ))}
-            </div>
-          )}
+          {/* Results Section */}
+          <EntityListContainer
+            query={searchQuery}
+            entityType={apiEntityType}
+            subType={apiSubType}
+            sortBy={sortBy}
+            limit={100}
+          />
         </div>
       </main>
 
