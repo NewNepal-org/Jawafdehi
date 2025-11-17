@@ -8,6 +8,7 @@
 import { useEntityDetail } from '@/hooks/useEntityDetail';
 import EntityProfileHeader from '@/components/EntityProfileHeader';
 import RelationshipList from '@/components/RelationshipList';
+import { EntityDetailSections } from '@/components/EntityDetailSections';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -30,6 +31,7 @@ export function EntityDetailContainer({
 }: EntityDetailContainerProps) {
   const {
     entity,
+    mergedEntity,
     allegations,
     cases,
     relationships,
@@ -130,7 +132,10 @@ export function EntityDetailContainer({
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Recent Allegations */}
+          {/* All Detail Sections */}
+          {mergedEntity && <EntityDetailSections entity={mergedEntity} />}
+
+          {/* Recent Allegations Preview */}
           {allegations.length > 0 && (
             <Card>
               <CardHeader>

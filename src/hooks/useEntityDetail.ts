@@ -19,8 +19,10 @@ import {
   getRelationships,
   getEntityVersions,
 } from '@/api/api';
+import { mergeNESEntity } from '@/api/entity-merger';
 import { mergeEvidenceAndSources, EvidenceAndSource } from '@/api/nes-adapters';
 import type { Entity, Relationship, VersionSummary } from '@/types/nes';
+import type { MergedEntity } from '@/types/merged-entity';
 import type { Allegation as JDSAllegation } from '@/types/jds';
 
 interface UseEntityDetailOptions {
@@ -32,6 +34,7 @@ interface UseEntityDetailOptions {
 
 interface UseEntityDetailReturn {
   entity: Entity | null;
+  mergedEntity: MergedEntity | null;
   allegations: JDSAllegation[];
   cases: JDSAllegation[];
   relationships: Relationship[];
@@ -46,6 +49,7 @@ export function useEntityDetail(options: UseEntityDetailOptions = {}): UseEntity
   const { entityId, entityType, entitySlug, autoFetch = true } = options;
 
   const [entity, setEntity] = useState<Entity | null>(null);
+  const [mergedEntity, setMergedEntity] = useState<MergedEntity | null>(null);
   const [allegations, setAllegations] = useState<JDSAllegation[]>([]);
   const [cases, setCases] = useState<JDSAllegation[]>([]);
   const [relationships, setRelationships] = useState<Relationship[]>([]);
@@ -109,10 +113,15 @@ export function useEntityDetail(options: UseEntityDetailOptions = {}): UseEntity
       const mergedSources = mergeEvidenceAndSources(entityData);
       setSources(mergedSources);
 
+      // 5. Create merged entity format
+      const merged = mergeNESEntity(entityData, allegationsData, allRelationships);
+      setMergedEntity(merged);
+
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to fetch entity details');
       setError(error);
       setEntity(null);
+      setMergedEntity(null);
     } finally {
       setLoading(false);
     }
@@ -126,6 +135,7 @@ export function useEntityDetail(options: UseEntityDetailOptions = {}): UseEntity
 
   return {
     entity,
+    mergedEntity,
     allegations,
     cases,
     relationships,
