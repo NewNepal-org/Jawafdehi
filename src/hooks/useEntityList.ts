@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { getEntities, searchEntities, EntitySearchParams, EntityListResponse } from '@/api/api';
+import { getEntities, searchEntities, EntitySearchParams, EntityListResponse } from '@/services/api';
 import type { Entity } from '@/types/nes';
 
 interface UseEntityListOptions {

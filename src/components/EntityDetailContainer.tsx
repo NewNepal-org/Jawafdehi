@@ -148,14 +148,15 @@ export function EntityDetailContainer({
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-medium">{allegation.title}</h4>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(allegation.created_at).toLocaleDateString()}
+                          {new Date(allegation.date).toLocaleDateString()}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-2">
-                        {allegation.title}
+                        {allegation.summary}
                       </p>
                       <div className="flex gap-2 mt-2">
                         <Badge variant="outline">{allegation.status}</Badge>
+                        <Badge variant="secondary">{allegation.severity}</Badge>
                       </div>
                     </div>
                   ))}
@@ -228,14 +229,15 @@ export function EntityDetailContainer({
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-medium">{allegation.title}</h4>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(allegation.created_at).toLocaleDateString()}
+                          {new Date(allegation.date).toLocaleDateString()}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {allegation.title}
+                        {allegation.summary}
                       </p>
                       <div className="flex gap-2 mt-2">
                         <Badge variant="outline">{allegation.status}</Badge>
+                        <Badge variant="secondary">{allegation.severity}</Badge>
                       </div>
                     </div>
                   ))}
@@ -258,16 +260,18 @@ export function EntityDetailContainer({
                   {cases.map((caseItem) => (
                     <div key={caseItem.id} className="border-b border-border pb-4 last:border-0">
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-medium">{caseItem.title}</h4>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(caseItem.created_at).toLocaleDateString()}
-                        </span>
+                        <h4 className="font-medium">{caseItem.name}</h4>
+                        <Badge variant="outline">{caseItem.status}</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {caseItem.title}
+                        {caseItem.description}
                       </p>
                       <div className="flex gap-2 mt-2">
-                        <Badge variant="outline">{caseItem.status}</Badge>
+                        {caseItem.documents && caseItem.documents.length > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {caseItem.documents.length} document(s)
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}

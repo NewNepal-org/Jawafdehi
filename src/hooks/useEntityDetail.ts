@@ -13,12 +13,13 @@
 import { useState, useEffect } from 'react';
 import { 
   getEntityById,
-  getEntityBySlug,
   getEntityAllegations,
   getEntityCases,
   getRelationships,
   getEntityVersions,
-} from '@/api/api';
+  type Allegation as PAPAllegation,
+  type Case as PAPCase,
+} from '@/services/api';
 import { mergeNESEntity } from '@/api/entity-merger';
 import { mergeEvidenceAndSources, EvidenceAndSource } from '@/api/nes-adapters';
 import type { Entity, Relationship, VersionSummary } from '@/types/nes';
@@ -35,8 +36,8 @@ interface UseEntityDetailOptions {
 interface UseEntityDetailReturn {
   entity: Entity | null;
   mergedEntity: MergedEntity | null;
-  allegations: JDSAllegation[];
-  cases: JDSAllegation[];
+  allegations: PAPAllegation[];
+  cases: PAPCase[];
   relationships: Relationship[];
   versions: VersionSummary[];
   sources: EvidenceAndSource[];
@@ -50,8 +51,8 @@ export function useEntityDetail(options: UseEntityDetailOptions = {}): UseEntity
 
   const [entity, setEntity] = useState<Entity | null>(null);
   const [mergedEntity, setMergedEntity] = useState<MergedEntity | null>(null);
-  const [allegations, setAllegations] = useState<JDSAllegation[]>([]);
-  const [cases, setCases] = useState<JDSAllegation[]>([]);
+  const [allegations, setAllegations] = useState<PAPAllegation[]>([]);
+  const [cases, setCases] = useState<PAPCase[]>([]);
   const [relationships, setRelationships] = useState<Relationship[]>([]);
   const [versions, setVersions] = useState<VersionSummary[]>([]);
   const [sources, setSources] = useState<EvidenceAndSource[]>([]);
@@ -71,7 +72,9 @@ export function useEntityDetail(options: UseEntityDetailOptions = {}): UseEntity
       // 1. Fetch entity profile
       let entityData: Entity;
       if (entityType && entitySlug) {
-        entityData = await getEntityBySlug(entityType, entitySlug);
+        // Construct NES entity ID format: entity:type/slug
+        const nesEntityId = `entity:${entityType}/${entitySlug}`;
+        entityData = await getEntityById(nesEntityId);
       } else if (entityId) {
         entityData = await getEntityById(entityId);
       } else {
@@ -113,8 +116,8 @@ export function useEntityDetail(options: UseEntityDetailOptions = {}): UseEntity
       const mergedSources = mergeEvidenceAndSources(entityData);
       setSources(mergedSources);
 
-      // 5. Create merged entity format
-      const merged = mergeNESEntity(entityData, allegationsData, allRelationships);
+      // 5. Create merged entity (pass empty arrays since merger expects JDS types, not PAP types)
+      const merged = mergeNESEntity(entityData, [], []);
       setMergedEntity(merged);
 
     } catch (err) {
