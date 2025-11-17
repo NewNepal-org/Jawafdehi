@@ -32,35 +32,27 @@ export function mergeNESEntity(
     NEPALI: nesEntity.names?.find(n => n.kind === 'PRIMARY')?.ne?.full ||
             nesEntity.names?.[0]?.ne?.full,
     ALIAS: nesEntity.names
-      ?.filter(n => n.kind === 'ALIAS' || n.kind === 'ALTERNATIVE')
+      ?.filter(n => n.kind === 'ALIAS' || n.kind === 'ALTERNATE')
       .map(n => n.en?.full || n.ne?.full)
       .filter(Boolean) as string[] || [],
   };
 
-  // Extract identifiers
+  // Extract identifiers from attributes (NES stores Nepal-specific IDs in attributes)
   const identifiers: MergedEntity['identifiers'] = {};
+  if (nesEntity.attributes) {
+    const attrs = nesEntity.attributes as any;
+    if (attrs.citizenship_no) identifiers.citizenship_no = attrs.citizenship_no;
+    if (attrs.pan_no) identifiers.pan_no = attrs.pan_no;
+    if (attrs.voter_id) identifiers.voter_id = attrs.voter_id;
+    if (attrs.passport_no) identifiers.passport_no = attrs.passport_no;
+    if (attrs.national_id) identifiers.national_id = attrs.national_id;
+  }
+  
+  // Extract external identifiers
   if (nesEntity.identifiers) {
     nesEntity.identifiers.forEach(id => {
-      switch (id.scheme) {
-        case 'NP_CITIZENSHIP':
-          identifiers.citizenship_no = id.value;
-          break;
-        case 'NP_PAN':
-          identifiers.pan_no = id.value;
-          break;
-        case 'NP_VOTER_ID':
-          identifiers.voter_id = id.value;
-          break;
-        case 'PASSPORT':
-          identifiers.passport_no = id.value;
-          break;
-        case 'NP_NATIONAL_ID':
-          identifiers.national_id = id.value;
-          break;
-        default:
-          if (!identifiers.other_ids) identifiers.other_ids = {};
-          identifiers.other_ids[id.scheme] = id.value;
-      }
+      if (!identifiers.other_ids) identifiers.other_ids = {};
+      identifiers.other_ids[id.scheme] = id.value;
     });
   }
 
@@ -73,10 +65,9 @@ export function mergeNESEntity(
           contacts.email = contact.value;
           break;
         case 'PHONE':
-        case 'MOBILE':
           contacts.phone = contact.value;
           break;
-        case 'WEBSITE':
+        case 'URL':
           contacts.website = contact.value;
           break;
       }
@@ -86,25 +77,11 @@ export function mergeNESEntity(
   // Extract address from person or organization
   if (isPerson && personData?.address) {
     const addr = personData.address;
-    contacts.address = [
-      addr.ward ? `Ward ${addr.ward}` : null,
-      addr.municipality?.en?.value || addr.municipality?.ne?.value,
-      addr.district?.en?.value || addr.district?.ne?.value,
-      addr.province?.en?.value || addr.province?.ne?.value,
-    ].filter(Boolean).join(', ');
-    
-    contacts.province = addr.province?.en?.value || addr.province?.ne?.value;
-    contacts.district = addr.district?.en?.value || addr.district?.ne?.value;
-    contacts.municipality = addr.municipality?.en?.value || addr.municipality?.ne?.value;
-    contacts.ward = addr.ward?.toString();
-  } else if ((nesEntity as Organization).address) {
-    const addr = (nesEntity as Organization).address!;
-    contacts.address = [
-      addr.ward ? `Ward ${addr.ward}` : null,
-      addr.municipality?.en?.value || addr.municipality?.ne?.value,
-      addr.district?.en?.value || addr.district?.ne?.value,
-      addr.province?.en?.value || addr.province?.ne?.value,
-    ].filter(Boolean).join(', ');
+    // Address has location_id and description2
+    contacts.address = addr.description2?.en?.value || addr.description2?.ne?.value;
+  } else if ((nesEntity as any).address) {
+    const addr = (nesEntity as any).address;
+    contacts.address = addr.description2?.en?.value || addr.description2?.ne?.value;
   }
 
   // Extract descriptions
@@ -122,14 +99,19 @@ export function mergeNESEntity(
   
   if (isPerson && personData) {
     attributes.gender = personData.gender || undefined;
-    attributes.dob_ad = personData.date_of_birth_ad || undefined;
-    attributes.dob_bs = personData.date_of_birth_bs || undefined;
+    attributes.dob_ad = personData.birth_date || undefined; // NES uses birth_date field
+    attributes.dob_bs = undefined; // No BS date in NES schema
     
-    // Calculate age from DOB
-    if (personData.date_of_birth_ad) {
-      const birthDate = new Date(personData.date_of_birth_ad);
+    // Calculate age from birth_date
+    if (personData.birth_date) {
+      const birthDate = new Date(personData.birth_date);
       const today = new Date();
-      attributes.age = today.getFullYear() - birthDate.getFullYear();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      attributes.age = age;
     }
 
     attributes.education = personData.education?.map(e =>
@@ -143,10 +125,15 @@ export function mergeNESEntity(
     )?.title?.en?.value || personData.positions?.[0]?.title?.en?.value;
   }
 
-  // Extract photo
-  const primaryPhoto = nesEntity.pictures?.find(p => p.type === 'PRIMARY');
-  if (primaryPhoto) {
-    attributes.photo_url = primaryPhoto.url || primaryPhoto.file_name;
+  // Extract photos (NES uses thumb, full, wide types)
+  const thumbPhoto = nesEntity.pictures?.find(p => p.type === 'thumb');
+  if (thumbPhoto) {
+    attributes.photo_url = thumbPhoto.url;
+  }
+  
+  const coverPhoto = nesEntity.pictures?.find(p => p.type === 'wide');
+  if (coverPhoto) {
+    attributes.cover_photo_url = coverPhoto.url;
   }
 
   // Additional attributes from entity.attributes
@@ -156,9 +143,9 @@ export function mergeNESEntity(
 
   // Transform relationships
   const mergedRelationships: MergedRelationship[] = relationships.map(rel => ({
-    id: rel.id || `${rel.source_id}-${rel.target_id}`,
-    source_id: rel.source_id,
-    target_id: rel.target_id,
+    id: rel.id || `${rel.source_entity_id}-${rel.target_entity_id}`,
+    source_id: rel.source_entity_id,
+    target_id: rel.target_entity_id,
     type: rel.type,
     start_date: rel.start_date || undefined,
     end_date: rel.end_date || undefined,
@@ -167,31 +154,31 @@ export function mergeNESEntity(
 
   // Transform allegations (from JDS)
   const mergedAllegations: MergedAllegation[] = allegations.map(a => ({
-    id: a.id,
+    id: a.id.toString(),
     entity_id: nesEntity.slug,
     title: a.title,
-    summary: a.summary_en || a.summary_ne || '',
+    summary: a.description || a.key_allegations || '',
     severity: determineSeverity(a),
-    status: a.status,
-    date: a.created_at,
-    evidence: a.documentary_evidence?.map(e => e.title || e.description) || [],
+    status: a.status || 'under_investigation',
+    date: a.first_public_date || a.created_at,
+    evidence: a.evidences?.map(e => e.file_url).filter(Boolean) as string[] || [],
   }));
 
   // Transform cases (current allegations from JDS)
   const mergedCases: MergedCase[] = allegations
     .filter(a => a.state === 'current')
     .map(a => ({
-      id: a.id,
+      id: a.id.toString(),
       entity_id: nesEntity.slug,
       name: a.title,
-      description: a.summary_en || a.summary_ne || '',
-      documents: a.documentary_evidence?.map(e => e.title || e.url || 'Document') || [],
-      timeline: a.timeline?.map(t => ({
+      description: a.description || '',
+      documents: a.evidences?.map(e => e.file_url).filter(Boolean) as string[] || [],
+      timeline: a.timelines?.map(t => ({
         date: t.date,
-        event: t.event_en || t.event_ne || 'Event',
-        description: t.description_en || t.description_ne,
+        event: t.title || 'Event',
+        description: t.description,
       })) || [],
-      status: a.status,
+      status: a.status || 'under_investigation',
     }));
 
   // Merge evidence and sources
