@@ -99,7 +99,7 @@ export function mergeNESEntity(
   
   if (isPerson && personData) {
     attributes.gender = personData.gender || undefined;
-    attributes.dob_ad = personData.birth_date || undefined; // NES uses birth_date field
+    attributes.dob_ad = personData.birth_date || undefined;
     attributes.dob_bs = undefined; // No BS date in NES schema
     
     // Calculate age from birth_date
@@ -112,6 +112,21 @@ export function mergeNESEntity(
         age--;
       }
       attributes.age = age;
+    }
+
+    // Extract family information
+    attributes.father_name = personData.father_name?.en?.value || personData.father_name?.ne?.value;
+    attributes.mother_name = personData.mother_name?.en?.value || personData.mother_name?.ne?.value;
+    attributes.spouse_name = personData.spouse_name?.en?.value || personData.spouse_name?.ne?.value;
+
+    // Extract birth and citizenship places
+    if (personData.birth_place) {
+      attributes.birth_place = personData.birth_place.description2?.en?.value || 
+                               personData.birth_place.description2?.ne?.value;
+    }
+    if (personData.citizenship_place) {
+      attributes.citizenship_place = personData.citizenship_place.description2?.en?.value || 
+                                     personData.citizenship_place.description2?.ne?.value;
     }
 
     attributes.education = personData.education?.map(e =>
@@ -196,6 +211,27 @@ export function mergeNESEntity(
     }) || [],
   };
 
+  // Extract electoral details for persons
+  let electoral_details: MergedEntity['electoral_details'] = undefined;
+  if (isPerson) {
+    const personEntity = nesEntity as Person;
+    if (personEntity.electoral_details?.candidacies && personEntity.electoral_details.candidacies.length > 0) {
+      electoral_details = {
+        candidacies: personEntity.electoral_details.candidacies.map(c => ({
+          election_year: c.election_year,
+          election_type: c.election_type,
+          constituency_id: c.constituency_id,
+          candidate_id: c.candidate_id,
+          position: c.position || undefined,
+          party_id: c.party_id || undefined,
+          votes_received: c.votes_received || undefined,
+          elected: c.elected || undefined,
+          pa_subdivision: c.pa_subdivision || undefined,
+        })),
+      };
+    }
+  }
+
   // Version summary
   const version_summary = nesEntity.version_summary ? {
     version: nesEntity.version_summary.version_number,
@@ -214,6 +250,7 @@ export function mergeNESEntity(
     contacts: Object.keys(contacts).length > 0 ? contacts : undefined,
     descriptions,
     attributes,
+    electoral_details,
     relationships: mergedRelationships,
     allegations: mergedAllegations,
     cases: mergedCases,

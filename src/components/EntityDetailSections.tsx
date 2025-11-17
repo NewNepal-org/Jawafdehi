@@ -64,6 +64,36 @@ export function EntityDetailSections({ entity }: EntityDetailSectionsProps) {
                   <dd className="text-sm">{entity.attributes.age} years</dd>
                 </div>
               )}
+              {entity.attributes.birth_place && (
+                <div>
+                  <dt className="text-sm font-medium text-muted-foreground">Birth Place</dt>
+                  <dd className="text-sm">{entity.attributes.birth_place}</dd>
+                </div>
+              )}
+              {entity.attributes.citizenship_place && (
+                <div>
+                  <dt className="text-sm font-medium text-muted-foreground">Citizenship Place</dt>
+                  <dd className="text-sm">{entity.attributes.citizenship_place}</dd>
+                </div>
+              )}
+              {entity.attributes.father_name && (
+                <div>
+                  <dt className="text-sm font-medium text-muted-foreground">Father's Name</dt>
+                  <dd className="text-sm">{entity.attributes.father_name}</dd>
+                </div>
+              )}
+              {entity.attributes.mother_name && (
+                <div>
+                  <dt className="text-sm font-medium text-muted-foreground">Mother's Name</dt>
+                  <dd className="text-sm">{entity.attributes.mother_name}</dd>
+                </div>
+              )}
+              {entity.attributes.spouse_name && (
+                <div>
+                  <dt className="text-sm font-medium text-muted-foreground">Spouse's Name</dt>
+                  <dd className="text-sm">{entity.attributes.spouse_name}</dd>
+                </div>
+              )}
               {entity.attributes.education && (
                 <div className="md:col-span-2">
                   <dt className="text-sm font-medium text-muted-foreground">Education</dt>
@@ -237,6 +267,72 @@ export function EntityDetailSections({ entity }: EntityDetailSectionsProps) {
                 </p>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Electoral History */}
+      {entity.electoral_details?.candidacies && entity.electoral_details.candidacies.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <History className="h-5 w-5" />
+              Electoral History
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {entity.electoral_details.candidacies.map((candidacy, idx) => (
+                <div key={idx} className="border-b border-border pb-4 last:border-0">
+                  <dl className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground">Election Year</dt>
+                      <dd className="text-sm">{candidacy.election_year}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground">Election Type</dt>
+                      <dd className="text-sm">{candidacy.election_type}</dd>
+                    </div>
+                    {candidacy.position && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground">Position</dt>
+                        <dd className="text-sm">{candidacy.position}</dd>
+                      </div>
+                    )}
+                    {candidacy.pa_subdivision && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground">PA Subdivision</dt>
+                        <dd className="text-sm">{candidacy.pa_subdivision}</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground">Candidate ID</dt>
+                      <dd className="text-sm font-mono">{candidacy.candidate_id}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground">Constituency ID</dt>
+                      <dd className="text-sm">{candidacy.constituency_id}</dd>
+                    </div>
+                    {candidacy.votes_received !== undefined && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground">Votes Received</dt>
+                        <dd className="text-sm">{candidacy.votes_received.toLocaleString()}</dd>
+                      </div>
+                    )}
+                    {candidacy.elected !== undefined && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground">Result</dt>
+                        <dd className="text-sm">
+                          <Badge variant={candidacy.elected ? "default" : "secondary"}>
+                            {candidacy.elected ? "Elected" : "Not Elected"}
+                          </Badge>
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}

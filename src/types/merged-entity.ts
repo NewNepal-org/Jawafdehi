@@ -47,6 +47,11 @@ export interface MergedEntity {
     dob_ad?: string;
     dob_bs?: string;
     age?: number;
+    birth_place?: string;
+    citizenship_place?: string;
+    father_name?: string;
+    mother_name?: string;
+    spouse_name?: string;
     education?: string;
     occupation?: string;
     political_position?: string;
@@ -54,6 +59,20 @@ export interface MergedEntity {
     photo_url?: string;
     cover_photo_url?: string;
     extra_attributes?: Record<string, any>;
+  };
+
+  electoral_details?: {
+    candidacies?: Array<{
+      election_year: number;
+      election_type: string;
+      constituency_id: string;
+      candidate_id: number;
+      position?: string;
+      party_id?: string;
+      votes_received?: number;
+      elected?: boolean;
+      pa_subdivision?: string;
+    }>;
   };
 
   relationships?: MergedRelationship[];
