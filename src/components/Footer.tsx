@@ -16,7 +16,7 @@ export const Footer = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground max-w-md">
-              A civic tech initiative by Let's Build Nepal (LBN) and NewNepal.org to promote transparency and accountability in Nepal.
+              A civic tech initiative to promote transparency and accountability in Nepal.
             </p>
           </div>
 
@@ -54,8 +54,26 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold text-foreground mb-3">Partners</h3>
             <ul className="space-y-2 text-sm">
-              <li className="text-muted-foreground">Let's Build Nepal (LBN)</li>
-              <li className="text-muted-foreground">NewNepal.org</li>
+              <li>
+                <a 
+                  href="https://LetsBuildNepal.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Let's Build Nepal (LBN)
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://NewNepal.org" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  NewNepal.org
+                </a>
+              </li>
             </ul>
           </div>
         </div>
