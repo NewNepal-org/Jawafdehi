@@ -1,0 +1,386 @@
+{
+  "nav": {
+    "home": "Home",
+    "entities": "Entities",
+    "cases": "Cases",
+    "information": "Information",
+    "about": "About",
+    "searchCases": "Search cases"
+  },
+  "header": {
+    "title": "Public Accountability",
+    "subtitle": "Platform Nepal",
+    "reportCase": "Report Case",
+    "viewCases": "View Cases"
+  },
+  "footer": {
+    "title": "Public Accountability Platform",
+    "subtitle": "Nepal",
+    "description": "A civic tech initiative to promote transparency and accountability in Nepal.",
+    "navigation": "Navigation",
+    "partners": "Partners",
+    "copyright": "© {{year}} Public Accountability Platform Nepal. All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "badge": "Transparency • Accountability • Justice",
+      "title": "Public Accountability Platform Nepal",
+      "description": "Documenting and tracking corruption cases to hold public entities accountable. Empowering Nepali citizens with transparency and verified information.",
+      "browseCases": "Browse Cases",
+      "learnMore": "Learn More"
+    },
+    "stats": {
+      "totalCases": "Total Cases Documented",
+      "totalCasesValue": "127",
+      "totalCasesDesc": "Verified corruption cases",
+      "entitiesTracked": "Entities Tracked",
+      "entitiesTrackedValue": "89",
+      "entitiesTrackedDesc": "Public organizations monitored",
+      "underInvestigation": "Cases Under Investigation",
+      "underInvestigationValue": "43",
+      "underInvestigationDesc": "Active investigations",
+      "resolved": "Cases Resolved",
+      "resolvedValue": "31",
+      "resolvedDesc": "Successfully concluded",
+      "trend": "↑ 12% this quarter"
+    },
+    "featuredCases": {
+      "title": "Featured Cases",
+      "description": "Recent high-impact corruption cases under public scrutiny",
+      "viewAll": "View All Cases →"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "The Public Accountability Platform (PAP) is a civic tech initiative by Let's Build Nepal (LBN) and NewNepal.org dedicated to promoting transparency and accountability in Nepal. We document, verify, and publish corruption cases involving public entities to empower citizens with information and drive systemic change.",
+      "aboutPlatform": "About the Platform"
+    },
+    "cta": {
+      "title": "Know About a Case of Corruption?",
+      "description": "Help us hold public entities accountable. Report allegations of misconduct and contribute to transparency in governance.",
+      "reportAllegation": "Report an Allegation",
+      "submitFeedback": "Submit Feedback"
+    }
+  },
+  "cases": {
+    "title": "Corruption Cases",
+    "description": "Browse and search documented corruption cases in Nepal",
+    "searchPlaceholder": "Search by title, entity, or location...",
+    "filterByStatus": "Filter by status",
+    "filterByType": "Filter by type",
+    "allStatuses": "All Statuses",
+    "allTypes": "All Types",
+    "clearFilters": "Clear Filters",
+    "loading": "Loading...",
+    "showing": "Showing {{count}} of {{total}} cases",
+    "noCasesFound": "No cases found matching your criteria",
+    "unableToLoad": "Unable to load cases at this time",
+    "tryAgain": "Try Again",
+    "clearAllFilters": "Clear All Filters",
+    "retry": "Retry",
+    "tooManyRequests": "Too many requests. Please wait a moment and try again.",
+    "failedToLoad": "Failed to load cases. Please try again.",
+    "status": {
+      "ongoing": "Ongoing",
+      "underInvestigation": "Under Investigation",
+      "resolved": "Resolved"
+    },
+    "type": {
+      "corruption": "Corruption",
+      "misconduct": "Misconduct",
+      "breachOfTrust": "Breach of Trust",
+      "brokenPromise": "Broken Promise",
+      "mediaTrial": "Media Trial"
+    }
+  },
+  "caseDetail": {
+    "backToCases": "Back to Cases",
+    "severity": "Severity",
+    "filed": "Filed",
+    "overview": "Case Overview",
+    "allegations": "Key Allegations",
+    "timeline": "Case Timeline",
+    "partiesInvolved": "Parties Involved",
+    "evidenceSources": "Evidence & Sources",
+    "viewSource": "View Source",
+    "status": {
+      "ongoing": "Ongoing",
+      "resolved": "Resolved",
+      "underInvestigation": "Under Investigation"
+    },
+    "severityLevels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  },
+  "entities": {
+    "title": "Public Entities",
+    "description": "Browse and search individuals and organizations in public service",
+    "searchPlaceholder": "Search by name...",
+    "search": "Search",
+    "entityType": "Entity Type",
+    "persons": "Persons",
+    "politicalParties": "Political Parties",
+    "sortBy": "Sort By",
+    "nameAZ": "Name (A-Z)",
+    "mostAllegations": "Most Allegations",
+    "latestUpdates": "Latest Updates",
+    "reset": "Reset",
+    "loading": "Loading...",
+    "entitiesFound": "{{count}} entities found",
+    "noEntitiesFound": "No entities found. Try adjusting your search criteria."
+  },
+  "about": {
+    "title": "About the Public Accountability Platform",
+    "subtitle": "A civic tech initiative committed to transparency, accountability, and justice in Nepal.",
+    "mission": {
+      "title": "Our Mission",
+      "description1": "The Public Accountability Platform (PAP) is dedicated to promoting transparency and accountability in Nepal by documenting, verifying, and publishing corruption cases involving public entities. We empower Nepali citizens with verified information to drive systemic change and hold public officials accountable for their actions.",
+      "description2": "Through rigorous investigation, documentation, and public disclosure, we aim to create a more transparent governance system where corruption is exposed, justice is served, and public trust is restored."
+    },
+    "values": {
+      "title": "Our Core Values",
+      "integrity": {
+        "title": "Integrity",
+        "description": "We maintain the highest standards of honesty and ethical conduct in all our investigations and documentation."
+      },
+      "transparency": {
+        "title": "Transparency",
+        "description": "All our processes, sources, and methodologies are open and accessible to the public for scrutiny and verification."
+      },
+      "accuracy": {
+        "title": "Accuracy",
+        "description": "Every case is thoroughly verified through multiple sources before publication to ensure factual accuracy and reliability."
+      },
+      "publicService": {
+        "title": "Public Service",
+        "description": "We serve the public interest by providing free access to information that affects every Nepali citizen."
+      }
+    },
+    "partners": {
+      "title": "Our Partners",
+      "lbn": {
+        "title": "Let's Build Nepal (LBN)",
+        "description": "A civic tech organization focused on building technology solutions for social good in Nepal. LBN brings technical expertise and development resources to the platform."
+      },
+      "newnepal": {
+        "title": "NewNepal.org",
+        "description": "A civil society initiative working towards a more transparent and accountable Nepal. NewNepal.org provides investigative support and policy advocacy expertise."
+      }
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "document": {
+        "label": "Document Corruption Cases:",
+        "description": "We systematically collect and organize information about corruption cases involving public entities."
+      },
+      "verify": {
+        "label": "Verify Information:",
+        "description": "All cases undergo rigorous verification through multiple independent sources before publication."
+      },
+      "track": {
+        "label": "Track Progress:",
+        "description": "We monitor the status of each case and update the public on investigations and outcomes."
+      },
+      "empower": {
+        "label": "Empower Citizens:",
+        "description": "We provide accessible, searchable information to help citizens make informed decisions and demand accountability."
+      },
+      "advocate": {
+        "label": "Advocate for Change:",
+        "description": "We use data and documented cases to advocate for policy reforms and stronger anti-corruption measures."
+      }
+    }
+  },
+  "information": {
+    "title": "Understanding Corruption & Our Process",
+    "subtitle": "Learn how we verify information, what constitutes corruption, and how you can contribute to transparency.",
+    "whatIsCorruption": {
+      "title": "What is Corruption?",
+      "description": "Corruption is the abuse of entrusted power for private gain. In the context of public service, it represents a betrayal of the public trust and includes various forms of misconduct.",
+      "typesTitle": "Types of Corruption We Track:",
+      "bribery": {
+        "title": "Bribery",
+        "description": "Offering, giving, receiving, or soliciting something of value to influence the actions of an official."
+      },
+      "embezzlement": {
+        "title": "Embezzlement",
+        "description": "Theft or misappropriation of funds placed in one's trust or belonging to one's employer."
+      },
+      "nepotism": {
+        "title": "Nepotism & Favoritism",
+        "description": "Favoritism granted to relatives or friends regardless of merit, especially in hiring or contract awards."
+      },
+      "conflictOfInterest": {
+        "title": "Conflict of Interest",
+        "description": "Situations where personal interests improperly influence professional duties and decisions."
+      },
+      "abuseOfResources": {
+        "title": "Abuse of Public Resources",
+        "description": "Misuse of public funds, assets, or authority for personal benefit or unauthorized purposes."
+      }
+    },
+    "verification": {
+      "title": "How We Verify Information",
+      "description": "We maintain rigorous standards for verification to ensure accuracy and reliability. Every case undergoes a multi-stage review process before publication.",
+      "sourceCollection": {
+        "title": "1. Source Collection",
+        "description": "We gather information from government records, media reports, NGO investigations, public documents, and credible whistleblowers."
+      },
+      "crossVerification": {
+        "title": "2. Cross-Verification",
+        "description": "Multiple independent sources are required. Claims must be corroborated through official documents, witness accounts, or verifiable evidence."
+      },
+      "teamReview": {
+        "title": "3. Team Review",
+        "description": "Our moderation team reviews each case for accuracy, legal compliance, and ethical standards before approval."
+      },
+      "continuousUpdates": {
+        "title": "4. Continuous Updates",
+        "description": "Cases are monitored for developments. Updates, responses from accused entities, and investigation outcomes are added as they emerge."
+      },
+      "standards": {
+        "title": "Verification Standards",
+        "minSources": "Minimum of two independent, credible sources for each allegation",
+        "officialDocs": "Official documentation or verifiable evidence whenever possible",
+        "clearDistinction": "Clear distinction between verified facts, allegations, and ongoing investigations",
+        "rightToRespond": "Right to respond granted to all accused entities",
+        "protectSources": "Protection of sources and sensitive information"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "howToReport": {
+        "question": "How can I report a corruption case?",
+        "answer1": "You can report a case through our \"Report Allegation\" form. Please provide as much detail and supporting documentation as possible. You can choose to submit anonymously or with your identity.",
+        "answer2": "All submissions are reviewed by our moderation team before being published. We may contact you for additional verification if needed."
+      },
+      "afterSubmit": {
+        "question": "What happens after I submit a report?",
+        "answer": "Your submission enters our verification queue. Our team will review the information, verify through multiple sources, and determine if it meets our publication standards. This process typically takes 7-14 days depending on case complexity. You'll be notified of the outcome if you provided contact information."
+      },
+      "anonymous": {
+        "question": "Is my identity protected if I report anonymously?",
+        "answer": "Yes. We take contributor privacy seriously. Anonymous submissions do not store any identifying information, and we have measures to protect all contributors from retaliation. Personal data like phone numbers and national ID numbers are never published."
+      },
+      "entityResponse": {
+        "question": "Can accused entities respond to allegations?",
+        "answer": "Absolutely. We believe in fair representation. Accused individuals and organizations can submit responses through our \"Entity Response\" portal. These responses are verified for authenticity and published alongside the allegations to provide complete context."
+      },
+      "inaccurate": {
+        "question": "What if information on the platform is inaccurate?",
+        "answer": "Despite our rigorous verification process, errors can occur. If you find inaccurate information, please contact us immediately through our feedback form with supporting evidence. We will review and correct any verified inaccuracies promptly. All corrections are documented in the case's audit trail."
+      },
+      "funding": {
+        "question": "How is this platform funded?",
+        "answer": "The Public Accountability Platform is funded through partnerships with civic organizations and potential grants from transparency-focused foundations. We maintain editorial independence and do not accept funding from government entities or organizations that could compromise our integrity."
+      },
+      "useInfo": {
+        "question": "Can I use information from this platform?",
+        "answer": "Yes! All information on this platform is publicly accessible and can be freely used for research, journalism, advocacy, or educational purposes. We encourage proper attribution and responsible use of the data."
+      }
+    }
+  },
+  "report": {
+    "title": "Report an Allegation",
+    "description": "Help maintain accountability by reporting allegations of misconduct. All submissions are reviewed by our moderation team before publication.",
+    "entityType": "Entity Type",
+    "selectEntityType": "Select entity type",
+    "individual": "Individual",
+    "organization": "Organization",
+    "entityName": "Entity Name",
+    "entityNamePlaceholder": "Name of the individual or organization",
+    "position": "Position/Role",
+    "positionPlaceholder": "e.g., Minister, Director, CEO",
+    "allegationTitle": "Allegation Title",
+    "allegationTitlePlaceholder": "Brief, descriptive title of the allegation",
+    "allegationType": "Allegation Type",
+    "selectAllegationType": "Select allegation type",
+    "corruption": "Corruption",
+    "misappropriation": "Misappropriation of Funds",
+    "conflictOfInterest": "Conflict of Interest",
+    "abuseOfPower": "Abuse of Power",
+    "breachOfTrust": "Breach of Public Trust",
+    "other": "Other",
+    "detailedDescription": "Detailed Description",
+    "detailedDescriptionPlaceholder": "Provide a detailed description of the allegation, including dates, locations, and circumstances",
+    "incidentDate": "Date of Incident (or approximate)",
+    "location": "Location",
+    "locationPlaceholder": "City, District, or Province",
+    "sources": "Sources & References",
+    "sourcesPlaceholder": "Provide links to news articles, official documents, or other credible sources (one per line)",
+    "evidence": "Supporting Evidence (optional)",
+    "evidenceUpload": "Click to upload or drag and drop",
+    "evidenceFormat": "Documents, images, PDFs (Max 10MB)",
+    "contributorInfo": "Contributor Information (optional)",
+    "contributorInfoDesc": "Provide your contact details if you'd like us to follow up",
+    "submitAnonymously": "Submit anonymously",
+    "yourName": "Your Name",
+    "yourNamePlaceholder": "Your full name",
+    "yourEmail": "Your Email",
+    "yourEmailPlaceholder": "your.email@example.com",
+    "importantNotice": "Important Notice",
+    "importantNoticeText": "All submissions are reviewed by our moderation team for accuracy and credibility. False allegations may have legal consequences. Please ensure your report is factual and evidence-based.",
+    "termsAgreement": "I confirm that the information provided is accurate to the best of my knowledge and I agree to the platform's terms of use",
+    "submitReport": "Submit Report",
+    "saveDraft": "Save as Draft",
+    "submitted": {
+      "title": "Report Submitted",
+      "description": "Your allegation has been submitted for moderation review. Thank you for contributing to public accountability."
+    }
+  },
+  "feedback": {
+    "title": "Platform Feedback",
+    "description": "Help us improve the Public Accountability Platform. Your feedback is valuable to us.",
+    "feedbackType": "Feedback Type",
+    "selectFeedbackType": "Select feedback type",
+    "bug": "Bug Report",
+    "feature": "Feature Request",
+    "usability": "Usability Issue",
+    "content": "Content Feedback",
+    "general": "General Feedback",
+    "subject": "Subject",
+    "subjectPlaceholder": "Brief summary of your feedback",
+    "description": "Description",
+    "descriptionPlaceholder": "Please provide detailed feedback. For bugs, include steps to reproduce the issue.",
+    "relatedPage": "Related Page or Feature (optional)",
+    "relatedPagePlaceholder": "e.g., Cases page, Search functionality",
+    "contactInfo": "Contact Information (optional)",
+    "contactInfoDesc": "Provide your contact details if you'd like us to follow up",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "your.email@example.com",
+    "submitFeedback": "Submit Feedback",
+    "submitted": {
+      "title": "Feedback Submitted",
+      "description": "Thank you for your feedback! We will review it and get back to you if needed."
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+  "common": {
+    "changeLanguage": "Change language",
+    "english": "English",
+    "nepali": "नेपाली (Nepali)",
+    "viewDetails": "View Details →"
+  },
+  "caseCard": {
+    "status": {
+      "ongoing": "Ongoing",
+      "resolved": "Resolved",
+      "underInvestigation": "Under Investigation"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
+  }
+}
+
