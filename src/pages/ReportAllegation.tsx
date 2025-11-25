@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,145 +13,146 @@ import { toast } from "@/hooks/use-toast";
 import { AlertCircle, Upload } from "lucide-react";
 
 export default function ReportAllegation() {
+  const { t } = useTranslation();
   const [isAnonymous, setIsAnonymous] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Report Submitted",
-      description: "Your allegation has been submitted for moderation review. Thank you for contributing to public accountability.",
+      title: t("report.submitted.title"),
+      description: t("report.submitted.description"),
     });
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1">
         <div className="container mx-auto px-4 py-12 max-w-3xl">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl">Report an Allegation</CardTitle>
+              <CardTitle className="text-3xl">{t("report.title")}</CardTitle>
               <CardDescription className="text-base">
-                Help maintain accountability by reporting allegations of misconduct. All submissions are reviewed by our moderation team before publication.
+                {t("report.description")}
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Entity Type */}
                 <div className="space-y-2">
-                  <Label htmlFor="entityType">Entity Type</Label>
+                  <Label htmlFor="entityType">{t("report.entityType")}</Label>
                   <Select required>
                     <SelectTrigger id="entityType">
-                      <SelectValue placeholder="Select entity type" />
+                      <SelectValue placeholder={t("report.selectEntityType")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="individual">Individual</SelectItem>
-                      <SelectItem value="organization">Organization</SelectItem>
+                      <SelectItem value="individual">{t("report.individual")}</SelectItem>
+                      <SelectItem value="organization">{t("report.organization")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Entity Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="entityName">Entity Name</Label>
-                  <Input 
-                    id="entityName" 
-                    placeholder="Name of the individual or organization"
-                    required 
+                  <Label htmlFor="entityName">{t("report.entityName")}</Label>
+                  <Input
+                    id="entityName"
+                    placeholder={t("report.entityNamePlaceholder")}
+                    required
                   />
                 </div>
 
                 {/* Position/Role */}
                 <div className="space-y-2">
-                  <Label htmlFor="position">Position/Role</Label>
-                  <Input 
-                    id="position" 
-                    placeholder="e.g., Minister, Director, CEO"
-                    required 
+                  <Label htmlFor="position">{t("report.position")}</Label>
+                  <Input
+                    id="position"
+                    placeholder={t("report.positionPlaceholder")}
+                    required
                   />
                 </div>
 
                 {/* Allegation Title */}
                 <div className="space-y-2">
-                  <Label htmlFor="title">Allegation Title</Label>
-                  <Input 
-                    id="title" 
-                    placeholder="Brief, descriptive title of the allegation"
-                    required 
+                  <Label htmlFor="title">{t("report.allegationTitle")}</Label>
+                  <Input
+                    id="title"
+                    placeholder={t("report.allegationTitlePlaceholder")}
+                    required
                   />
                 </div>
 
                 {/* Allegation Type */}
                 <div className="space-y-2">
-                  <Label htmlFor="type">Allegation Type</Label>
+                  <Label htmlFor="type">{t("report.allegationType")}</Label>
                   <Select required>
                     <SelectTrigger id="type">
-                      <SelectValue placeholder="Select allegation type" />
+                      <SelectValue placeholder={t("report.selectAllegationType")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="corruption">Corruption</SelectItem>
-                      <SelectItem value="misappropriation">Misappropriation of Funds</SelectItem>
-                      <SelectItem value="conflict-of-interest">Conflict of Interest</SelectItem>
-                      <SelectItem value="abuse-of-power">Abuse of Power</SelectItem>
-                      <SelectItem value="breach-of-trust">Breach of Public Trust</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="corruption">{t("report.corruption")}</SelectItem>
+                      <SelectItem value="misappropriation">{t("report.misappropriation")}</SelectItem>
+                      <SelectItem value="conflict-of-interest">{t("report.conflictOfInterest")}</SelectItem>
+                      <SelectItem value="abuse-of-power">{t("report.abuseOfPower")}</SelectItem>
+                      <SelectItem value="breach-of-trust">{t("report.breachOfTrust")}</SelectItem>
+                      <SelectItem value="other">{t("report.other")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <Label htmlFor="description">Detailed Description</Label>
-                  <Textarea 
-                    id="description" 
-                    placeholder="Provide a detailed description of the allegation, including dates, locations, and circumstances"
+                  <Label htmlFor="description">{t("report.detailedDescription")}</Label>
+                  <Textarea
+                    id="description"
+                    placeholder={t("report.detailedDescriptionPlaceholder")}
                     rows={6}
-                    required 
+                    required
                   />
                 </div>
 
                 {/* Date of Incident */}
                 <div className="space-y-2">
-                  <Label htmlFor="incidentDate">Date of Incident (or approximate)</Label>
-                  <Input 
-                    id="incidentDate" 
+                  <Label htmlFor="incidentDate">{t("report.incidentDate")}</Label>
+                  <Input
+                    id="incidentDate"
                     type="date"
-                    required 
+                    required
                   />
                 </div>
 
                 {/* Location */}
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input 
-                    id="location" 
-                    placeholder="City, District, or Province"
-                    required 
+                  <Label htmlFor="location">{t("report.location")}</Label>
+                  <Input
+                    id="location"
+                    placeholder={t("report.locationPlaceholder")}
+                    required
                   />
                 </div>
 
                 {/* Sources */}
                 <div className="space-y-2">
-                  <Label htmlFor="sources">Sources & References</Label>
-                  <Textarea 
-                    id="sources" 
-                    placeholder="Provide links to news articles, official documents, or other credible sources (one per line)"
+                  <Label htmlFor="sources">{t("report.sources")}</Label>
+                  <Textarea
+                    id="sources"
+                    placeholder={t("report.sourcesPlaceholder")}
                     rows={4}
                   />
                 </div>
 
                 {/* Evidence Upload */}
                 <div className="space-y-2">
-                  <Label htmlFor="evidence">Supporting Evidence (optional)</Label>
+                  <Label htmlFor="evidence">{t("report.evidence")}</Label>
                   <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
                     <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-1">Click to upload or drag and drop</p>
-                    <p className="text-xs text-muted-foreground">Documents, images, PDFs (Max 10MB)</p>
-                    <Input 
-                      id="evidence" 
-                      type="file" 
+                    <p className="text-sm text-muted-foreground mb-1">{t("report.evidenceUpload")}</p>
+                    <p className="text-xs text-muted-foreground">{t("report.evidenceFormat")}</p>
+                    <Input
+                      id="evidence"
+                      type="file"
                       className="hidden"
                       multiple
                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
@@ -160,34 +162,36 @@ export default function ReportAllegation() {
 
                 {/* Contributor Information */}
                 <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                  <h3 className="font-semibold text-foreground text-sm">{t("report.contributorInfo")}</h3>
+                  <p className="text-xs text-muted-foreground">{t("report.contributorInfoDesc")}</p>
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="anonymous" 
+                    <Checkbox
+                      id="anonymous"
                       checked={isAnonymous}
                       onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
                     />
                     <Label htmlFor="anonymous" className="cursor-pointer">
-                      Submit anonymously
+                      {t("report.submitAnonymously")}
                     </Label>
                   </div>
 
                   {!isAnonymous && (
                     <>
                       <div className="space-y-2">
-                        <Label htmlFor="contributorName">Your Name</Label>
-                        <Input 
-                          id="contributorName" 
-                          placeholder="Your full name"
+                        <Label htmlFor="contributorName">{t("report.yourName")}</Label>
+                        <Input
+                          id="contributorName"
+                          placeholder={t("report.yourNamePlaceholder")}
                           required={!isAnonymous}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="contributorEmail">Your Email</Label>
-                        <Input 
-                          id="contributorEmail" 
+                        <Label htmlFor="contributorEmail">{t("report.yourEmail")}</Label>
+                        <Input
+                          id="contributorEmail"
                           type="email"
-                          placeholder="your.email@example.com"
+                          placeholder={t("report.yourEmailPlaceholder")}
                           required={!isAnonymous}
                         />
                       </div>
@@ -199,8 +203,8 @@ export default function ReportAllegation() {
                 <div className="flex items-start gap-3 p-4 bg-warning/10 border border-warning/20 rounded-lg">
                   <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
                   <div className="text-sm text-muted-foreground">
-                    <p className="font-semibold text-foreground mb-1">Important Notice</p>
-                    <p>All submissions are reviewed by our moderation team for accuracy and credibility. False allegations may have legal consequences. Please ensure your report is factual and evidence-based.</p>
+                    <p className="font-semibold text-foreground mb-1">{t("report.importantNotice")}</p>
+                    <p>{t("report.importantNoticeText")}</p>
                   </div>
                 </div>
 
@@ -208,17 +212,17 @@ export default function ReportAllegation() {
                 <div className="flex items-start space-x-2">
                   <Checkbox id="terms" required />
                   <Label htmlFor="terms" className="text-sm cursor-pointer">
-                    I confirm that the information provided is accurate to the best of my knowledge and I agree to the platform's terms of use
+                    {t("report.termsAgreement")}
                   </Label>
                 </div>
 
                 {/* Submit Button */}
                 <div className="flex gap-4">
                   <Button type="submit" className="flex-1">
-                    Submit Report
+                    {t("report.submitReport")}
                   </Button>
                   <Button type="button" variant="outline" className="flex-1">
-                    Save as Draft
+                    {t("report.saveDraft")}
                   </Button>
                 </div>
               </form>

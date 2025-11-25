@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import {
@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const LanguageToggle = () => {
-  const [language, setLanguage] = useState<"en" | "ne">("en");
+  const { i18n, t } = useTranslation();
+  const currentLanguage = i18n.language || "ne";
 
   const handleLanguageChange = (lang: "en" | "ne") => {
-    setLanguage(lang);
-    // In a real implementation, this would update the app's i18n configuration
-    console.log("Language changed to:", lang);
+    i18n.changeLanguage(lang);
+    // Language preference is automatically persisted via localStorage by i18next-browser-languagedetector
   };
 
   return (
@@ -22,15 +22,15 @@ export const LanguageToggle = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <Globe className="h-5 w-5" />
-          <span className="sr-only">Change language</span>
+          <span className="sr-only">{t("common.changeLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => handleLanguageChange("en")}>
-          <span className={language === "en" ? "font-bold" : ""}>English</span>
+          <span className={currentLanguage === "en" ? "font-bold" : ""}>{t("common.english")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleLanguageChange("ne")}>
-          <span className={language === "ne" ? "font-bold" : ""}>नेपाली (Nepali)</span>
+          <span className={currentLanguage === "ne" ? "font-bold" : ""}>{t("common.nepali")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

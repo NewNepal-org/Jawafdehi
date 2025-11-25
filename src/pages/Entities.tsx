@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -16,6 +17,7 @@ import { getPrimaryName } from "@/utils/nes-helpers";
 import { toast } from "sonner";
 
 const Entities = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [entities, setEntities] = useState<Entity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ const Entities = () => {
         limit: 100,
         offset: 0
       };
-      
+
       // Set entity_type and sub_type based on filter
       if (entityTypeFilter === "person") {
         params.entity_type = "person";
@@ -54,7 +56,7 @@ const Entities = () => {
         params.entity_type = "organization";
         params.sub_type = "political_party";
       }
-      
+
       let data;
       if (searchQuery) {
         // Use search endpoint when there's a query
@@ -63,11 +65,11 @@ const Entities = () => {
         // Use regular entities endpoint
         data = await getEntities(params);
       }
-      
+
       setEntities(data.entities || data || []);
     } catch (error) {
       console.error("Failed to fetch entities:", error);
-      toast.error("Failed to load entities. Please try again.");
+      toast.error(t("entities.noEntitiesFound"));
       setEntities([]);
     } finally {
       setLoading(false);
@@ -112,14 +114,14 @@ const Entities = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Public Entities</h1>
+            <h1 className="text-4xl font-bold mb-2">{t("entities.title")}</h1>
             <p className="text-muted-foreground">
-              Browse and search individuals and organizations in public service
+              {t("entities.description")}
             </p>
           </div>
 
@@ -132,7 +134,7 @@ const Entities = () => {
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search by name..."
+                      placeholder={t("entities.searchPlaceholder")}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -141,36 +143,36 @@ const Entities = () => {
                   </div>
                   <Button onClick={handleSearch}>
                     <Search className="w-4 h-4 mr-2" />
-                    Search
+                    {t("entities.search")}
                   </Button>
                 </div>
 
                 {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
-                    <label className="text-sm font-medium mb-3 block">Entity Type</label>
+                    <label className="text-sm font-medium mb-3 block">{t("entities.entityType")}</label>
                     <RadioGroup value={entityTypeFilter} onValueChange={setEntityTypeFilter} className="flex gap-4">
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="person" id="person" />
-                        <Label htmlFor="person" className="cursor-pointer">Persons</Label>
+                        <Label htmlFor="person" className="cursor-pointer">{t("entities.persons")}</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="political_party" id="political_party" />
-                        <Label htmlFor="political_party" className="cursor-pointer">Political Parties</Label>
+                        <Label htmlFor="political_party" className="cursor-pointer">{t("entities.politicalParties")}</Label>
                       </div>
                     </RadioGroup>
                   </div>
 
                   <div className="flex-1">
-                    <label className="text-sm font-medium mb-2 block">Sort By</label>
+                    <label className="text-sm font-medium mb-2 block">{t("entities.sortBy")}</label>
                     <Select value={sortBy} onValueChange={setSortBy}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="name">Name (A-Z)</SelectItem>
-                        <SelectItem value="allegations">Most Allegations</SelectItem>
-                        <SelectItem value="updated">Latest Updates</SelectItem>
+                        <SelectItem value="name">{t("entities.nameAZ")}</SelectItem>
+                        <SelectItem value="allegations">{t("entities.mostAllegations")}</SelectItem>
+                        <SelectItem value="updated">{t("entities.latestUpdates")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -178,7 +180,7 @@ const Entities = () => {
                   <div className="flex items-end">
                     <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
                       <Filter className="w-4 h-4 mr-2" />
-                      Reset
+                      {t("entities.reset")}
                     </Button>
                   </div>
                 </div>
@@ -189,7 +191,7 @@ const Entities = () => {
           {/* Results Count */}
           <div className="mb-4">
             <p className="text-sm text-muted-foreground">
-              {loading ? "Loading..." : `${sortedEntities.length} entities found`}
+              {loading ? t("entities.loading") : t("entities.entitiesFound", { count: sortedEntities.length })}
             </p>
           </div>
 
@@ -216,7 +218,7 @@ const Entities = () => {
             <Card>
               <CardContent className="p-12 text-center">
                 <p className="text-muted-foreground">
-                  No entities found. Try adjusting your search criteria.
+                  {t("entities.noEntitiesFound")}
                 </p>
               </CardContent>
             </Card>

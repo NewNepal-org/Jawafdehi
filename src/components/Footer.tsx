@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const Footer = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-border bg-muted/30">
       <div className="container mx-auto px-4 py-12">
@@ -11,53 +14,53 @@ export const Footer = () => {
                 <span className="text-xl font-bold text-primary-foreground">PAP</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold text-foreground">Public Accountability Platform</span>
-                <span className="text-xs text-muted-foreground">Nepal</span>
+                <span className="text-sm font-bold text-foreground">{t("footer.title")}</span>
+                <span className="text-xs text-muted-foreground">{t("footer.subtitle")}</span>
               </div>
             </div>
             <p className="text-sm text-muted-foreground max-w-md">
-              A civic tech initiative to promote transparency and accountability in Nepal.
+              {t("footer.description")}
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-3">Navigation</h3>
+            <h3 className="font-semibold text-foreground mb-3">{t("footer.navigation")}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link to="/" className="text-muted-foreground hover:text-primary transition-colors">
-                  Home
+                  {t("nav.home")}
                 </Link>
               </li>
               <li>
                 <Link to="/cases" className="text-muted-foreground hover:text-primary transition-colors">
-                  Cases
+                  {t("nav.cases")}
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                  About
+                  {t("nav.about")}
                 </Link>
               </li>
               <li>
                 <Link to="/report" className="text-muted-foreground hover:text-primary transition-colors">
-                  Report Allegation
+                  {t("report.title")}
                 </Link>
               </li>
               <li>
                 <Link to="/feedback" className="text-muted-foreground hover:text-primary transition-colors">
-                  Feedback
+                  {t("feedback.title")}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-3">Partners</h3>
+            <h3 className="font-semibold text-foreground mb-3">{t("footer.partners")}</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a 
-                  href="https://LetsBuildNepal.com" 
-                  target="_blank" 
+                <a
+                  href="https://LetsBuildNepal.com"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
@@ -65,9 +68,9 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
-                <a 
-                  href="https://NewNepal.org" 
-                  target="_blank" 
+                <a
+                  href="https://NewNepal.org"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
@@ -80,7 +83,7 @@ export const Footer = () => {
 
         <div className="mt-8 pt-8 border-t border-border">
           <p className="text-center text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Public Accountability Platform Nepal. All rights reserved.
+            {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
         </div>
       </div>
