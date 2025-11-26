@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CaseCard } from "@/components/CaseCard";
@@ -21,10 +22,11 @@ async function retryWithBackoff<T>(
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
-    } catch (error: any) {
-      const isRateLimited = error?.statusCode === 429 || error?.message?.includes('429');
+    } catch (error: unknown) {
+      const typedError = error as { statusCode?: number; message?: string };
+      const isRateLimited = typedError.statusCode === 429 || typedError.message?.includes('429');
       const isLastAttempt = i === maxRetries - 1;
-      
+
       if (isRateLimited && !isLastAttempt) {
         const delay = initialDelay * Math.pow(2, i);
         console.log(`Rate limited. Retrying in ${delay}ms... (attempt ${i + 1}/${maxRetries})`);
@@ -38,6 +40,7 @@ async function retryWithBackoff<T>(
 }
 
 const Cases = () => {
+  const { t } = useTranslation();
   const [cases, setCases] = useState<Allegation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +50,7 @@ const Cases = () => {
 
   useEffect(() => {
     fetchCases();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCases = async () => {
@@ -62,12 +66,13 @@ const Cases = () => {
         2000
       );
       setCases(response.results);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const typedError = err as { statusCode?: number; message?: string };
       console.error("Failed to fetch cases:", err);
-      const isRateLimited = err?.statusCode === 429 || err?.message?.includes('429');
-      const errorMessage = isRateLimited 
-        ? "Too many requests. Please wait a moment and try again."
-        : "Failed to load cases. Please try again.";
+      const isRateLimited = typedError.statusCode === 429 || typedError.message?.includes('429');
+      const errorMessage = isRateLimited
+        ? t("cases.tooManyRequests")
+        : t("cases.failedToLoad");
       setError(errorMessage);
       toast.error(errorMessage);
       setCases([]);
@@ -77,7 +82,7 @@ const Cases = () => {
   };
 
   const filteredCases = cases.filter((caseItem) => {
-    const matchesSearch = 
+    const matchesSearch =
       caseItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       caseItem.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || caseItem.status === statusFilter;
@@ -88,12 +93,12 @@ const Cases = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4">
           <div className="mb-10">
-            <h1 className="text-4xl font-bold text-foreground mb-3">Corruption Cases</h1>
-            <p className="text-muted-foreground text-lg">Browse and search documented corruption cases in Nepal</p>
+            <h1 className="text-4xl font-bold text-foreground mb-3">{t("cases.title")}</h1>
+            <p className="text-muted-foreground text-lg">{t("cases.description")}</p>
           </div>
 
           {/* Search and Filter Section */}
@@ -101,7 +106,7 @@ const Cases = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
-                placeholder="Search by title, entity, or location..."
+                placeholder={t("cases.searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 h-12"
@@ -112,13 +117,13 @@ const Cases = () => {
               <div className="flex-1">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Filter by status" />
+                    <SelectValue placeholder={t("cases.filterByStatus")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="ongoing">Ongoing</SelectItem>
-                    <SelectItem value="under-investigation">Under Investigation</SelectItem>
-                    <SelectItem value="resolved">Resolved</SelectItem>
+                    <SelectItem value="all">{t("cases.allStatuses")}</SelectItem>
+                    <SelectItem value="ongoing">{t("cases.status.ongoing")}</SelectItem>
+                    <SelectItem value="under-investigation">{t("cases.status.underInvestigation")}</SelectItem>
+                    <SelectItem value="resolved">{t("cases.status.resolved")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -126,21 +131,21 @@ const Cases = () => {
               <div className="flex-1">
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Filter by type" />
+                    <SelectValue placeholder={t("cases.filterByType")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="corruption">Corruption</SelectItem>
-                    <SelectItem value="misconduct">Misconduct</SelectItem>
-                    <SelectItem value="breach_of_trust">Breach of Trust</SelectItem>
-                    <SelectItem value="broken_promise">Broken Promise</SelectItem>
-                    <SelectItem value="media_trial">Media Trial</SelectItem>
+                    <SelectItem value="all">{t("cases.allTypes")}</SelectItem>
+                    <SelectItem value="corruption">{t("cases.type.corruption")}</SelectItem>
+                    <SelectItem value="misconduct">{t("cases.type.misconduct")}</SelectItem>
+                    <SelectItem value="breach_of_trust">{t("cases.type.breachOfTrust")}</SelectItem>
+                    <SelectItem value="broken_promise">{t("cases.type.brokenPromise")}</SelectItem>
+                    <SelectItem value="media_trial">{t("cases.type.mediaTrial")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setStatusFilter("all");
                   setTypeFilter("all");
@@ -149,7 +154,7 @@ const Cases = () => {
                 }}
               >
                 <Filter className="mr-2 h-4 w-4" />
-                Clear Filters
+                {t("cases.clearFilters")}
               </Button>
             </div>
           </div>
@@ -157,7 +162,7 @@ const Cases = () => {
           {/* Results Count */}
           <div className="mb-6">
             <p className="text-sm text-muted-foreground">
-              {loading ? "Loading..." : `Showing ${filteredCases.length} of ${cases.length} cases`}
+              {loading ? t("cases.loading") : t("cases.showing", { count: filteredCases.length, total: cases.length })}
             </p>
           </div>
 
@@ -168,12 +173,12 @@ const Cases = () => {
               <AlertDescription className="flex items-center justify-between">
                 <span>{error}</span>
                 <Button variant="outline" size="sm" onClick={fetchCases} className="ml-4">
-                  Retry
+                  {t("cases.retry")}
                 </Button>
               </AlertDescription>
             </Alert>
           ) : null}
-          
+
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -187,13 +192,15 @@ const Cases = () => {
             </div>
           ) : filteredCases.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* NOTE: Dynamic case content (title, description, entity names) from Entity API
+                  remains in English until API-side i18n is implemented. See GitHub issue for i18n. */}
               {filteredCases.map((caseItem) => (
-                <CaseCard 
-                  key={caseItem.id} 
+                <CaseCard
+                  key={caseItem.id}
                   id={caseItem.id.toString()}
                   title={caseItem.title}
-                  entity={Array.isArray(caseItem.alleged_entities) 
-                    ? caseItem.alleged_entities.join(', ') 
+                  entity={Array.isArray(caseItem.alleged_entities)
+                    ? caseItem.alleged_entities.join(', ')
                     : String(caseItem.alleged_entities || 'Unknown Entity')}
                   location={caseItem.location_id || 'Unknown Location'}
                   date={new Date(caseItem.created_at).toLocaleDateString()}
@@ -206,10 +213,10 @@ const Cases = () => {
           ) : (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg mb-4">
-                {error ? "Unable to load cases at this time" : "No cases found matching your criteria"}
+                {error ? t("cases.unableToLoad") : t("cases.noCasesFound")}
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setStatusFilter("all");
                   setTypeFilter("all");
@@ -217,7 +224,7 @@ const Cases = () => {
                   fetchCases();
                 }}
               >
-                {error ? "Try Again" : "Clear All Filters"}
+                {error ? t("cases.tryAgain") : t("cases.clearAllFilters")}
               </Button>
             </div>
           )}

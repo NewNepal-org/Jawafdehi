@@ -5,8 +5,13 @@ import { StatCard } from "@/components/StatCard";
 import { CaseCard } from "@/components/CaseCard";
 import { FileText, Users, Eye, TrendingUp, Shield, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Index = () => {
+  const { t } = useTranslation();
+
+  // NOTE: This is mock data. When replaced with Entity API data, case content (title, description, etc.)
+  // should remain in English until API-side i18n is implemented. See GitHub issue for i18n.
   const featuredCases = [
     {
       id: "1",
@@ -43,7 +48,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-primary via-navy-dark to-slate-800 py-20 md:py-32">
@@ -52,24 +57,23 @@ const Index = () => {
             <div className="max-w-3xl">
               <div className="inline-flex items-center rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground mb-6">
                 <Shield className="mr-2 h-4 w-4" />
-                Transparency • Accountability • Justice
+                {t("home.hero.badge")}
               </div>
               <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6">
-                Public Accountability Platform Nepal
+                {t("home.hero.title")}
               </h1>
               <p className="text-xl text-primary-foreground/80 mb-8 leading-relaxed">
-                Documenting and tracking corruption cases to hold public entities accountable. 
-                Empowering Nepali citizens with transparency and verified information.
+                {t("home.hero.description")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" asChild className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
                   <Link to="/cases">
                     <Search className="mr-2 h-5 w-5" />
-                    Browse Cases
+                    {t("home.hero.browseCases")}
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
-                  <Link to="/about">Learn More</Link>
+                <Button size="lg" variant="outline" asChild className="border-primary-foreground/20 text-primary">
+                  <Link to="/about">{t("home.hero.learnMore")}</Link>
                 </Button>
               </div>
             </div>
@@ -81,29 +85,29 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatCard
-                title="Total Cases Documented"
-                value="127"
+                title={t("home.stats.totalCases")}
+                value={t("home.stats.totalCasesValue")}
                 icon={FileText}
-                description="Verified corruption cases"
+                description={t("home.stats.totalCasesDesc")}
               />
               <StatCard
-                title="Entities Tracked"
-                value="89"
+                title={t("home.stats.entitiesTracked")}
+                value={t("home.stats.entitiesTrackedValue")}
                 icon={Users}
-                description="Public organizations monitored"
+                description={t("home.stats.entitiesTrackedDesc")}
               />
               <StatCard
-                title="Cases Under Investigation"
-                value="43"
+                title={t("home.stats.underInvestigation")}
+                value={t("home.stats.underInvestigationValue")}
                 icon={Eye}
-                description="Active investigations"
+                description={t("home.stats.underInvestigationDesc")}
               />
               <StatCard
-                title="Cases Resolved"
-                value="31"
+                title={t("home.stats.resolved")}
+                value={t("home.stats.resolvedValue")}
                 icon={TrendingUp}
-                description="Successfully concluded"
-                trend="↑ 12% this quarter"
+                description={t("home.stats.resolvedDesc")}
+                trend={t("home.stats.trend")}
               />
             </div>
           </div>
@@ -113,8 +117,8 @@ const Index = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="mb-10">
-              <h2 className="text-3xl font-bold text-foreground mb-3">Featured Cases</h2>
-              <p className="text-muted-foreground">Recent high-impact corruption cases under public scrutiny</p>
+              <h2 className="text-3xl font-bold text-foreground mb-3">{t("home.featuredCases.title")}</h2>
+              <p className="text-muted-foreground">{t("home.featuredCases.description")}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {featuredCases.map((caseItem) => (
@@ -123,7 +127,7 @@ const Index = () => {
             </div>
             <div className="text-center">
               <Button size="lg" variant="outline" asChild>
-                <Link to="/cases">View All Cases →</Link>
+                <Link to="/cases">{t("home.featuredCases.viewAll")}</Link>
               </Button>
             </div>
           </div>
@@ -133,15 +137,12 @@ const Index = () => {
         <section className="py-16 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-bold text-foreground mb-6">Our Mission</h2>
+              <h2 className="text-3xl font-bold text-foreground mb-6">{t("home.mission.title")}</h2>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                The Public Accountability Platform (PAP) is a civic tech initiative by Let's Build Nepal (LBN) 
-                and NewNepal.org dedicated to promoting transparency and accountability in Nepal. We document, 
-                verify, and publish corruption cases involving public entities to empower citizens with information 
-                and drive systemic change.
+                {t("home.mission.description")}
               </p>
               <Button size="lg" asChild>
-                <Link to="/about">About the Platform</Link>
+                <Link to="/about">{t("home.mission.aboutPlatform")}</Link>
               </Button>
             </div>
           </div>
@@ -152,17 +153,17 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold text-primary-foreground mb-4">
-                Know About a Case of Corruption?
+                {t("home.cta.title")}
               </h2>
               <p className="text-lg text-primary-foreground/80 mb-8">
-                Help us hold public entities accountable. Report allegations of misconduct and contribute to transparency in governance.
+                {t("home.cta.description")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                  <Link to="/report">Report an Allegation</Link>
+                  <Link to="/report">{t("home.cta.reportAllegation")}</Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
-                  <Link to="/feedback">Submit Feedback</Link>
+                <Button size="lg" variant="outline" asChild className="border-primary-foreground/20 text-primary">
+                  <Link to="/feedback">{t("home.cta.submitFeedback")}</Link>
                 </Button>
               </div>
             </div>

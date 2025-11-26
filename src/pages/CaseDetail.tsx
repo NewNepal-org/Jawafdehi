@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AuditTrail } from "@/components/AuditTrail";
@@ -9,9 +10,12 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink } from "lucide-react";
 
 const CaseDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
 
-  // Mock data - in real app would fetch based on ID
+  // NOTE: Mock data - in real app would fetch based on ID from Entity API.
+  // Dynamic case content (title, description, allegations, etc.) from Entity API
+  // remains in English until API-side i18n is implemented. See GitHub issue for i18n.
   const caseData = {
     id: "1",
     title: "Alleged Misappropriation of Public Funds in Highway Construction",
@@ -21,9 +25,9 @@ const CaseDetail = () => {
     status: "under-investigation" as const,
     severity: "high" as const,
     description: "Investigation into alleged irregularities in the bidding process and fund allocation for the Ring Road expansion project.",
-    fullDescription: `The Department of Roads under the Ministry of Physical Infrastructure is under investigation for alleged 
-    misappropriation of public funds totaling NPR 2.5 billion allocated for the Kathmandu Ring Road expansion project. 
-    The investigation was initiated following multiple complaints from civil society organizations and whistleblowers within 
+    fullDescription: `The Department of Roads under the Ministry of Physical Infrastructure is under investigation for alleged
+    misappropriation of public funds totaling NPR 2.5 billion allocated for the Kathmandu Ring Road expansion project.
+    The investigation was initiated following multiple complaints from civil society organizations and whistleblowers within
     the department.`,
     allegations: [
       "Irregularities in the contractor selection and bidding process",
@@ -44,53 +48,53 @@ const CaseDetail = () => {
       { name: "XYZ Construction Pvt. Ltd.", role: "Contractor", status: "Under investigation" },
     ],
     evidenceAndSources: [
-      { 
-        title: "Internal Audit Report", 
-        type: "document", 
+      {
+        title: "Internal Audit Report",
+        type: "document",
         description: "Comprehensive audit report highlighting fund discrepancies and irregularities in the project allocation.",
         link: "#",
         uploadedFile: "audit-report-2024.pdf"
       },
-      { 
-        title: "Whistleblower Testimonies", 
-        type: "legal record", 
+      {
+        title: "Whistleblower Testimonies",
+        type: "legal record",
         description: "Sworn testimonies from department employees detailing alleged misconduct and irregularities.",
         uploadedFile: "testimonies-compilation.pdf"
       },
-      { 
-        title: "Financial Transaction Records", 
-        type: "document", 
+      {
+        title: "Financial Transaction Records",
+        type: "document",
         description: "Bank statements and transaction records showing irregular payments to contractors and third parties.",
         link: "#",
         uploadedFile: "financial-records.xlsx"
       },
-      { 
-        title: "Comparative Market Analysis", 
-        type: "document", 
+      {
+        title: "Comparative Market Analysis",
+        type: "document",
         description: "Independent analysis comparing project material costs with market rates, showing 40% overpricing.",
         link: "#"
       },
-      { 
-        title: "CIAA Official Statement", 
-        type: "article", 
+      {
+        title: "CIAA Official Statement",
+        type: "article",
         description: "Official statement from the Commission for Investigation of Abuse of Authority announcing the investigation.",
         link: "#"
       },
-      { 
-        title: "Kathmandu Post Investigation Report", 
-        type: "article", 
+      {
+        title: "Kathmandu Post Investigation Report",
+        type: "article",
         description: "In-depth investigative journalism piece detailing the allegations and initial findings.",
         link: "#"
       },
-      { 
-        title: "Site Inspection Photos", 
-        type: "photo", 
+      {
+        title: "Site Inspection Photos",
+        type: "photo",
         description: "Documentary photographs from the construction site showing substandard work and materials.",
         uploadedFile: "site-photos.zip"
       },
-      { 
-        title: "Civil Society Statement", 
-        type: "article", 
+      {
+        title: "Civil Society Statement",
+        type: "article",
         description: "Joint statement from multiple civil society organizations calling for transparent investigation.",
         link: "#"
       },
@@ -129,28 +133,28 @@ const CaseDetail = () => {
   };
 
   const statusConfig = {
-    ongoing: { label: "Ongoing", color: "bg-alert text-alert-foreground" },
-    resolved: { label: "Resolved", color: "bg-success text-success-foreground" },
-    "under-investigation": { label: "Under Investigation", color: "bg-muted text-muted-foreground" },
+    ongoing: { label: t("caseDetail.status.ongoing"), color: "bg-alert text-alert-foreground" },
+    resolved: { label: t("caseDetail.status.resolved"), color: "bg-success text-success-foreground" },
+    "under-investigation": { label: t("caseDetail.status.underInvestigation"), color: "bg-muted text-muted-foreground" },
   };
 
   const severityConfig = {
-    low: { label: "Low", color: "bg-slate-200 text-slate-700" },
-    medium: { label: "Medium", color: "bg-yellow-500/20 text-yellow-700" },
-    high: { label: "High", color: "bg-orange-500/20 text-orange-700" },
-    critical: { label: "Critical", color: "bg-destructive/20 text-destructive" },
+    low: { label: t("caseDetail.severityLevels.low"), color: "bg-slate-200 text-slate-700" },
+    medium: { label: t("caseDetail.severityLevels.medium"), color: "bg-yellow-500/20 text-yellow-700" },
+    high: { label: t("caseDetail.severityLevels.high"), color: "bg-orange-500/20 text-orange-700" },
+    critical: { label: t("caseDetail.severityLevels.critical"), color: "bg-destructive/20 text-destructive" },
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-5xl">
           <Button variant="ghost" asChild className="mb-6">
             <Link to="/cases">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Cases
+              {t("caseDetail.backToCases")}
             </Link>
           </Button>
 
@@ -161,15 +165,16 @@ const CaseDetail = () => {
                 {statusConfig[caseData.status].label}
               </Badge>
               <Badge variant="outline" className={severityConfig[caseData.severity].color}>
-                {severityConfig[caseData.severity].label} Severity
+                {severityConfig[caseData.severity].label} {t("caseDetail.severity")}
               </Badge>
             </div>
+            {/* NOTE: Dynamic case content from Entity API remains in English until API-side i18n is implemented */}
             <h1 className="text-4xl font-bold text-foreground mb-6">{caseData.title}</h1>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center text-muted-foreground">
                 <User className="mr-2 h-5 w-5 flex-shrink-0" />
-                <Link 
+                <Link
                   to={`/entity/${id}`}
                   className="text-sm hover:text-primary hover:underline transition-colors"
                 >
@@ -182,7 +187,7 @@ const CaseDetail = () => {
               </div>
               <div className="flex items-center text-muted-foreground">
                 <Calendar className="mr-2 h-5 w-5" />
-                <span className="text-sm">Filed: {caseData.date}</span>
+                <span className="text-sm">{t("caseDetail.filed")}: {caseData.date}</span>
               </div>
             </div>
           </div>
@@ -194,7 +199,7 @@ const CaseDetail = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <FileText className="mr-2 h-5 w-5" />
-                Case Overview
+                {t("caseDetail.overview")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -208,7 +213,7 @@ const CaseDetail = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <AlertTriangle className="mr-2 h-5 w-5" />
-                Key Allegations
+                {t("caseDetail.allegations")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -228,7 +233,7 @@ const CaseDetail = () => {
           {/* Timeline */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Case Timeline</CardTitle>
+              <CardTitle>{t("caseDetail.timeline")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -255,7 +260,7 @@ const CaseDetail = () => {
           {/* Involved Parties */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Parties Involved</CardTitle>
+              <CardTitle>{t("caseDetail.partiesInvolved")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -275,7 +280,7 @@ const CaseDetail = () => {
           {/* Evidence & Sources */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Evidence & Sources</CardTitle>
+              <CardTitle>{t("caseDetail.evidenceSources")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -288,14 +293,14 @@ const CaseDetail = () => {
                     <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
                     <div className="flex flex-wrap gap-3">
                       {item.link && (
-                        <a 
-                          href={item.link} 
+                        <a
+                          href={item.link}
                           className="flex items-center text-sm text-primary hover:underline"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                          View Source
+                          {t("caseDetail.viewSource")}
                         </a>
                       )}
                       {item.uploadedFile && (

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -10,106 +11,108 @@ import { toast } from "@/hooks/use-toast";
 import { MessageSquare } from "lucide-react";
 
 export default function Feedback() {
+  const { t } = useTranslation();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Feedback Submitted",
-      description: "Thank you for your feedback! We will review it and get back to you if needed.",
+      title: t("feedback.submitted.title"),
+      description: t("feedback.submitted.description"),
     });
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1">
         <div className="container mx-auto px-4 py-12 max-w-2xl">
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2 mb-2">
                 <MessageSquare className="h-6 w-6 text-primary" />
-                <CardTitle className="text-3xl">Platform Feedback</CardTitle>
+                <CardTitle className="text-3xl">{t("feedback.title")}</CardTitle>
               </div>
               <CardDescription className="text-base">
-                Help us improve the Public Accountability Platform. Your feedback is valuable to us.
+                {t("feedback.description")}
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Feedback Type */}
                 <div className="space-y-2">
-                  <Label htmlFor="feedbackType">Feedback Type</Label>
+                  <Label htmlFor="feedbackType">{t("feedback.feedbackType")}</Label>
                   <Select required>
                     <SelectTrigger id="feedbackType">
-                      <SelectValue placeholder="Select feedback type" />
+                      <SelectValue placeholder={t("feedback.selectFeedbackType")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="bug">Bug Report</SelectItem>
-                      <SelectItem value="feature">Feature Request</SelectItem>
-                      <SelectItem value="usability">Usability Issue</SelectItem>
-                      <SelectItem value="content">Content Feedback</SelectItem>
-                      <SelectItem value="general">General Feedback</SelectItem>
+                      <SelectItem value="bug">{t("feedback.bug")}</SelectItem>
+                      <SelectItem value="feature">{t("feedback.feature")}</SelectItem>
+                      <SelectItem value="usability">{t("feedback.usability")}</SelectItem>
+                      <SelectItem value="content">{t("feedback.content")}</SelectItem>
+                      <SelectItem value="general">{t("feedback.general")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Subject */}
                 <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input 
-                    id="subject" 
-                    placeholder="Brief summary of your feedback"
-                    required 
+                  <Label htmlFor="subject">{t("feedback.subject")}</Label>
+                  <Input
+                    id="subject"
+                    placeholder={t("feedback.subjectPlaceholder")}
+                    required
                   />
                 </div>
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea 
-                    id="description" 
-                    placeholder="Please provide detailed feedback. For bugs, include steps to reproduce the issue."
+                  <Label htmlFor="description">{t("feedback.description")}</Label>
+                  <Textarea
+                    id="description"
+                    placeholder={t("feedback.descriptionPlaceholder")}
                     rows={8}
-                    required 
+                    required
                   />
                 </div>
 
                 {/* Page/Feature */}
                 <div className="space-y-2">
-                  <Label htmlFor="pageFeature">Related Page or Feature (optional)</Label>
-                  <Input 
-                    id="pageFeature" 
-                    placeholder="e.g., Cases page, Search functionality"
+                  <Label htmlFor="pageFeature">{t("feedback.relatedPage")}</Label>
+                  <Input
+                    id="pageFeature"
+                    placeholder={t("feedback.relatedPagePlaceholder")}
                   />
                 </div>
 
                 {/* Contact Information */}
                 <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-                  <h3 className="font-semibold text-foreground text-sm">Contact Information (optional)</h3>
-                  <p className="text-xs text-muted-foreground">Provide your contact details if you'd like us to follow up</p>
-                  
+                  <h3 className="font-semibold text-foreground text-sm">{t("feedback.contactInfo")}</h3>
+                  <p className="text-xs text-muted-foreground">{t("feedback.contactInfoDesc")}</p>
+
                   <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input 
-                      id="name" 
-                      placeholder="Your name"
+                    <Label htmlFor="name">{t("feedback.name")}</Label>
+                    <Input
+                      id="name"
+                      placeholder={t("feedback.namePlaceholder")}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
+                    <Label htmlFor="email">{t("feedback.email")}</Label>
+                    <Input
+                      id="email"
                       type="email"
-                      placeholder="your.email@example.com"
+                      placeholder={t("feedback.emailPlaceholder")}
                     />
                   </div>
                 </div>
 
                 {/* Submit Button */}
                 <Button type="submit" className="w-full">
-                  Submit Feedback
+                  {t("feedback.submitFeedback")}
                 </Button>
               </form>
             </CardContent>
