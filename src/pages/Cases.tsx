@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Search, Filter, AlertCircle } from "lucide-react";
-import { getAllegations } from "@/services/jds-api";
-import type { Allegation } from "@/types/jds";
+import { getCases } from "@/services/jds-api";
+import type { Case } from "@/types/jds";
 import { toast } from "sonner";
 
 // Retry helper for rate-limited requests
@@ -41,7 +41,7 @@ async function retryWithBackoff<T>(
 
 const Cases = () => {
   const { t } = useTranslation();
-  const [cases, setCases] = useState<Allegation[]>([]);
+  const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,8 +58,7 @@ const Cases = () => {
     setError(null);
     try {
       const response = await retryWithBackoff(
-        () => getAllegations({
-          state: 'current',
+        () => getCases({
           page: 1
         }),
         3,
@@ -85,8 +84,8 @@ const Cases = () => {
     const matchesSearch =
       caseItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       caseItem.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || caseItem.status === statusFilter;
-    const matchesType = typeFilter === "all" || caseItem.allegation_type === typeFilter;
+    const matchesStatus = statusFilter === "all"; // Status filtering removed from API
+    const matchesType = typeFilter === "all" || caseItem.case_type === typeFilter;
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -135,11 +134,8 @@ const Cases = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">{t("cases.allTypes")}</SelectItem>
-                    <SelectItem value="corruption">{t("cases.type.corruption")}</SelectItem>
-                    <SelectItem value="misconduct">{t("cases.type.misconduct")}</SelectItem>
-                    <SelectItem value="breach_of_trust">{t("cases.type.breachOfTrust")}</SelectItem>
-                    <SelectItem value="broken_promise">{t("cases.type.brokenPromise")}</SelectItem>
-                    <SelectItem value="media_trial">{t("cases.type.mediaTrial")}</SelectItem>
+                    <SelectItem value="CORRUPTION">{t("cases.type.corruption")}</SelectItem>
+                    <SelectItem value="PROMISES">{t("cases.type.brokenPromise")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -199,14 +195,12 @@ const Cases = () => {
                   key={caseItem.id}
                   id={caseItem.id.toString()}
                   title={caseItem.title}
-                  entity={Array.isArray(caseItem.alleged_entities)
-                    ? caseItem.alleged_entities.join(', ')
-                    : String(caseItem.alleged_entities || 'Unknown Entity')}
-                  location={caseItem.location_id || 'Unknown Location'}
+                  entity={caseItem.alleged_entities.join(', ') || 'Unknown Entity'}
+                  location={caseItem.locations[0] || 'Unknown Location'}
                   date={new Date(caseItem.created_at).toLocaleDateString()}
-                  status={caseItem.status === 'under_investigation' ? 'under-investigation' : caseItem.status === 'closed' ? 'resolved' : 'ongoing'}
-                  severity={caseItem.allegation_type === 'corruption' || caseItem.allegation_type === 'breach_of_trust' ? 'critical' : 'high'}
-                  description={caseItem.key_allegations}
+                  status="ongoing"
+                  severity={caseItem.case_type === 'CORRUPTION' ? 'critical' : 'high'}
+                  description={caseItem.key_allegations.join('. ')}
                 />
               ))}
             </div>

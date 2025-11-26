@@ -5,7 +5,7 @@
  */
 
 import type { Entity, Person, Organization, Relationship } from '@/types/nes';
-import type { Allegation as JDSAllegation } from '@/types/jds';
+import type { Case as JDSCase } from '@/types/jds';
 import type { 
   MergedEntity, 
   MergedRelationship, 
@@ -18,7 +18,7 @@ import type {
  */
 export function mergeNESEntity(
   nesEntity: Entity,
-  allegations: JDSAllegation[] = [],
+  cases: JDSCase[] = [],
   relationships: Relationship[] = []
 ): MergedEntity {
   const isPerson = nesEntity.type === 'person';
@@ -167,34 +167,32 @@ export function mergeNESEntity(
     attributes: rel.attributes || undefined,
   }));
 
-  // Transform allegations (from JDS)
-  const mergedAllegations: MergedAllegation[] = allegations.map(a => ({
-    id: a.id.toString(),
+  // Transform cases (from JDS)
+  const mergedAllegations: MergedAllegation[] = cases.map(c => ({
+    id: c.id.toString(),
     entity_id: nesEntity.slug,
-    title: a.title,
-    summary: a.description || a.key_allegations || '',
-    severity: determineSeverity(a),
-    status: a.status || 'under_investigation',
-    date: a.first_public_date || a.created_at,
-    evidence: a.evidences?.map(e => e.file_url).filter(Boolean) as string[] || [],
+    title: c.title,
+    summary: c.description || c.key_allegations.join('; ') || '',
+    severity: determineSeverity(c),
+    status: 'ongoing',
+    date: c.created_at,
+    evidence: c.evidence?.map(e => e.source_id.toString()) || [],
   }));
 
-  // Transform cases (current allegations from JDS)
-  const mergedCases: MergedCase[] = allegations
-    .filter(a => a.state === 'current')
-    .map(a => ({
-      id: a.id.toString(),
-      entity_id: nesEntity.slug,
-      name: a.title,
-      description: a.description || '',
-      documents: a.evidences?.map(e => e.file_url).filter(Boolean) as string[] || [],
-      timeline: a.timelines?.map(t => ({
-        date: t.date,
-        event: t.title || 'Event',
-        description: t.description,
-      })) || [],
-      status: a.status || 'under_investigation',
-    }));
+  // Transform cases (published cases from JDS)
+  const mergedCases: MergedCase[] = cases.map(c => ({
+    id: c.id.toString(),
+    entity_id: nesEntity.slug,
+    name: c.title,
+    description: c.description || '',
+    documents: c.evidence?.map(e => e.source_id.toString()) || [],
+    timeline: c.timeline?.map(t => ({
+      date: t.date,
+      event: t.title || 'Event',
+      description: t.description,
+    })) || [],
+    status: 'ongoing',
+  }));
 
   // Merge evidence and sources
   const evidence = {
@@ -260,17 +258,13 @@ export function mergeNESEntity(
 }
 
 /**
- * Determine severity from allegation data
+ * Determine severity from case data
  */
-function determineSeverity(allegation: JDSAllegation): string {
-  // Try to infer from allegation type or other fields
-  const type = allegation.allegation_type?.toLowerCase() || '';
+function determineSeverity(caseData: JDSCase): string {
+  const type = caseData.case_type?.toLowerCase() || '';
   
-  if (type.includes('corruption') || type.includes('fraud') || type.includes('embezzlement')) {
+  if (type.includes('corruption')) {
     return 'High';
-  }
-  if (type.includes('misconduct') || type.includes('abuse')) {
-    return 'Medium';
   }
   
   return 'Medium'; // Default

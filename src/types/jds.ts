@@ -1,158 +1,90 @@
 /**
  * Jawafdehi API (JDS) Types
  * 
- * Type definitions for the accountability and allegations API.
+ * Type definitions for the accountability and cases API.
  * 
- * Reference: Jawafdehi_API-2.yaml
- * Base URL: https://mp55ce3b24df0bd1c9ea.free.beeceptor.com/api
+ * Reference: Jawafdehi_Public_Accountability_API.yaml
+ * Base URL: https://api.jawafdehi.newnepal.org/api
  */
 
 // ============================================================================
 // Enums
 // ============================================================================
 
-export type AllegationType = 
-  | 'corruption'
-  | 'misconduct'
-  | 'breach_of_trust'
-  | 'broken_promise'
-  | 'media_trial';
-
-export type AllegationState = 
-  | 'draft'
-  | 'under_review'
-  | 'current'
-  | 'closed';
-
-export type AllegationStatus = 
-  | 'under_investigation'
-  | 'closed'
-  | null;
-
-export type ModificationAction =
-  | 'created'
-  | 'submitted'
-  | 'reviewed'
-  | 'approved'
-  | 'rejected'
-  | 'updated'
-  | 'response_added';
-
-export type SourceType =
-  | 'government'
-  | 'ngo'
-  | 'social_media'
-  | 'media'
-  | 'crowdsourced'
-  | 'other';
+export type CaseType = 
+  | 'CORRUPTION'
+  | 'PROMISES';
 
 // ============================================================================
 // Main Types
 // ============================================================================
 
-export interface Timeline {
-  id: number;
+export interface TimelineEntry {
   date: string; // ISO date format
   title: string;
   description: string;
-  order: number;
-  allegation: number;
 }
 
-export interface Evidence {
-  id: number;
+export interface EvidenceEntry {
+  source_id: number;
   description: string;
-  file_url?: string;
-  source?: string;
-  allegation: number;
-  created_at?: string;
 }
 
-export interface Response {
-  id: number;
-  response_text: string;
-  entity_id: string;
-  submitted_at: string; // ISO datetime
-  verified_at?: string | null; // ISO datetime
-  allegation: number;
-  verified_by?: number | null;
+export interface VersionInfo {
+  version_number: number;
+  user_id?: number;
+  change_summary?: string;
+  datetime: string;
 }
 
-export interface Modification {
+export interface AuditHistory {
+  versions: VersionInfo[];
+}
+
+export interface Case {
   id: number;
-  action: ModificationAction;
-  timestamp: string; // ISO datetime
-  notes?: string;
-  allegation: number;
-  user?: number | null;
+  case_id: string; // Unique identifier shared across versions
+  case_type: CaseType;
+  title: string;
+  case_start_date: string | null; // ISO date format
+  case_end_date: string | null; // ISO date format
+  alleged_entities: string[]; // Entity IDs (e.g., 'entity:person/rabi-lamichhane')
+  related_entities: string[]; // Entity IDs
+  locations: string[]; // Location entity IDs (e.g., 'entity:location/district/kathmandu')
+  tags: string[]; // Tags for categorization (e.g., 'land-encroachment', 'national-interest')
+  description: string; // Rich text description
+  key_allegations: string[]; // List of key allegation statements
+  timeline: TimelineEntry[];
+  evidence: EvidenceEntry[];
+  versionInfo?: VersionInfo;
+  created_at: string; // ISO datetime
+  updated_at: string; // ISO datetime
+}
+
+export interface CaseDetail extends Case {
+  audit_history: AuditHistory; // Complete audit trail
 }
 
 export interface DocumentSource {
   id: number;
+  source_id: string;
   title: string;
-  source_type: SourceType;
-  url?: string;
-  description?: string;
-  published_date?: string;
-  allegation?: number;
-}
-
-export interface Allegation {
-  id: number;
-  allegation_type: AllegationType;
-  state: AllegationState;
-  title: string;
-  alleged_entities: any; // Can be structured based on NES entity IDs
-  related_entities: any; // Can be structured based on NES entity IDs
-  location_id?: string | null;
   description: string;
-  key_allegations: string;
-  status: AllegationStatus;
-  created_at: string; // ISO datetime
-  first_public_date?: string | null; // ISO datetime
-  timelines: Timeline[];
-  evidences: Evidence[];
-  modifications: Modification[];
-  responses: Response[];
+  url?: string | null;
+  related_entity_ids: string[];
+  created_at: string;
+  updated_at: string;
 }
 
 // ============================================================================
 // API Response Types
 // ============================================================================
 
-export interface PaginatedAllegationList {
+export interface PaginatedCaseList {
   count: number;
   next: string | null;
   previous: string | null;
-  results: Allegation[];
-}
-
-export interface PaginatedTimelineList {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Timeline[];
-}
-
-export interface PaginatedEvidenceList {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Evidence[];
-}
-
-export interface PaginatedResponseList {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Response[];
-}
-
-export interface PaginatedModificationList {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Modification[];
+  results: Case[];
 }
 
 export interface PaginatedDocumentSourceList {
@@ -166,38 +98,13 @@ export interface PaginatedDocumentSourceList {
 // Search/Filter Parameters
 // ============================================================================
 
-export interface AllegationSearchParams {
-  allegation_type?: AllegationType;
-  state?: AllegationState;
-  status?: AllegationStatus;
+export interface CaseSearchParams {
+  case_type?: CaseType;
+  tags?: string;
   search?: string;
-  ordering?: string;
-  page?: number;
-}
-
-export interface EvidenceSearchParams {
-  allegation?: number;
-  page?: number;
-}
-
-export interface ResponseSearchParams {
-  allegation?: number;
-  page?: number;
-}
-
-export interface ModificationSearchParams {
-  action?: ModificationAction;
-  allegation?: number;
-  page?: number;
-}
-
-export interface TimelineSearchParams {
-  allegation?: number;
   page?: number;
 }
 
 export interface DocumentSourceSearchParams {
-  source_type?: SourceType;
-  search?: string;
   page?: number;
 }

@@ -13,6 +13,7 @@
  */
 
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import { getCasesByEntity } from '@/services/jds-api';
 import type { 
   Person, 
   Organization, 
@@ -333,18 +334,18 @@ export async function getEntityAllegations(idOrSlug: string): Promise<Allegation
   try {
     const { getAllegationsByEntity } = await import('./jds-api');
     // URL-encode the entity ID for JDS API query
-    const jdsAllegations = await getAllegationsByEntity(idOrSlug);
+    const jdsCases = await getCasesByEntity(idOrSlug);
     
-    // Map JDS allegations to PAP Allegation format
-    return jdsAllegations.map(jdsAllegation => ({
-      id: jdsAllegation.id.toString(),
+    // Map JDS cases to PAP Allegation format
+    return jdsCases.map(jdsCase => ({
+      id: jdsCase.id.toString(),
       entity_id: idOrSlug,
-      title: jdsAllegation.title,
-      status: jdsAllegation.status || jdsAllegation.state,
-      severity: jdsAllegation.allegation_type, // Map type to severity
-      summary: jdsAllegation.key_allegations,
-      evidence: jdsAllegation.evidences.map(e => e.description),
-      date: jdsAllegation.created_at,
+      title: jdsCase.title,
+      status: 'ongoing', // Cases are published cases
+      severity: jdsCase.case_type, // Map type to severity
+      summary: jdsCase.key_allegations.join('; '),
+      evidence: jdsCase.evidence.map(e => e.description),
+      date: jdsCase.created_at,
     }));
   } catch (error) {
     console.warn(`Allegations not available from JDS API (entity: ${idOrSlug})`);
@@ -360,22 +361,21 @@ export async function getEntityAllegations(idOrSlug: string): Promise<Allegation
  */
 export async function getEntityCases(idOrSlug: string): Promise<Case[]> {
   try {
-    const { getCasesByEntity } = await import('./jds-api');
-    const allegations = await getCasesByEntity(idOrSlug);
+    const cases = await getCasesByEntity(idOrSlug);
     
-    // Map allegations to Case format for compatibility
-    return allegations.map(allegation => ({
-      id: allegation.id.toString(),
+    // Map JDS cases to PAP Case format
+    return cases.map(c => ({
+      id: c.id.toString(),
       entity_id: idOrSlug,
-      name: allegation.title,
-      description: allegation.description,
-      documents: allegation.evidences.map(e => e.file_url || e.source).filter(Boolean) as string[],
-      timeline: allegation.timelines.map(t => ({
+      name: c.title,
+      description: c.description,
+      documents: c.evidence.map(e => e.source_id.toString()),
+      timeline: c.timeline.map(t => ({
         date: t.date,
         event: t.title,
         description: t.description
       })),
-      status: allegation.status || allegation.state,
+      status: 'ongoing', // Published cases
     }));
   } catch (error) {
     console.warn(`Cases not available from JDS API (entity: ${idOrSlug})`);

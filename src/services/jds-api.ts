@@ -1,46 +1,37 @@
 /**
  * Jawafdehi API (JDS) Client
  * 
- * API client for the accountability and allegations service.
+ * API client for the Jawafdehi accountability platform.
+ * Provides read-only access to published cases of alleged corruption,
+ * misconduct, and broken promises by public entities in Nepal.
  * 
- * Reference: Jawafdehi_API-2.yaml
- * Environment Variable: VITE_JDS_API_BASE_URL (default: https://api.jawafdehi.newnepal.org/api)
+ * Reference: Jawafdehi_Public_Accountability_API.yaml
+ * Base URL: https://api.jawafdehi.newnepal.org/api
  */
 
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import type {
-  Allegation,
-  PaginatedAllegationList,
-  AllegationSearchParams,
-  Evidence,
-  PaginatedEvidenceList,
-  EvidenceSearchParams,
-  Response as JDSResponse,
-  PaginatedResponseList,
-  ResponseSearchParams,
-  Modification,
-  PaginatedModificationList,
-  ModificationSearchParams,
-  Timeline,
-  PaginatedTimelineList,
-  TimelineSearchParams,
+  Case,
+  CaseDetail,
+  CaseSearchParams,
   DocumentSource,
-  PaginatedDocumentSourceList,
   DocumentSourceSearchParams,
+  PaginatedCaseList,
+  PaginatedDocumentSourceList,
 } from '@/types/jds';
 
 // ============================================================================
-// API Configuration
+// Configuration
 // ============================================================================
 
 const JDS_API_BASE_URL = import.meta.env.VITE_JDS_API_BASE_URL || 'https://api.jawafdehi.newnepal.org/api';
 
-const jdsApi: AxiosInstance = axios.create({
+const apiClient: AxiosInstance = axios.create({
   baseURL: JDS_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000,
+  timeout: 10000,
 });
 
 // ============================================================================
@@ -48,267 +39,95 @@ const jdsApi: AxiosInstance = axios.create({
 // ============================================================================
 
 export class JDSApiError extends Error {
-  constructor(
-    message: string,
-    public statusCode?: number,
-    public endpoint?: string,
-    public originalError?: Error
-  ) {
+  statusCode?: number;
+  endpoint?: string;
+  originalError?: unknown;
+
+  constructor(message: string, statusCode?: number, endpoint?: string, originalError?: unknown) {
     super(message);
     this.name = 'JDSApiError';
+    this.statusCode = statusCode;
+    this.endpoint = endpoint;
+    this.originalError = originalError;
   }
 }
 
-function handleApiError(error: unknown, functionName: string, endpoint: string): never {
+function handleApiError(error: unknown, endpoint: string): never {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError;
     const statusCode = axiosError.response?.status;
-    const responseData = axiosError.response?.data as any;
-    const message = responseData?.detail || axiosError.message;
+    const message = axiosError.response?.data
+      ? JSON.stringify(axiosError.response.data)
+      : axiosError.message;
 
     throw new JDSApiError(
-      `${functionName} failed: ${message}`,
+      `API Error: ${message}`,
       statusCode,
       endpoint,
-      axiosError
+      error
     );
   }
 
   throw new JDSApiError(
-    `${functionName} failed: Unknown error`,
+    `Unexpected error: ${error instanceof Error ? error.message : String(error)}`,
     undefined,
     endpoint,
-    error instanceof Error ? error : undefined
+    error
   );
 }
 
 // ============================================================================
-// Allegation API Functions
+// Case API Functions
 // ============================================================================
 
 /**
- * Get list of allegations with optional filters
- * 
- * @param params - Search and filter parameters
- * @returns Promise<PaginatedAllegationList>
- * 
- * @example
- * ```typescript
- * const allegations = await getAllegations({
- *   allegation_type: 'corruption',
- *   state: 'current',
- *   page: 1
- * });
- * ```
+ * Retrieve a paginated list of published accountability cases.
+ * Only cases with state=PUBLISHED are returned.
+ * Results are ordered by creation date (newest first).
  */
-export async function getAllegations(params?: AllegationSearchParams): Promise<PaginatedAllegationList> {
+export async function getCases(params?: CaseSearchParams): Promise<PaginatedCaseList> {
   try {
-    const response = await jdsApi.get<PaginatedAllegationList>('/allegations/', {
+    const response = await apiClient.get<PaginatedCaseList>('/cases/', {
       params,
     });
     return response.data;
   } catch (error) {
-    throw handleApiError(error, 'getAllegations', '/allegations/');
+    handleApiError(error, '/cases/');
   }
 }
 
 /**
- * Get a single allegation by ID
- * 
- * @param id - Allegation ID
- * @returns Promise<Allegation>
- * 
- * @example
- * ```typescript
- * const allegation = await getAllegationById(123);
- * ```
+ * Retrieve detailed information about a specific published case.
+ * Includes complete case data and audit history.
  */
-export async function getAllegationById(id: number): Promise<Allegation> {
+export async function getCaseById(id: number): Promise<CaseDetail> {
   try {
-    const response = await jdsApi.get<Allegation>(`/allegations/${id}/`);
+    const response = await apiClient.get<CaseDetail>(`/cases/${id}/`);
     return response.data;
   } catch (error) {
-    throw handleApiError(error, 'getAllegationById', `/allegations/${id}/`);
+    handleApiError(error, `/cases/${id}/`);
   }
 }
 
 /**
- * Get allegations for a specific entity (by entity ID)
- * 
- * @param entityId - NES Entity ID
- * @param params - Additional search parameters
- * @returns Promise<Allegation[]>
- * 
- * @example
- * ```typescript
- * const entityAllegations = await getAllegationsByEntity('entity:person/prabin-shahi');
- * ```
+ * Filter cases to find those associated with a specific entity ID.
+ * Returns all cases where the entity is in alleged_entities or related_entities.
  */
-export async function getAllegationsByEntity(
-  entityId: string,
-  params?: AllegationSearchParams
-): Promise<Allegation[]> {
+export async function getCasesByEntity(entityId: string, params?: CaseSearchParams): Promise<Case[]> {
   try {
-    const response = await getAllegations(params);
+    const response = await apiClient.get<PaginatedCaseList>('/cases/', {
+      params,
+    });
     
-    // Filter allegations where the entity is in alleged_entities or related_entities
-    return response.results.filter(allegation => {
-      const allegedIds = Array.isArray(allegation.alleged_entities) 
-        ? allegation.alleged_entities 
-        : Object.values(allegation.alleged_entities || {});
-      const relatedIds = Array.isArray(allegation.related_entities)
-        ? allegation.related_entities
-        : Object.values(allegation.related_entities || {});
-      
-      return allegedIds.includes(entityId) || relatedIds.includes(entityId);
-    });
+    // Filter cases that include the entity in alleged_entities or related_entities
+    const filteredCases = response.data.results.filter(caseItem => 
+      caseItem.alleged_entities.includes(entityId) || 
+      caseItem.related_entities.includes(entityId)
+    );
+    
+    return filteredCases;
   } catch (error) {
-    console.error(`Failed to get allegations for entity ${entityId}:`, error);
-    return [];
-  }
-}
-
-// ============================================================================
-// Evidence API Functions
-// ============================================================================
-
-/**
- * Get evidence with optional filters
- * 
- * @param params - Search parameters
- * @returns Promise<PaginatedEvidenceList>
- */
-export async function getEvidence(params?: EvidenceSearchParams): Promise<PaginatedEvidenceList> {
-  try {
-    const response = await jdsApi.get<PaginatedEvidenceList>('/evidence/', {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getEvidence', '/evidence/');
-  }
-}
-
-/**
- * Get a single evidence item by ID
- * 
- * @param id - Evidence ID
- * @returns Promise<Evidence>
- */
-export async function getEvidenceById(id: number): Promise<Evidence> {
-  try {
-    const response = await jdsApi.get<Evidence>(`/evidence/${id}/`);
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getEvidenceById', `/evidence/${id}/`);
-  }
-}
-
-// ============================================================================
-// Response API Functions
-// ============================================================================
-
-/**
- * Get responses with optional filters
- * 
- * @param params - Search parameters
- * @returns Promise<PaginatedResponseList>
- */
-export async function getResponses(params?: ResponseSearchParams): Promise<PaginatedResponseList> {
-  try {
-    const response = await jdsApi.get<PaginatedResponseList>('/responses/', {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getResponses', '/responses/');
-  }
-}
-
-/**
- * Get a single response by ID
- * 
- * @param id - Response ID
- * @returns Promise<JDSResponse>
- */
-export async function getResponseById(id: number): Promise<JDSResponse> {
-  try {
-    const response = await jdsApi.get<JDSResponse>(`/responses/${id}/`);
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getResponseById', `/responses/${id}/`);
-  }
-}
-
-// ============================================================================
-// Timeline API Functions
-// ============================================================================
-
-/**
- * Get timeline entries with optional filters
- * 
- * @param params - Search parameters
- * @returns Promise<PaginatedTimelineList>
- */
-export async function getTimelines(params?: TimelineSearchParams): Promise<PaginatedTimelineList> {
-  try {
-    const response = await jdsApi.get<PaginatedTimelineList>('/timelines/', {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getTimelines', '/timelines/');
-  }
-}
-
-/**
- * Get a single timeline entry by ID
- * 
- * @param id - Timeline ID
- * @returns Promise<Timeline>
- */
-export async function getTimelineById(id: number): Promise<Timeline> {
-  try {
-    const response = await jdsApi.get<Timeline>(`/timelines/${id}/`);
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getTimelineById', `/timelines/${id}/`);
-  }
-}
-
-// ============================================================================
-// Modification API Functions
-// ============================================================================
-
-/**
- * Get modifications with optional filters
- * 
- * @param params - Search parameters
- * @returns Promise<PaginatedModificationList>
- */
-export async function getModifications(params?: ModificationSearchParams): Promise<PaginatedModificationList> {
-  try {
-    const response = await jdsApi.get<PaginatedModificationList>('/modifications/', {
-      params,
-    });
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getModifications', '/modifications/');
-  }
-}
-
-/**
- * Get a single modification by ID
- * 
- * @param id - Modification ID
- * @returns Promise<Modification>
- */
-export async function getModificationById(id: number): Promise<Modification> {
-  try {
-    const response = await jdsApi.get<Modification>(`/modifications/${id}/`);
-    return response.data;
-  } catch (error) {
-    throw handleApiError(error, 'getModificationById', `/modifications/${id}/`);
+    handleApiError(error, '/cases/');
   }
 }
 
@@ -317,49 +136,47 @@ export async function getModificationById(id: number): Promise<Modification> {
 // ============================================================================
 
 /**
- * Get document sources with optional filters
- * 
- * @param params - Search parameters
- * @returns Promise<PaginatedDocumentSourceList>
+ * Retrieve a paginated list of document sources.
+ * Only sources associated with published cases are accessible.
  */
 export async function getDocumentSources(params?: DocumentSourceSearchParams): Promise<PaginatedDocumentSourceList> {
   try {
-    const response = await jdsApi.get<PaginatedDocumentSourceList>('/sources/', {
+    const response = await apiClient.get<PaginatedDocumentSourceList>('/sources/', {
       params,
     });
     return response.data;
   } catch (error) {
-    throw handleApiError(error, 'getDocumentSources', '/sources/');
+    handleApiError(error, '/sources/');
   }
 }
 
 /**
- * Get a single document source by ID
- * 
- * @param id - Document Source ID
- * @returns Promise<DocumentSource>
+ * Retrieve detailed information about a specific document source.
  */
 export async function getDocumentSourceById(id: number): Promise<DocumentSource> {
   try {
-    const response = await jdsApi.get<DocumentSource>(`/sources/${id}/`);
+    const response = await apiClient.get<DocumentSource>(`/sources/${id}/`);
     return response.data;
   } catch (error) {
-    throw handleApiError(error, 'getDocumentSourceById', `/sources/${id}/`);
+    handleApiError(error, `/sources/${id}/`);
   }
 }
 
 // ============================================================================
-// Helper Functions
+// Backward Compatibility Aliases
 // ============================================================================
 
 /**
- * Get cases (allegations) for a specific entity
- * Note: In JDS, cases are represented as allegations
- * 
- * @param entityId - NES Entity ID
- * @returns Promise<Allegation[]>
+ * @deprecated Use getCases instead
  */
-export async function getCasesByEntity(entityId: string): Promise<Allegation[]> {
-  // Cases are essentially allegations in this system
-  return getAllegationsByEntity(entityId, { state: 'current' });
-}
+export const getAllegations = getCases;
+
+/**
+ * @deprecated Use getCaseById instead
+ */
+export const getAllegationById = getCaseById;
+
+/**
+ * @deprecated Use getCasesByEntity instead
+ */
+export const getAllegationsByEntity = getCasesByEntity;

@@ -18,8 +18,8 @@ import type {
   Relationship,
   VersionSummary
 } from '@/types/nes';
-import { getAllegationsByEntity } from '@/services/jds-api';
-import type { Allegation as JDSAllegation } from '@/types/jds';
+import { getCasesByEntity } from '@/services/jds-api';
+import type { Case as JDSCase } from '@/types/jds';
 
 // ============================================================================
 // API Configuration
@@ -224,11 +224,11 @@ export async function getRelationships(params?: RelationshipSearchParams): Promi
 // ============================================================================
 
 /**
- * Get allegations for an entity (from JDS API)
+ * Get allegations/cases for an entity (from JDS API)
  */
-export async function getEntityAllegations(entityId: string): Promise<JDSAllegation[]> {
+export async function getEntityAllegations(entityId: string): Promise<JDSCase[]> {
   try {
-    return await getAllegationsByEntity(entityId);
+    return await getCasesByEntity(entityId);
   } catch (error) {
     console.error('Failed to fetch allegations:', error);
     return [];
@@ -236,12 +236,11 @@ export async function getEntityAllegations(entityId: string): Promise<JDSAllegat
 }
 
 /**
- * Get cases for an entity (allegations with state='current' from JDS API)
+ * Get cases for an entity (published cases from JDS API)
  */
-export async function getEntityCases(entityId: string): Promise<JDSAllegation[]> {
+export async function getEntityCases(entityId: string): Promise<JDSCase[]> {
   try {
-    const allegations = await getAllegationsByEntity(entityId);
-    return allegations.filter(a => a.state === 'current');
+    return await getCasesByEntity(entityId);
   } catch (error) {
     console.error('Failed to fetch cases:', error);
     return [];

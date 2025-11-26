@@ -24,7 +24,7 @@ import { mergeNESEntity } from '@/api/entity-merger';
 import { mergeEvidenceAndSources, EvidenceAndSource } from '@/api/nes-adapters';
 import type { Entity, Relationship, VersionSummary } from '@/types/nes';
 import type { MergedEntity } from '@/types/merged-entity';
-import type { Allegation as JDSAllegation } from '@/types/jds';
+import type { Case as JDSCase } from '@/types/jds';
 
 interface UseEntityDetailOptions {
   entityId?: string;
