@@ -11,90 +11,149 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Filter } from "lucide-react";
-import { getEntities, searchEntities, Entity } from "@/services/api";
+import { Filter } from "lucide-react";
+import { getEntities, Entity, getEntityIdsWithCases } from "@/services/api";
 import { getPrimaryName } from "@/utils/nes-helpers";
 import { toast } from "sonner";
+
+// Debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 const Entities = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [entities, setEntities] = useState<Entity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "rabi");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const [entityTypeFilter, setEntityTypeFilter] = useState(searchParams.get("entityType") || "person");
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "name");
+  const [entityIdsWithCases, setEntityIdsWithCases] = useState<string[]>([]);
+
+  // Debounce search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
 
+  // Fetch entity IDs with cases on mount
   useEffect(() => {
-    // Set default search params on initial load if not present
-    if (!searchParams.has("search") && !searchParams.has("entityType")) {
-      const params = new URLSearchParams();
-      params.set("search", "rabi");
-      params.set("entityType", "person");
-      setSearchParams(params, { replace: true });
-    }
+    const fetchEntityIds = async () => {
+      try {
+        const ids = await getEntityIdsWithCases();
+        setEntityIdsWithCases(ids);
+      } catch (error) {
+        console.error("Failed to fetch entity IDs with cases:", error);
+        toast.error("Failed to load entities with cases");
+      }
+    };
+    fetchEntityIds();
   }, []);
 
+  // Update URL params when filters change
   useEffect(() => {
-    fetchEntities();
-  }, [searchParams]);
-
-  const fetchEntities = async () => {
-    setLoading(true);
-    try {
-      const params: {
-        limit: number;
-        offset: number;
-        entity_type?: string;
-        sub_type?: string;
-      } = {
-        limit: 100,
-        offset: 0
-      };
-
-      // Set entity_type and sub_type based on filter
-      if (entityTypeFilter === "person") {
-        params.entity_type = "person";
-        // sub_type is null/undefined for persons
-      } else if (entityTypeFilter === "political_party") {
-        params.entity_type = "organization";
-        params.sub_type = "political_party";
-      }
-
-      let data;
-      if (searchQuery) {
-        // Use search endpoint when there's a query
-        data = await searchEntities(searchQuery, params);
-      } else {
-        // Use regular entities endpoint
-        data = await getEntities(params);
-      }
-
-      setEntities(data.entities || data || []);
-    } catch (error) {
-      console.error("Failed to fetch entities:", error);
-      toast.error(t("entities.noEntitiesFound"));
-      setEntities([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = () => {
     const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
+    if (debouncedSearchQuery) params.set("search", debouncedSearchQuery);
     if (entityTypeFilter) params.set("entityType", entityTypeFilter);
     if (sortBy !== "name") params.set("sort", sortBy);
-    setSearchParams(params);
-  };
+    setSearchParams(params, { replace: true });
+  }, [debouncedSearchQuery, entityTypeFilter, sortBy, setSearchParams]);
+
+  // Fetch entities when filters or entity IDs change
+  useEffect(() => {
+    const fetchEntities = async () => {
+      setLoading(true);
+      try {
+        const params: {
+          limit: number;
+          offset: number;
+          entity_type?: string;
+          sub_type?: string;
+          entity_ids?: string[];
+          query?: string;
+        } = {
+          limit: 100,
+          offset: 0
+        };
+
+        // Set entity_type and sub_type based on filter
+        if (entityTypeFilter === "person") {
+          params.entity_type = "person";
+        } else if (entityTypeFilter === "political_party") {
+          params.entity_type = "organization";
+          params.sub_type = "political_party";
+        }
+
+        // Only use entity IDs for filtering if they're loaded
+        if (entityIdsWithCases.length > 0) {
+          params.entity_ids = entityIdsWithCases;
+        }
+
+        // Add search query to params if provided
+        if (debouncedSearchQuery) {
+          params.query = debouncedSearchQuery;
+        }
+
+        const data = await getEntities(params);
+
+        // Extract entities array from response
+        const entitiesArray = Array.isArray(data) ? data : (data.entities || []);
+
+
+        // Filter entities by search query if provided (client-side filtering for names)
+        let filteredEntities = entitiesArray;
+
+        if (debouncedSearchQuery) {
+          const queryLower = debouncedSearchQuery.toLowerCase();
+          filteredEntities = entitiesArray.filter(entity => {
+            const nameEn = getPrimaryName(entity.names, 'en').toLowerCase();
+            const nameNe = getPrimaryName(entity.names, 'ne').toLowerCase();
+            return nameEn.includes(queryLower) || nameNe.includes(queryLower);
+          });
+        }
+
+        // Filter to only include entities that have cases (if entity IDs are loaded)
+        // If entity IDs haven't loaded yet, show all entities temporarily
+        if (entityIdsWithCases.length > 0) {
+          const beforeFilter = filteredEntities.length;
+          filteredEntities = filteredEntities.filter(entity => {
+            return entityIdsWithCases.includes(entity.id);
+          });
+        } else {
+          // If entity IDs haven't loaded yet, show all entities temporarily
+          // They will be filtered once entity IDs load
+        }
+
+        setEntities(filteredEntities);
+      } catch (error) {
+        console.error("Failed to fetch entities:", error);
+        toast.error(t("entities.noEntitiesFound"));
+        setEntities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEntities();
+  }, [debouncedSearchQuery, entityTypeFilter, entityIdsWithCases, t]);
+
 
   const handleReset = () => {
-    setSearchQuery("rabi");
+    setSearchQuery("");
     setEntityTypeFilter("person");
     setSortBy("name");
     const params = new URLSearchParams();
-    params.set("search", "rabi");
     params.set("entityType", "person");
     setSearchParams(params);
   };
@@ -135,21 +194,13 @@ const Entities = () => {
             <CardContent className="p-6">
               <div className="space-y-4">
                 {/* Search Bar */}
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      placeholder={t("entities.searchPlaceholder")}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                      className="pl-10"
-                    />
-                  </div>
-                  <Button onClick={handleSearch}>
-                    <Search className="w-4 h-4 mr-2" />
-                    {t("entities.search")}
-                  </Button>
+                <div className="relative flex-1">
+                  <Input
+                    placeholder={t("entities.searchPlaceholder")}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full"
+                  />
                 </div>
 
                 {/* Filters */}

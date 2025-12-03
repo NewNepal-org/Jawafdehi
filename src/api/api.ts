@@ -1,9 +1,9 @@
 /**
  * Nepal Entity Service (NES) API Client
- * 
+ *
  * Tundikhel Backend Integration
  * Base URL: VITE_API_BASE_URL (fallback: http://localhost:8000/api)
- * 
+ *
  * Routes:
  * - GET /entity (list)
  * - GET /entity/search?q=...
@@ -13,8 +13,8 @@
  */
 
 import axios, { AxiosInstance, AxiosError } from 'axios';
-import type { 
-  Entity, 
+import type {
+  Entity,
   Relationship,
   VersionSummary
 } from '@/types/nes';
@@ -68,6 +68,7 @@ export interface EntitySearchParams {
   attributes?: Record<string, unknown>;
   limit?: number;
   offset?: number;
+  entity_ids?: string[]; // Filter by specific entity IDs (comma-separated or array)
 }
 
 export interface RelationshipSearchParams {
@@ -98,10 +99,10 @@ function handleApiError(error: unknown, endpoint: string): never {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError;
     const status = axiosError.response?.status;
-    const message = axiosError.response?.data 
+    const message = axiosError.response?.data
       ? JSON.stringify(axiosError.response.data)
       : axiosError.message;
-    
+
     throw new NESApiError(
       `API Error: ${message}`,
       status,
@@ -109,7 +110,7 @@ function handleApiError(error: unknown, endpoint: string): never {
       axiosError
     );
   }
-  
+
   throw new NESApiError(
     `Unexpected error: ${error}`,
     undefined,
@@ -125,10 +126,27 @@ function handleApiError(error: unknown, endpoint: string): never {
 /**
  * Get list of entities with optional filtering
  * GET /entity
+ *
+ * Supports batch retrieval by entity IDs using entity_ids parameter.
+ * If entity_ids is provided, it will be sent as comma-separated values in the query string.
  */
 export async function getEntities(params?: EntitySearchParams): Promise<EntityListResponse> {
   try {
-    const response = await api.get<EntityListResponse>('/entity', { params });
+    const queryParams: Record<string, string | number> = {};
+
+    // Convert params to query string format
+    if (params?.query) queryParams.q = params.query;
+    if (params?.entity_type) queryParams.entity_type = params.entity_type;
+    if (params?.sub_type) queryParams.sub_type = params.sub_type;
+    if (params?.limit) queryParams.limit = params.limit;
+    if (params?.offset !== undefined) queryParams.offset = params.offset;
+
+    // Handle entity_ids for batch retrieval
+    if (params?.entity_ids && params.entity_ids.length > 0) {
+      queryParams['entity-id'] = params.entity_ids.join(',');
+    }
+
+    const response = await api.get<EntityListResponse>('/entity', { params: queryParams });
     return response.data;
   } catch (error) {
     return handleApiError(error, '/entity');
@@ -176,7 +194,7 @@ export async function getEntityById(idOrSlug: string): Promise<Entity> {
       const [type, slug] = idOrSlug.split(':');
       return await getEntityBySlug(type, slug);
     }
-    
+
     // Fallback: try direct ID lookup
     const response = await api.get<Entity>(`/entity/${idOrSlug}`);
     return response.data;
@@ -190,10 +208,10 @@ export async function getEntityById(idOrSlug: string): Promise<Entity> {
  * GET /entity/:type/:slug/versions
  */
 export async function getEntityVersions(typeOrId: string, slug?: string): Promise<VersionListResponse> {
-  const versionEndpoint = slug 
+  const versionEndpoint = slug
     ? `/entity/${typeOrId}/${slug}/versions`
     : `/entity/${typeOrId}/versions`;
-  
+
   try {
     const response = await api.get<VersionListResponse>(versionEndpoint);
     return response.data;
@@ -243,6 +261,47 @@ export async function getEntityCases(entityId: string): Promise<JDSCase[]> {
     return await getCasesByEntity(entityId);
   } catch (error) {
     console.error('Failed to fetch cases:', error);
+    return [];
+  }
+}
+
+/**
+ * Get entity IDs associated with cases
+ *
+ * This endpoint retrieves all cases and extracts unique entity IDs
+ * from alleged_entities and related_entities fields.
+ *
+ * Returns a list of entity IDs that have associated cases.
+ *
+ * @returns Promise<string[]> - Array of entity IDs
+ */
+export async function getEntityIdsWithCases(): Promise<string[]> {
+  try {
+    const { getCases } = await import('@/services/jds-api');
+    const casesResponse = await getCases({ page: 1 });
+
+    // Extract all entity IDs from cases
+    const entityIds = new Set<string>();
+
+    casesResponse.results.forEach(caseItem => {
+      // Add alleged entities
+      caseItem.alleged_entities.forEach(entity => {
+        if (entity.nes_id) {
+          entityIds.add(entity.nes_id);
+        }
+      });
+
+      // Add related entities
+      caseItem.related_entities.forEach(entity => {
+        if (entity.nes_id) {
+          entityIds.add(entity.nes_id);
+        }
+      });
+    });
+
+    return Array.from(entityIds);
+  } catch (error) {
+    console.error('Failed to fetch entity IDs with cases:', error);
     return [];
   }
 }
