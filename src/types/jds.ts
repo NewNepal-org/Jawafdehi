@@ -114,3 +114,15 @@ export interface CaseSearchParams {
 export interface DocumentSourceSearchParams {
   page?: number;
 }
+
+// ============================================================================
+// Statistics Types
+// ============================================================================
+
+export interface CaseStatistics {
+  published_cases: number;
+  entities_tracked: number;
+  cases_under_investigation: number;
+  cases_closed: number;
+  last_updated: string;
+}

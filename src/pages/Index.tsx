@@ -6,44 +6,60 @@ import { CaseCard } from "@/components/CaseCard";
 import { FileText, Users, Eye, TrendingUp, Shield, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { getCases, getStatistics } from "@/services/jds-api";
+import { useMemo } from "react";
 
 const Index = () => {
   const { t } = useTranslation();
 
-  // NOTE: This is mock data. When replaced with Entity API data, case content (title, description, etc.)
-  // should remain in English until API-side i18n is implemented. See GitHub issue for i18n.
-  const featuredCases = [
-    {
-      id: "1",
-      title: "Alleged Misappropriation of Public Funds in Highway Construction",
-      entity: "Department of Roads, Ministry of Physical Infrastructure",
-      location: "Kathmandu Valley",
-      date: "March 15, 2024",
-      status: "under-investigation" as const,
-      severity: "high" as const,
-      description: "Investigation into alleged irregularities in the bidding process and fund allocation for the Ring Road expansion project.",
-    },
-    {
-      id: "2",
-      title: "Corruption in Medical Equipment Procurement",
-      entity: "Ministry of Health and Population",
-      location: "Province 1",
-      date: "February 28, 2024",
-      status: "ongoing" as const,
-      severity: "critical" as const,
-      description: "Reports of overpriced medical equipment purchases during the pandemic response, with potential kickbacks to officials.",
-    },
-    {
-      id: "3",
-      title: "Land Grab Case - Public Park Converted to Private Property",
-      entity: "Metropolitan City Development Committee",
-      location: "Lalitpur",
-      date: "January 10, 2024",
-      status: "resolved" as const,
-      severity: "medium" as const,
-      description: "Public park land illegally transferred to private developers. Case resolved with land returned to public ownership.",
-    },
-  ];
+  // Fetch real statistics from API
+  const { data: stats, isError: statsError, isLoading: statsLoading } = useQuery({
+    queryKey: ['statistics'],
+    queryFn: getStatistics,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes to match cache
+    retry: 2,
+  });
+
+  // Helper to display stat values: show "-" if error/loading, otherwise show the value
+  const getStatValue = (value: number | undefined): string => {
+    if (statsError || statsLoading) return "-";
+    return value?.toString() || "0";
+  };
+
+  // Fetch real cases from API (first 3 for featured section)
+  const { data: casesData } = useQuery({
+    queryKey: ['cases', { page: 1 }],
+    queryFn: () => getCases({ page: 1 }),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Transform API cases to CaseCard format
+  const featuredCases = useMemo(() => {
+    if (!casesData?.results) return [];
+    
+    return casesData.results.slice(0, 3).map((caseItem) => {
+      const primaryEntity = caseItem.alleged_entities[0]?.display_name || "Unknown Entity";
+      const primaryLocation = caseItem.locations[0]?.display_name || "Unknown Location";
+      const formattedDate = caseItem.case_start_date 
+        ? new Date(caseItem.case_start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : new Date(caseItem.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      return {
+        id: caseItem.id.toString(),
+        title: caseItem.title,
+        entity: primaryEntity,
+        location: primaryLocation,
+        date: formattedDate,
+        status: "ongoing" as const, // All published cases shown as ongoing
+        description: caseItem.description.replace(/<[^>]*>/g, '').substring(0, 200), // Strip HTML and truncate
+        tags: caseItem.tags,
+        entityIds: caseItem.alleged_entities.map(e => e.nes_id).filter((id): id is string => id !== null),
+        locationIds: caseItem.locations.map(l => l.nes_id).filter((id): id is string => id !== null),
+      };
+    });
+  }, [casesData]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -86,28 +102,27 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatCard
                 title={t("home.stats.totalCases")}
-                value={t("home.stats.totalCasesValue")}
+                value={getStatValue(stats?.published_cases)}
                 icon={FileText}
                 description={t("home.stats.totalCasesDesc")}
               />
               <StatCard
                 title={t("home.stats.entitiesTracked")}
-                value={t("home.stats.entitiesTrackedValue")}
+                value={getStatValue(stats?.entities_tracked)}
                 icon={Users}
                 description={t("home.stats.entitiesTrackedDesc")}
               />
               <StatCard
                 title={t("home.stats.underInvestigation")}
-                value={t("home.stats.underInvestigationValue")}
+                value={getStatValue(stats?.cases_under_investigation)}
                 icon={Eye}
                 description={t("home.stats.underInvestigationDesc")}
               />
               <StatCard
                 title={t("home.stats.resolved")}
-                value={t("home.stats.resolvedValue")}
+                value={getStatValue(stats?.cases_closed)}
                 icon={TrendingUp}
                 description={t("home.stats.resolvedDesc")}
-                trend={t("home.stats.trend")}
               />
             </div>
           </div>

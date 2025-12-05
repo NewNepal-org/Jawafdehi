@@ -14,6 +14,7 @@ import type {
   Case,
   CaseDetail,
   CaseSearchParams,
+  CaseStatistics,
   DocumentSource,
   DocumentSourceSearchParams,
   PaginatedCaseList,
@@ -159,6 +160,24 @@ export async function getDocumentSourceById(id: number): Promise<DocumentSource>
     return response.data;
   } catch (error) {
     handleApiError(error, `/sources/${id}/`);
+  }
+}
+
+// ============================================================================
+// Statistics API Functions
+// ============================================================================
+
+/**
+ * Retrieve aggregate statistics for the platform.
+ * Returns counts of published cases, entities tracked, cases under investigation, and closed cases.
+ * Statistics are cached for 5 minutes on the server side.
+ */
+export async function getStatistics(): Promise<CaseStatistics> {
+  try {
+    const response = await apiClient.get<CaseStatistics>('/statistics/');
+    return response.data;
+  } catch (error) {
+    handleApiError(error, '/statistics/');
   }
 }
 
