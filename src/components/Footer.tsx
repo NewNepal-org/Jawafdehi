@@ -82,6 +82,11 @@ export const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t border-border">
+          <div className="mb-4">
+            <p className="text-xs text-muted-foreground italic max-w-4xl mx-auto text-center">
+              {t("footer.disclaimer")}
+            </p>
+          </div>
           <p className="text-center text-xs text-muted-foreground">
             {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
