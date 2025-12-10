@@ -16,10 +16,11 @@ export const Header = () => {
             alt="Jawafdehi Logo" 
             className="h-10 w-10"
           />
-          <div className="flex flex-col">
+          <div className="flex items-baseline gap-1">
             <span className="text-2xl font-bold text-foreground">
               {t("header.title")}
             </span>
+            <sup className="text-xs font-semibold text-red-600">Beta</sup>
           </div>
         </Link>
 
