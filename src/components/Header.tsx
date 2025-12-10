@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Search } from "lucide-react";
 
@@ -17,11 +16,11 @@ export const Header = () => {
             alt="Jawafdehi Logo" 
             className="h-10 w-10"
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-baseline gap-1">
             <span className="text-2xl font-bold text-foreground">
               {t("header.title")}
             </span>
-            <Badge variant="secondary" className="text-xs">Beta</Badge>
+            <sup className="text-xs font-semibold text-red-600">Beta</sup>
           </div>
         </Link>
 
