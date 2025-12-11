@@ -307,7 +307,7 @@ const CaseDetail = () => {
             </CardHeader>
             <CardContent>
               <div 
-                className="text-muted-foreground leading-relaxed prose prose-sm max-w-none [&_a]:underline"
+                className="text-muted-foreground leading-relaxed prose prose-sm max-w-none [&_a]:underline [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:space-y-2 [&_ul]:my-4 [&_li]:ml-6 [&_li]:pl-2"
                 dangerouslySetInnerHTML={{ __html: caseData.description }}
               />
             </CardContent>

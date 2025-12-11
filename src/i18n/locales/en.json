@@ -53,7 +53,7 @@
     },
     "mission": {
       "title": "Our Mission",
-      "description": "Jawafdehi is a civic tech initiative by Let's Build Nepal (LBN) and NewNepal.org dedicated to promoting transparency and accountability in Nepal. We document, verify, and publish corruption cases involving public entities to empower citizens with information and drive systemic change.",
+      "description": "Jawafdehi is an open-source civic‑tech platform for Nepal built by Nepali to document allegations of corruption. Grounded in a Gen‑Z mandate for transparency and action, we aim to become the Nepali accountability system—holding corrupt politicians and others accountable through independent, evidence‑first, and citizen‑powered means.",
       "aboutPlatform": "About the Platform"
     },
     "cta": {
@@ -139,6 +139,11 @@
   "about": {
     "title": "About Jawafdehi",
     "subtitle": "A civic tech initiative committed to transparency, accountability, and justice in Nepal.",
+    "aboutUs": {
+      "title": "About Us",
+      "description": "Jawafdehi is an open-source civic‑tech platform for Nepal built by Nepali to document allegations of corruption. Grounded in a Gen‑Z mandate for transparency and action, Jawafdehi aims to become the Nepali accountability system to bring an end to the practice of unaccountability—holding corrupt politicians, individuals, and others accountable through independent, evidence‑first, and citizen‑powered means. Using AI to process government documents, track news sources, and generate comprehensive investigation reports, Jawafdehi scales the fight against corruption through technology.",
+      "openSource": "open-source"
+    },
     "mission": {
       "title": "Our Mission",
       "description1": "Jawafdehi is dedicated to promoting transparency and accountability in Nepal by documenting, verifying, and publishing corruption cases involving public entities. We empower Nepali citizens with verified information to drive systemic change and hold public officials accountable for their actions.",
