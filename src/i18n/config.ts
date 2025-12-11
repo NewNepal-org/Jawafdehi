@@ -32,7 +32,6 @@ i18n
       },
     },
     fallbackLng: 'ne', // Nepali is the default language
-    lng: 'ne', // Set initial language to Nepali
     detection: languageDetectorOptions,
     interpolation: {
       escapeValue: false, // React already escapes values
