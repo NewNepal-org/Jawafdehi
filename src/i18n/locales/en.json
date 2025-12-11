@@ -332,6 +332,16 @@
     "submitted": {
       "title": "Report Submitted",
       "description": "Your allegation has been submitted for moderation review. Thank you for contributing to public accountability."
+    },
+    "templateDownload": {
+      "title": "Download Case Entry Template",
+      "description": "We are currently updating our online submission form. In the meantime, please use our case entry template to document and submit corruption cases.",
+      "instructions": "Download the template in your preferred format, fill it out with detailed information, and send it to us at:",
+      "email": "cases@jawafdehi.org",
+      "availableFormats": "Available Formats:",
+      "downloadDocx": "Download Word Document (.docx)",
+      "downloadMd": "Download Markdown (.md)",
+      "emailSubject": "Subject: Case Submission - [Brief Title]"
     }
   },
   "feedback": {

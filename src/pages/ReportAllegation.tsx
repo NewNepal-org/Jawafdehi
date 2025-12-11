@@ -10,11 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { AlertCircle, Upload } from "lucide-react";
+import { AlertCircle, Upload, Download, FileText, Mail } from "lucide-react";
 
 export default function ReportAllegation() {
   const { t } = useTranslation();
   const [isAnonymous, setIsAnonymous] = useState(false);
+  
+  // Check feature flag for case submission form
+  const isFormEnabled = import.meta.env.VITE_ENABLE_CASE_SUBMISSION_FORM === 'true';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +42,91 @@ export default function ReportAllegation() {
             </CardHeader>
 
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              {!isFormEnabled ? (
+                // Template Download Section
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      {t("report.templateDownload.description")}
+                    </p>
+                    
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                      <p className="text-sm font-medium">{t("report.templateDownload.instructions")}</p>
+                      <div className="flex items-center gap-2 p-3 bg-background rounded border">
+                        <Mail className="h-4 w-4 text-primary" />
+                        <a 
+                          href="mailto:cases@jawafdehi.org" 
+                          className="text-primary hover:underline font-medium"
+                        >
+                          {t("report.templateDownload.email")}
+                        </a>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {t("report.templateDownload.emailSubject")}
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-foreground">
+                        {t("report.templateDownload.availableFormats")}
+                      </h3>
+                      
+                      <div className="grid gap-3">
+                        {/* DOCX Download */}
+                        <a
+                          href="/case-entry-template/case-entry-template.docx"
+                          download
+                          className="flex items-center justify-between p-4 border rounded-lg hover:border-primary hover:bg-accent transition-colors group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-100 dark:bg-blue-950 rounded">
+                              <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div>
+                              <p className="font-medium group-hover:text-primary transition-colors">
+                                {t("report.templateDownload.downloadDocx")}
+                              </p>
+                              <p className="text-xs text-muted-foreground">Microsoft Word format</p>
+                            </div>
+                          </div>
+                          <Download className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        </a>
+
+                        {/* Markdown Download */}
+                        <a
+                          href="/case-entry-template/case-entry-template.md"
+                          download
+                          className="flex items-center justify-between p-4 border rounded-lg hover:border-primary hover:bg-accent transition-colors group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-green-100 dark:bg-green-950 rounded">
+                              <FileText className="h-5 w-5 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div>
+                              <p className="font-medium group-hover:text-primary transition-colors">
+                                {t("report.templateDownload.downloadMd")}
+                              </p>
+                              <p className="text-xs text-muted-foreground">Plain text format</p>
+                            </div>
+                          </div>
+                          <Download className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Important Notice */}
+                    <div className="flex items-start gap-3 p-4 bg-warning/10 border border-warning/20 rounded-lg">
+                      <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+                      <div className="text-sm text-muted-foreground">
+                        <p className="font-semibold text-foreground mb-1">{t("report.importantNotice")}</p>
+                        <p>{t("report.importantNoticeText")}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Original Form
+                <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Entity Type */}
                 <div className="space-y-2">
                   <Label htmlFor="entityType">{t("report.entityType")}</Label>
@@ -226,6 +313,7 @@ export default function ReportAllegation() {
                   </Button>
                 </div>
               </form>
+              )}
             </CardContent>
           </Card>
         </div>
