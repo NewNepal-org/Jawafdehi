@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Calendar } from "lucide-react";
 import { Case } from "@/services/api";
+import { formatDate } from "@/utils/date";
 
 interface CaseItemProps {
   case: Case;
@@ -59,7 +60,7 @@ const CaseItem = ({ case: caseData }: CaseItemProps) => {
                 <div key={index} className="pl-4">
                   <div className="text-sm font-medium">{event.event}</div>
                   <div className="text-xs text-muted-foreground">
-                    {new Date(event.date).toLocaleDateString()}
+                    {formatDate(event.date)}
                   </div>
                   {event.description && (
                     <div className="text-xs text-muted-foreground mt-1">

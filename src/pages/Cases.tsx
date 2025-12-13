@@ -14,6 +14,7 @@ import { getEntityById } from "@/services/api";
 import type { Case } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { toast } from "sonner";
+import { formatDate } from "@/utils/date";
 
 // Retry helper for rate-limited requests
 async function retryWithBackoff<T>(
@@ -233,7 +234,7 @@ const Cases = () => {
                     }
                     return e.display_name || e.nes_id || 'Unknown';
                   }).join(', ') || 'Unknown Location'}
-                  date={new Date(caseItem.created_at).toLocaleDateString()}
+                  date={formatDate(caseItem.created_at)}
                   status="ongoing"
                   tags={caseItem.tags || []}
                   description={caseItem.key_allegations.join('. ')}

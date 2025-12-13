@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { getPrimaryName, getAttribute, getEmail, getPhone, getWebsite, getDescription, formatSubType } from '@/utils/nes-helpers';
 import type { Case as JDSCase } from '@/types/jds';
+import { formatDate } from '@/utils/date';
 
 interface EntityDetailContainerProps {
   entityId?: string;
@@ -258,7 +259,7 @@ export function EntityDetailContainer({
                           {caseItem.title}
                         </Link>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(caseItem.created_at).toLocaleDateString()}
+                          {formatDate(caseItem.created_at)}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground">
@@ -295,7 +296,7 @@ export function EntityDetailContainer({
                           {caseItem.title}
                         </Link>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(caseItem.created_at).toLocaleDateString()}
+                          {formatDate(caseItem.created_at)}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground">

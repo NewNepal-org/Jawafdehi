@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "lucide-react";
+import { formatDate } from "@/utils/date";
 
 interface TimelineItemProps {
   date: string;
@@ -38,7 +39,7 @@ const TimelineItem = ({ date, title, description, status, severity }: TimelineIt
             <h4 className="font-semibold">{title}</h4>
             <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
               <Calendar className="w-4 h-4" />
-              {new Date(date).toLocaleDateString()}
+              {formatDate(date)}
             </div>
           </div>
 

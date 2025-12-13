@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Allegation } from "@/services/api";
+import { formatDate } from "@/utils/date";
 
 interface AllegationTimelineProps {
   allegations: Allegation[];
@@ -66,11 +67,7 @@ export const AllegationTimeline = ({ allegations }: AllegationTimelineProps) => 
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(item.date).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
+                    {formatDate(item.date, 'PPP')}
                   </p>
                 </Link>
               </div>

@@ -16,6 +16,7 @@ import { getEntityById } from "@/services/api";
 import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { toast } from "sonner";
+import { formatDate, formatCaseDateRange } from "@/utils/date";
 
 const CaseDetail = () => {
   const { t } = useTranslation();
@@ -208,9 +209,7 @@ const CaseDetail = () => {
                 <Calendar className="mr-2 h-5 w-5" />
                 <span className="text-sm">
                   {t("caseDetail.period")}:{" "}
-                  {caseData.case_start_date && new Date(caseData.case_start_date).toLocaleDateString()}
-                  {caseData.case_end_date && ` - ${new Date(caseData.case_end_date).toLocaleDateString()}`}
-                  {!caseData.case_start_date && !caseData.case_end_date && 'N/A'}
+                  {formatCaseDateRange(caseData.case_start_date, caseData.case_end_date, t("cases.status.ongoing"))}
                 </span>
               </div>
             </div>
@@ -275,17 +274,17 @@ const CaseDetail = () => {
                 <div className="space-y-4">
                   {caseData.timeline.map((item, index) => (
                     <div key={index} className="flex items-start">
-                      <div className="flex flex-col items-center mr-4">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                      <div className="flex flex-col items-center mr-4 min-h-full">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
                           <div className="h-2 w-2 rounded-full bg-primary" />
                         </div>
                         {index !== caseData.timeline.length - 1 && (
-                          <div className="w-px h-full bg-border my-1" />
+                          <div className="w-px flex-1 bg-border mt-1" />
                         )}
                       </div>
                       <div className="flex-1 pb-6">
                         <p className="text-sm font-semibold text-foreground mb-1">
-                          {new Date(item.date).toLocaleDateString()}
+                          {formatDate(item.date)}
                         </p>
                         <p className="text-sm font-medium text-foreground mb-1">{item.title}</p>
                         <p className="text-sm text-muted-foreground">{item.description}</p>
@@ -373,7 +372,7 @@ const CaseDetail = () => {
                           {t("caseDetail.version")} {version.version_number}
                         </h4>
                         <span className="text-sm text-muted-foreground">
-                          {new Date(version.datetime).toLocaleDateString()}
+                          {formatDate(version.datetime)}
                         </span>
                       </div>
                       {version.change_summary && (

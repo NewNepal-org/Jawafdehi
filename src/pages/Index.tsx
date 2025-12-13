@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { getCases, getStatistics } from "@/services/jds-api";
 import { useMemo } from "react";
+import { formatDate } from "@/utils/date";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -43,8 +44,8 @@ const Index = () => {
       const primaryEntity = caseItem.alleged_entities[0]?.display_name || "Unknown Entity";
       const primaryLocation = caseItem.locations[0]?.display_name || "Unknown Location";
       const formattedDate = caseItem.case_start_date 
-        ? new Date(caseItem.case_start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-        : new Date(caseItem.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        ? formatDate(caseItem.case_start_date, 'PPP')
+        : formatDate(caseItem.created_at, 'PPP');
 
       return {
         id: caseItem.id.toString(),

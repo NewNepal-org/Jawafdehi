@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, FileText } from "lucide-react";
 import { Allegation } from "@/services/api";
+import { formatDate } from "@/utils/date";
 
 interface AllegationItemProps {
   allegation: Allegation;
@@ -40,7 +41,7 @@ const AllegationItem = ({ allegation }: AllegationItemProps) => {
             </div>
           </div>
           <span className="text-sm text-muted-foreground whitespace-nowrap">
-            {new Date(allegation.date).toLocaleDateString()}
+            {formatDate(allegation.date)}
           </span>
         </div>
       </CardHeader>

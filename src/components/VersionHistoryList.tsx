@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp, User, Calendar, FileText } from "lucide-react";
+import { formatDateTime } from "@/utils/date";
 
 interface Version {
   version: number;
@@ -60,7 +61,7 @@ const VersionHistoryList = ({ versions }: VersionHistoryListProps) => {
                       </Badge>
                       <span className="text-sm text-muted-foreground flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(version.created_at).toLocaleString()}
+                        {formatDateTime(version.created_at)}
                       </span>
                     </div>
 

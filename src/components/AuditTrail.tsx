@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, User, Edit, Plus, CheckCircle } from "lucide-react";
+import { formatDateTime } from "@/utils/date";
 
 interface AuditEntry {
   id: string;
@@ -56,7 +57,7 @@ export const AuditTrail = ({ entries }: AuditTrailProps) => {
                       {entry.action}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(entry.timestamp).toLocaleString()}
+                      {formatDateTime(entry.timestamp)}
                     </span>
                   </div>
                   
