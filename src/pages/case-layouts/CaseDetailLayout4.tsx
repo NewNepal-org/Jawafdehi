@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink } from "lucide-react";
 import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
 import type { Entity } from "@/types/nes";
+import { DEFAULT_CASE_THUMBNAIL_URL } from "@/config/caseDetail";
 
 interface CaseDetailLayout4Props {
   caseData: CaseDetailType;
@@ -27,8 +28,8 @@ interface CaseDetailLayout4Props {
 const CaseDetailLayout4 = ({ caseData, resolvedSources, resolvedEntities }: CaseDetailLayout4Props) => {
   const { t } = useTranslation();
   
-  // Use test thumbnail or fallback
-  const thumbnailUrl = caseData.thumbnail_url || "https://s3.jawafdehi.org/cases/giribandhu/giribandhu-tea-estate.jpeg";
+  // Use case thumbnail or default fallback
+  const thumbnailUrl = caseData.thumbnail_url || DEFAULT_CASE_THUMBNAIL_URL;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
