@@ -59,7 +59,7 @@ export interface Case {
    * Should be a publicly accessible URL (HTTPS recommended).
    * Recommended dimensions: 1200x600px or 16:9 aspect ratio.
    * Supported formats: JPEG, PNG, WebP.
-   * Falls back to DEFAULT_CASE_THUMBNAIL_URL if not provided.
+   * If not provided, layout components will use a default fallback image.
    */
   thumbnail_url?: string | null;
   case_start_date: string | null; // ISO date format

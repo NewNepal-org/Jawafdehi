@@ -18,6 +18,7 @@ import CaseDetailLayout1 from "./case-layouts/CaseDetailLayout1";
 import CaseDetailLayout2 from "./case-layouts/CaseDetailLayout2";
 import CaseDetailLayout3 from "./case-layouts/CaseDetailLayout3";
 import CaseDetailLayout4 from "./case-layouts/CaseDetailLayout4";
+import { DEFAULT_CASE_THUMBNAIL_URL } from "@/config/caseDetail";
 
 const CaseDetailLayoutDemo = () => {
   const { t } = useTranslation();
@@ -279,9 +280,9 @@ const CaseDetailLayoutDemo = () => {
 
             <div className="mt-8 p-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground">
-                <strong>Note:</strong> All layouts use the test thumbnail image: 
+                <strong>Note:</strong> All layouts use the default thumbnail image: 
                 <code className="ml-2 text-xs bg-background px-2 py-1 rounded">
-                  https://s3.jawafdehi.org/cases/giribandhu/giribandhu-tea-estate.jpeg
+                  {DEFAULT_CASE_THUMBNAIL_URL}
                 </code>
               </p>
             </div>
