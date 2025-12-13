@@ -29,7 +29,7 @@ const App = () => {
 
   // Get dehydrated state from SSR (if available)
   const dehydratedState = typeof window !== 'undefined' 
-    ? (window as any).__REACT_QUERY_STATE__ 
+    ? (window as Window & { __REACT_QUERY_STATE__?: unknown }).__REACT_QUERY_STATE__ 
     : undefined;
 
   return (

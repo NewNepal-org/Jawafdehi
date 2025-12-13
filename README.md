@@ -107,4 +107,26 @@ This project is built with:
 
 ## Deployment
 
+### Standard Build (Client-Side Only)
+
+```sh
+npm run build
+```
+
+Builds the application for production with client-side rendering. Output is in the `dist/` directory.
+
+### Server-Side Rendering (SSR) Build
+
+```sh
+npm run build:ssr
+```
+
+Builds the application with server-side rendering support. This pre-renders the home page, about page, and information page for faster initial load and better SEO. Output includes:
+- `dist/client/` - Pre-rendered HTML and client assets
+- `dist/server/` - SSR rendering function
+
+See [docs/SSR.md](./docs/SSR.md) for detailed SSR documentation.
+
+### Deployment Platforms
+
 The project is deployed on Google Cloud Platform using Cloud Run. See the repository's GitHub Actions workflows for CI/CD configuration.
