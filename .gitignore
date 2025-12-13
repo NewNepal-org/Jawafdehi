@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Screenshots and temporary files
+screenshots/
+capture-screenshots.cjs
