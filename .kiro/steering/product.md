@@ -67,6 +67,9 @@ bun run dev
 # Build for production
 bun run build
 
+# Run tests
+bun test
+
 # Lint
 bun run lint
 
@@ -76,6 +79,8 @@ bun run preview
 # Deploy (GitHub Pages)
 bun run deploy
 ```
+
+**Important**: Always use `bun` for testing and package management, NOT `npm`.
 
 ## Code Quality Standards
 
@@ -104,12 +109,14 @@ bun run deploy
 ## Deployment
 
 - **Platform**: Google Cloud Platform (Cloud Run)
-- **Static Hosting**: GitHub Pages (beta)
+- **Production URL**: https://beta.jawafdehi.org (this is the production endpoint)
 - **Build Output**: `dist/` directory
-- **Port**: 5173 (development)
-- **URLs**:
-  - Production: https://jawafdehi.org
-  - Beta: https://beta.jawafdehi.org
+- **Development Server Port**: 8080
+- **Development URL Examples**:
+  - Production: https://beta.jawafdehi.org/case/175
+  - Local equivalent: http://localhost:8080/case/175
+
+**Note**: The production endpoint is https://beta.jawafdehi.org (don't be confused by "beta" in the name - this is the live production site).
 
 ## Key Principles
 
@@ -119,3 +126,7 @@ bun run deploy
 - **Bilingual First**: Equal support for English and Nepali
 - **Mobile-First**: Responsive design for all screen sizes
 - **Open Data**: Transparent access to accountability information
+
+## Documentation & Verification
+
+- **Screenshots**: Always provide screenshots when making UI changes or when verifying functionality. Screenshots are preferred for validation and documentation purposes.
