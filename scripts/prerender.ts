@@ -2,32 +2,34 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { QueryClient } from '@tanstack/react-query';
-import { getCases, getStatistics } from '../src/services/jds-api';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Pages to pre-render
+// Pages to pre-render (without data prefetching for now)
 const pagesToPrerender = [
-  { url: '/', prefetch: true },
-  { url: '/about', prefetch: false },
-  { url: '/information', prefetch: false },
+  { url: '/' },
+  { url: '/about' },
+  { url: '/information' },
 ];
 
 async function prerender() {
   // Import the server entry after build
-  const { render } = await import('../dist/server/entry-server.js');
+  const serverEntryPath = path.resolve(__dirname, '../dist/server/entry-server.js');
+  console.log(`Loading server entry from: ${serverEntryPath}`);
+  
+  const { render } = await import(serverEntryPath);
   
   // Read the client template
-  const template = fs.readFileSync(
-    path.resolve(__dirname, '../dist/client/index.html'),
-    'utf-8'
-  );
+  const templatePath = path.resolve(__dirname, '../dist/client/index.html');
+  console.log(`Loading template from: ${templatePath}`);
+  
+  const template = fs.readFileSync(templatePath, 'utf-8');
 
   // Create output directory for prerendered pages
   const outputDir = path.resolve(__dirname, '../dist/client');
 
   for (const page of pagesToPrerender) {
-    console.log(`Prerendering ${page.url}...`);
+    console.log(`\nPrerendering ${page.url}...`);
     
     // Create a new QueryClient for each page
     const queryClient = new QueryClient({
@@ -38,26 +40,6 @@ async function prerender() {
         },
       },
     });
-
-    // Prefetch data for the home page
-    if (page.url === '/' && page.prefetch) {
-      try {
-        console.log('  Prefetching cases and statistics...');
-        await Promise.all([
-          queryClient.prefetchQuery({
-            queryKey: ['cases', { page: 1 }],
-            queryFn: () => getCases({ page: 1 }),
-          }),
-          queryClient.prefetchQuery({
-            queryKey: ['statistics'],
-            queryFn: getStatistics,
-          }),
-        ]);
-        console.log('  Data prefetched successfully');
-      } catch (error) {
-        console.warn('  Warning: Could not prefetch data:', error instanceof Error ? error.message : String(error));
-      }
-    }
 
     // Render the page
     const { html, dehydratedState } = await render({
@@ -89,10 +71,12 @@ async function prerender() {
     console.log(`  ✓ Generated ${outputPath}`);
   }
 
-  console.log('\nPrerendering complete!');
+  console.log('\n✅ Prerendering complete!');
+  console.log('\nNote: Pages are pre-rendered with initial shell. Data will be fetched on client-side.');
 }
 
 prerender().catch((err) => {
-  console.error('Prerendering failed:', err);
+  console.error('❌ Prerendering failed:', err);
+  console.error('Stack trace:', err.stack);
   process.exit(1);
 });

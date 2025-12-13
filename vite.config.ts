@@ -37,9 +37,6 @@ export default defineConfig(({ mode, command }) => {
           format: 'es',
         },
       },
-    } : {
-      // Client build configuration
-      outDir: 'dist/client',
-    },
+    } : undefined,
   };
 });
