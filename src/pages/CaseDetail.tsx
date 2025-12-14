@@ -362,7 +362,7 @@ const CaseDetail = () => {
               <CardTitle>{t("caseDetail.audit_history")}</CardTitle>
             </CardHeader>
             <CardContent>
-              {caseData.audit_history && caseData.audit_history.versions && caseData.audit_history.versions.length > 0 ? (
+              {caseData.audit_history?.versions?.length > 0 ? (
                 <div className="space-y-4">
                   {caseData.audit_history.versions.map((version, index) => (
                     <div key={index} className="p-4 rounded-lg bg-muted/50 border border-border">
