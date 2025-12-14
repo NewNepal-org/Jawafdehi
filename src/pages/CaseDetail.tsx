@@ -3,14 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { AuditTrail } from "@/components/AuditTrail";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle } from "lucide-react";
+import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Construction } from "lucide-react";
 import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
@@ -357,15 +356,15 @@ const CaseDetail = () => {
             </Card>
           )}
 
-          {/* Audit Trail */}
-          {caseData.audit_history && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>{t("caseDetail.audit_history")}</CardTitle>
-              </CardHeader>
-              <CardContent>
+          {/* Audit Trail / Case History */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>{t("caseDetail.audit_history")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {caseData.audit_history && caseData.audit_history.versions && caseData.audit_history.versions.length > 0 ? (
                 <div className="space-y-4">
-                  {caseData.audit_history.versions?.map((version, index) => (
+                  {caseData.audit_history.versions.map((version, index) => (
                     <div key={index} className="p-4 rounded-lg bg-muted/50 border border-border">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="font-semibold text-foreground">
@@ -381,9 +380,21 @@ const CaseDetail = () => {
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="rounded-full bg-muted p-3 mb-4">
+                    <Construction className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {t("caseDetail.underConstruction")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    {t("caseDetail.underConstructionMessage")}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
 

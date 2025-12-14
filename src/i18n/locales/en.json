@@ -107,6 +107,8 @@
     "evidence": "Evidence & Sources",
     "viewSource": "View Source",
     "version": "Version",
+    "underConstruction": "This section is under construction",
+    "underConstructionMessage": "Case history tracking will be available soon. Volunteer case workers may choose to showcase their contributions here.",
     "failedToLoad": "Failed to load case details",
     "notFound": "Case not found",
     "status": {
