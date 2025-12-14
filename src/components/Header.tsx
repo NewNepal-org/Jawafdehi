@@ -38,6 +38,9 @@ export const Header = () => {
           <Link to="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             {t("nav.home")}
           </Link>
+          <Link to="/cases" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            {t("nav.cases")}
+          </Link>
           <Link to="/entities" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             {t("nav.entities")}
           </Link>
@@ -87,6 +90,13 @@ export const Header = () => {
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.home")}
+                </Link>
+                <Link 
+                  to="/cases" 
+                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {t("nav.cases")}
                 </Link>
                 <Link 
                   to="/entities" 

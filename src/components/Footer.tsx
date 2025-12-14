@@ -7,7 +7,7 @@ export const Footer = () => {
   return (
     <footer className="border-t border-border bg-muted/30">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
@@ -75,6 +75,32 @@ export const Footer = () => {
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   NewNepal.org
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-foreground mb-3">{t("footer.resources")}</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a
+                  href="https://portal.jawafdehi.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {t("footer.contributorPortal")}
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/NewNepal-org/Jawafdehi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {t("footer.githubRepo")}
                 </a>
               </li>
             </ul>
