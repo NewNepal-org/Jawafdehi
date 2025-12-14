@@ -25,4 +25,4 @@ dist-ssr
 .env
 
 # We use bun
-package-lock.json
+package-lock.jsontest-results/
