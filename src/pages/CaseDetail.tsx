@@ -16,7 +16,7 @@ import { getEntityById } from "@/services/api";
 import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { toast } from "sonner";
-import { formatDate, formatCaseDateRange } from "@/utils/date";
+import { formatDate, formatDateWithBS, formatCaseDateRange } from "@/utils/date";
 
 const CaseDetail = () => {
   const { t } = useTranslation();
@@ -30,14 +30,14 @@ const CaseDetail = () => {
   useEffect(() => {
     const fetchCase = async () => {
       if (!id) return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         const data = await getCaseById(parseInt(id));
         setCaseData(data);
-        
+
         // Resolve evidence sources
         const sourcePromises = data.evidence.map(async (evidence) => {
           try {
@@ -47,19 +47,19 @@ const CaseDetail = () => {
             return null;
           }
         });
-        
+
         const sources = await Promise.all(sourcePromises);
         const sourcesMap = sources.reduce((acc, item) => {
           if (item) acc[item.id] = item.source;
           return acc;
         }, {} as Record<number, DocumentSource>);
         setResolvedSources(sourcesMap);
-        
+
         // Resolve entities from NES if they have nes_id
         const allEntities = [...data.alleged_entities, ...data.related_entities, ...data.locations];
         const entitiesWithNesId = allEntities.filter(e => e.nes_id);
         const uniqueNesIds = [...new Set(entitiesWithNesId.map(e => e.nes_id!))];
-        
+
         const entityPromises = uniqueNesIds.map(async (nesId) => {
           try {
             const entity = await getEntityById(nesId);
@@ -68,14 +68,14 @@ const CaseDetail = () => {
             return null;
           }
         });
-        
+
         const entities = await Promise.all(entityPromises);
         const entitiesMap = entities.reduce((acc, item) => {
           if (item) acc[item.id] = item.entity;
           return acc;
         }, {} as Record<string, Entity>);
         setResolvedEntities(entitiesMap);
-        
+
       } catch (err) {
         console.error("Failed to fetch case:", err);
         setError(t("caseDetail.failedToLoad"));
@@ -292,7 +292,7 @@ const CaseDetail = () => {
                       </div>
                       <div className="flex-1 pb-6">
                         <p className="text-sm font-semibold text-foreground mb-1">
-                          {formatDate(item.date)}
+                          {formatDateWithBS(item.date)}
                         </p>
                         <p className="text-sm font-medium text-foreground mb-1">{item.title}</p>
                         <p className="text-sm text-muted-foreground">{item.description}</p>
@@ -313,7 +313,7 @@ const CaseDetail = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div 
+              <div
                 className="text-muted-foreground leading-relaxed prose prose-sm max-w-none [&_a]:underline [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:space-y-2 [&_ul]:my-4 [&_li]:ml-6 [&_li]:pl-2"
                 dangerouslySetInnerHTML={{ __html: caseData.description }}
               />
