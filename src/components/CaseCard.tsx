@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, User } from "lucide-react";
+import { generateCaseSlug } from "@/utils/slug";
 
 interface CaseCardProps {
   id: string;
@@ -30,7 +31,8 @@ export const CaseCard = ({ id, title, entity, location, date, status, tags = [],
   const handleCardClick = (e: React.MouseEvent) => {
     // Only navigate if not clicking on an inner link
     if (!(e.target as HTMLElement).closest("a")) {
-      navigate(`/case/${id}`);
+      const sluggedUrl = generateCaseSlug(id, title);
+      navigate(`/case/${sluggedUrl}`);
     }
   };
 

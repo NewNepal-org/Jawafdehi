@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Calendar } from "lucide-react";
 import { Case } from "@/services/api";
 import { formatDate } from "@/utils/date";
+import { generateCaseSlug } from "@/utils/slug";
 
 interface CaseItemProps {
   case: Case;
@@ -79,7 +80,7 @@ const CaseItem = ({ case: caseData }: CaseItemProps) => {
         )}
 
         <Link 
-          to={`/case/${caseData.id}`}
+          to={`/case/${generateCaseSlug(caseData.id, caseData.name)}`}
           className="inline-block text-sm text-primary hover:underline mt-2"
         >
           View Full Case Details →
