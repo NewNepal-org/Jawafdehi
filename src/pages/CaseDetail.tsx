@@ -17,6 +17,7 @@ import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { toast } from "sonner";
 import { formatDate, formatDateWithBS, formatCaseDateRange } from "@/utils/date";
+import { extractIdFromSlug } from "@/utils/slug";
 
 const CaseDetail = () => {
   const { t } = useTranslation();
@@ -35,7 +36,12 @@ const CaseDetail = () => {
       setError(null);
 
       try {
-        const data = await getCaseById(parseInt(id));
+        // Extract case ID from slugged URL (e.g., "207-rabi-lamichhane-fraud" -> 207)
+        const caseId = extractIdFromSlug(id);
+        if (!caseId) {
+          throw new Error("Invalid case ID");
+        }
+        const data = await getCaseById(caseId);
         setCaseData(data);
 
         // Resolve evidence sources
