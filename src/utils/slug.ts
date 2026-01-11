@@ -16,7 +16,7 @@ export function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .trim()
-    // Replace Nepali and special characters with spaces first
+    // Replace non-alphanumeric special characters with spaces
     .replace(/[^\w\s-]/g, ' ')
     // Replace multiple spaces/hyphens with single hyphen
     .replace(/[\s_-]+/g, '-')
