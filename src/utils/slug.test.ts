@@ -48,7 +48,11 @@ describe('slug utilities', () => {
     });
 
     it('should handle empty title', () => {
-      expect(generateCaseSlug(1, '')).toBe('1-');
+      expect(generateCaseSlug(1, '')).toBe('1');
+    });
+
+    it('should handle Nepali-only titles', () => {
+      expect(generateCaseSlug(207, 'रवि लामिछाने सहकारी घोटाला')).toBe('207');
     });
   });
 

@@ -32,6 +32,10 @@ export function generateSlug(text: string): string {
  */
 export function generateCaseSlug(caseId: number | string, caseTitle: string): string {
   const slug = generateSlug(caseTitle);
+  // If slug is empty (e.g., Nepali-only text), just return the ID
+  if (!slug) {
+    return `${caseId}`;
+  }
   return `${caseId}-${slug}`;
 }
 
