@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -11,6 +11,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `text-sm font-medium transition-colors ${isActive
+    ? "text-primary"
+    : "text-foreground hover:text-primary"
+  }`;
+
+const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `text-lg font-medium transition-colors py-2 ${isActive
+    ? "text-primary"
+    : "text-foreground hover:text-primary"
+  }`;
 
 export const Header = () => {
   const { t } = useTranslation();
@@ -35,24 +47,24 @@ export const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          <NavLink to="/" end className={navLinkClass}>
             {t("nav.home")}
-          </Link>
-          <Link to="/updates" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/updates" className={navLinkClass}>
             {t("nav.updates")}
-          </Link>
-          <Link to="/cases" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/cases" className={navLinkClass}>
             {t("nav.cases")}
-          </Link>
-          <Link to="/entities" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/entities" className={navLinkClass}>
             {t("nav.entities")}
-          </Link>
-          <Link to="/information" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/information" className={navLinkClass}>
             {t("nav.information")}
-          </Link>
-          <Link to="/about" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/about" className={navLinkClass}>
             {t("nav.about")}
-          </Link>
+          </NavLink>
         </nav>
 
         {/* Desktop Actions */}
@@ -87,48 +99,48 @@ export const Header = () => {
                 <SheetTitle>{t("nav.menu")}</SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col space-y-4 mt-8">
-                <Link
+                <NavLink
                   to="/"
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.home")}
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/updates"
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.updates")}
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/cases"
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.cases")}
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/entities"
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.entities")}
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/information"
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.information")}
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                   to="/about"
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.about")}
-                </Link>
+                </NavLink>
                 <div className="pt-4 space-y-3 border-t border-border">
                   <Button asChild variant="destructive" className="w-full" onClick={() => setIsOpen(false)}>
                     <Link to="/report">{t("header.reportCase")}</Link>
