@@ -20,9 +20,9 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center space-x-2">
-          <img 
-            src="/favicon.png" 
-            alt="Jawafdehi Logo" 
+          <img
+            src="/favicon.png"
+            alt="Jawafdehi Logo"
             className="h-10 w-10"
           />
           <div className="flex items-baseline gap-1">
@@ -37,6 +37,9 @@ export const Header = () => {
         <nav className="hidden md:flex items-center space-x-6">
           <Link to="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             {t("nav.home")}
+          </Link>
+          <Link to="/updates" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            {t("nav.updates")}
           </Link>
           <Link to="/cases" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             {t("nav.cases")}
@@ -84,36 +87,43 @@ export const Header = () => {
                 <SheetTitle>{t("nav.menu")}</SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col space-y-4 mt-8">
-                <Link 
-                  to="/" 
+                <Link
+                  to="/"
                   className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.home")}
                 </Link>
-                <Link 
-                  to="/cases" 
+                <Link
+                  to="/updates"
+                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {t("nav.updates")}
+                </Link>
+                <Link
+                  to="/cases"
                   className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.cases")}
                 </Link>
-                <Link 
-                  to="/entities" 
+                <Link
+                  to="/entities"
                   className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.entities")}
                 </Link>
-                <Link 
-                  to="/information" 
+                <Link
+                  to="/information"
                   className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.information")}
                 </Link>
-                <Link 
-                  to="/about" 
+                <Link
+                  to="/about"
                   className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
                   onClick={() => setIsOpen(false)}
                 >
