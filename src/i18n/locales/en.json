@@ -2,6 +2,7 @@
   "nav": {
     "home": "Home",
     "entities": "Entities",
+    "updates": "Updates",
     "cases": "Cases",
     "information": "Information",
     "about": "About",
@@ -457,6 +458,13 @@
     "loading": "Loading entity details...",
     "activeCases": "Active Cases",
     "unknown": "Unknown"
+  },
+  "updates": {
+    "title": "Updates & News",
+    "description": "Latest news, announcements, and reports from Jawafdehi.",
+    "readMore": "Read More",
+    "backToUpdates": "Back to Updates",
+    "documentsAndResources": "Documents & Resources",
+    "view": "View"
   }
 }
-

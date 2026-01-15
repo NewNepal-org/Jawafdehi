@@ -14,6 +14,8 @@ import ReportAllegation from "./pages/ReportAllegation";
 import EntityResponse from "./pages/EntityResponse";
 import ModerationDashboard from "./pages/ModerationDashboard";
 import Feedback from "./pages/Feedback";
+import Updates from "./pages/Updates";
+import UpdateDetail from "./pages/UpdateDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,8 @@ const App = () => (
           <Route path="/entity-response/:id" element={<EntityResponse />} />
           <Route path="/moderation" element={<ModerationDashboard />} />
           <Route path="/feedback" element={<Feedback />} />
+          <Route path="/updates" element={<Updates />} />
+          <Route path="/updates/:id" element={<UpdateDetail />} />
           <Route path="/information" element={<Information />} />
           <Route path="/about" element={<About />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

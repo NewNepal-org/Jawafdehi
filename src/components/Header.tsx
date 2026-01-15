@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -12,6 +12,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `text-sm font-medium transition-colors ${isActive
+    ? "text-primary"
+    : "text-foreground hover:text-primary"
+  }`;
+
+const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `text-lg font-medium transition-colors py-2 ${isActive
+    ? "text-primary"
+    : "text-foreground hover:text-primary"
+  }`;
+
 export const Header = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -20,9 +32,9 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center space-x-2">
-          <img 
-            src="/favicon.png" 
-            alt="Jawafdehi Logo" 
+          <img
+            src="/favicon.png"
+            alt="Jawafdehi Logo"
             className="h-10 w-10"
           />
           <div className="flex items-baseline gap-1">
@@ -34,26 +46,29 @@ export const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+        <nav className="hidden lg:flex items-center space-x-6">
+          <NavLink to="/" end className={navLinkClass}>
             {t("nav.home")}
-          </Link>
-          <Link to="/cases" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/cases" className={navLinkClass}>
             {t("nav.cases")}
-          </Link>
-          <Link to="/entities" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/entities" className={navLinkClass}>
             {t("nav.entities")}
-          </Link>
-          <Link to="/information" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/information" className={navLinkClass}>
             {t("nav.information")}
-          </Link>
-          <Link to="/about" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+          </NavLink>
+          <NavLink to="/updates" className={navLinkClass}>
+            {t("nav.updates")}
+          </NavLink>
+          <NavLink to="/about" className={navLinkClass}>
             {t("nav.about")}
-          </Link>
+          </NavLink>
         </nav>
 
         {/* Desktop Actions */}
-        <div className="hidden md:flex items-center space-x-2">
+        <div className="hidden lg:flex items-center space-x-2">
           <LanguageToggle />
           <Button variant="ghost" size="icon" asChild>
             <Link to="/cases">
@@ -70,7 +85,7 @@ export const Header = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div className="flex md:hidden items-center space-x-2">
+        <div className="flex lg:hidden items-center space-x-2">
           <LanguageToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -84,41 +99,48 @@ export const Header = () => {
                 <SheetTitle>{t("nav.menu")}</SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col space-y-4 mt-8">
-                <Link 
-                  to="/" 
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                <NavLink
+                  to="/"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.home")}
-                </Link>
-                <Link 
-                  to="/cases" 
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                </NavLink>
+                <NavLink
+                  to="/cases"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.cases")}
-                </Link>
-                <Link 
-                  to="/entities" 
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                </NavLink>
+                <NavLink
+                  to="/entities"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.entities")}
-                </Link>
-                <Link 
-                  to="/information" 
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                </NavLink>
+                <NavLink
+                  to="/information"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.information")}
-                </Link>
-                <Link 
-                  to="/about" 
-                  className="text-lg font-medium text-foreground hover:text-primary transition-colors py-2"
+                </NavLink>
+                <NavLink
+                  to="/updates"
+                  className={mobileNavLinkClass}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {t("nav.updates")}
+                </NavLink>
+                <NavLink
+                  to="/about"
+                  className={mobileNavLinkClass}
                   onClick={() => setIsOpen(false)}
                 >
                   {t("nav.about")}
-                </Link>
+                </NavLink>
                 <div className="pt-4 space-y-3 border-t border-border">
                   <Button asChild variant="destructive" className="w-full" onClick={() => setIsOpen(false)}>
                     <Link to="/report">{t("header.reportCase")}</Link>
