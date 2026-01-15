@@ -28,20 +28,20 @@ In summary, we called for:
 - Digital infrastructure upgrades — high-bandwidth government websites, document digitization, and online court records
 - Government funding for civic accountability initiatives to reduce foreign dependency
 
-![Jawafdehi at the consultation meeting](/updates/assets/2026-01-04-second-national-strategy-feedback.jpeg)
+![Jawafdehi at the consultation meeting](/assets/updates/2026-01-04-second-national-strategy-feedback.jpeg)
 *Rohan representing Jawafdehi at the stakeholder consultation in Singha Durbar*
 
 Moving forward, we remain committed to supporting the implementation of this strategy and will continue engaging with the government on anti-corruption efforts.
 `,
-        thumbnail: "/updates/assets/2026-01-04-second-national-strategy-feedback.jpeg",
+        thumbnail: "/assets/updates/2026-01-04-second-national-strategy-feedback.jpeg",
         pdfs: [
             {
                 name: "Our Feedback Letter",
-                path: "/updates/assets/our-feedback.pdf",
+                path: "/assets/updates/our-feedback.pdf",
             },
             {
                 name: "Government Strategy Document (भ्रष्टाचार विरुद्धको दोस्रो राष्ट्रिय रणनीति तथा कार्ययोजना, २०८२)",
-                path: "/updates/assets/भ्रष्टाचार विरुद्धको दोस्रो राष्ट्रिय रणनीति तथा कार्ययोजना, २०८२.pdf",
+                path: "/assets/updates/भ्रष्टाचार विरुद्धको दोस्रो राष्ट्रिय रणनीति तथा कार्ययोजना, २०८२.pdf",
             }
         ]
     }

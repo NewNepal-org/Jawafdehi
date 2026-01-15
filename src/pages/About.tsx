@@ -33,7 +33,7 @@ const teamMembers: TeamMember[] = [
     contacts: [
       { type: "email", value: "damo94761@gmail.com" },
       { type: "linkedin", value: "https://www.linkedin.com/in/damo-da/" },
-      { type: "github", value: "https://github.com/damo-da"}
+      { type: "github", value: "https://github.com/damo-da" }
     ],
   },
   {
@@ -79,7 +79,6 @@ const teamMembers: TeamMember[] = [
     thumb: "https://s3.jawafdehi.org/team/rohan2.jpg",
     contacts: [
       { type: "linkedin", value: "https://www.linkedin.com/in/rohanrajgautam/" },
-      { type: "website", value: "https://rrg.com.np/" },
     ],
   },
 ];
@@ -446,7 +445,7 @@ const About = () => {
     style ExternalSources2 fill:#f5e6d3,stroke-dasharray: 5 5
     style JawafdehiTeam fill:#e8d4f5
 `} />
-              
+
               <div className="mt-10 space-y-8">
                 <div>
                   <h3 className="text-2xl font-semibold text-foreground mb-4">Data Scraping Team</h3>
