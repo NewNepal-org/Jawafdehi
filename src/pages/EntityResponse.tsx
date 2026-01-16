@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,11 @@ export default function EntityResponse() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>Submit Response | Jawafdehi</title>
+      </Helmet>
       <Header />
-      
+
       <main className="flex-1">
         <div className="container mx-auto px-4 py-12 max-w-3xl">
           <Button variant="ghost" asChild className="mb-6">
@@ -43,7 +47,7 @@ export default function EntityResponse() {
                 Exercise your right to respond to allegations. Your response will be verified and displayed alongside the allegations on your profile.
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Identity Verification Notice */}
@@ -91,11 +95,11 @@ export default function EntityResponse() {
                 {/* Response Content */}
                 <div className="space-y-2">
                   <Label htmlFor="response">Your Response</Label>
-                  <Textarea 
-                    id="response" 
+                  <Textarea
+                    id="response"
                     placeholder="Provide your detailed response to the allegation(s)"
                     rows={8}
-                    required 
+                    required
                   />
                   <p className="text-xs text-muted-foreground">
                     Be clear, factual, and professional. Your response will be published exactly as written after verification.
@@ -109,9 +113,9 @@ export default function EntityResponse() {
                     <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground mb-1">Upload supporting documents</p>
                     <p className="text-xs text-muted-foreground">Legal documents, official records, etc. (Max 10MB per file)</p>
-                    <Input 
-                      id="evidence" 
-                      type="file" 
+                    <Input
+                      id="evidence"
+                      type="file"
                       className="hidden"
                       multiple
                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
@@ -122,33 +126,33 @@ export default function EntityResponse() {
                 {/* Contact Information */}
                 <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
                   <h3 className="font-semibold text-foreground">Contact Information for Verification</h3>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>
-                    <Input 
-                      id="fullName" 
+                    <Input
+                      id="fullName"
                       placeholder="Your full legal name"
-                      required 
+                      required
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input 
-                      id="email" 
+                    <Input
+                      id="email"
                       type="email"
                       placeholder="your.email@example.com"
-                      required 
+                      required
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input 
-                      id="phone" 
+                    <Input
+                      id="phone"
                       type="tel"
                       placeholder="+977 XXX-XXXXXXX"
-                      required 
+                      required
                     />
                   </div>
 
@@ -169,11 +173,11 @@ export default function EntityResponse() {
 
                   <div className="space-y-2">
                     <Label htmlFor="verificationDetails">Verification Details</Label>
-                    <Textarea 
-                      id="verificationDetails" 
+                    <Textarea
+                      id="verificationDetails"
                       placeholder="Provide relevant details (e.g., social media handle, preferred call time, official email address)"
                       rows={3}
-                      required 
+                      required
                     />
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -72,7 +73,7 @@ const Entities = () => {
 
       try {
         const JDS_API_BASE_URL = import.meta.env.VITE_JDS_API_BASE_URL || 'https://portal.jawafdehi.org/api';
-        
+
         // Fetch JawafEntities from JDS API with pagination
         const response = await axios.get<{ count: number; next: string | null; results: JawafEntity[] }>(
           `${JDS_API_BASE_URL}/entities/`,
@@ -166,6 +167,10 @@ const Entities = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>Entities | Jawafdehi</title>
+        <meta name="description" content={t("entities.hero.description")} />
+      </Helmet>
       <Header />
 
       <main className="flex-1 container mx-auto px-4 py-8">
@@ -209,7 +214,7 @@ const Entities = () => {
           <div className="mb-4">
             <p className="text-sm text-muted-foreground">
               {loading ? t("entities.loading") : (
-                debouncedSearchQuery 
+                debouncedSearchQuery
                   ? t("entities.entitiesFound", { count: entities.length })
                   : t("entities.showing", { count: allEntities.length, total: totalCount })
               )}

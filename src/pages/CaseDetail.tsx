@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -141,6 +142,13 @@ const CaseDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>{caseData.title} | Jawafdehi</title>
+        <meta name="description" content={caseData.description.replace(/<[^>]*>/g, '').substring(0, 160)} />
+        <meta property="og:title" content={caseData.title} />
+        <meta property="og:description" content={caseData.description.replace(/<[^>]*>/g, '').substring(0, 160)} />
+        <meta property="og:type" content="article" />
+      </Helmet>
       <Header />
 
       <main className="flex-1 py-12">

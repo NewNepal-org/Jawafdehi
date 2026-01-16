@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -90,8 +91,11 @@ export default function ModerationDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>Moderation Dashboard | Jawafdehi</title>
+      </Helmet>
       <Header />
-      
+
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
@@ -176,15 +180,15 @@ export default function ModerationDashboard() {
                             {submission.submittedDate}
                           </span>
                         </div>
-                        
+
                         <h3 className="text-lg font-semibold text-foreground mb-1">
                           {submission.title}
                         </h3>
-                        
+
                         <p className="text-sm text-muted-foreground mb-2">
                           Entity: <span className="font-medium">{submission.entity}</span>
                         </p>
-                        
+
                         <p className="text-sm text-muted-foreground">
                           Submitted by: <span className="font-medium">{submission.submittedBy}</span>
                         </p>
@@ -205,30 +209,30 @@ export default function ModerationDashboard() {
                                 Review submission details before making a decision
                               </DialogDescription>
                             </DialogHeader>
-                            
+
                             <div className="space-y-4">
                               <div>
                                 <Label>Entity</Label>
                                 <p className="text-sm">{submission.entity}</p>
                               </div>
-                              
+
                               <div>
                                 <Label>Type</Label>
                                 <p className="text-sm capitalize">{submission.type}</p>
                               </div>
-                              
+
                               {submission.severity && (
                                 <div>
                                   <Label>Severity</Label>
                                   <p className="text-sm capitalize">{submission.severity}</p>
                                 </div>
                               )}
-                              
+
                               <div>
                                 <Label>Description</Label>
                                 <p className="text-sm whitespace-pre-wrap">{submission.description}</p>
                               </div>
-                              
+
                               {submission.sources && (
                                 <div>
                                   <Label>Sources</Label>
@@ -243,12 +247,12 @@ export default function ModerationDashboard() {
                                   </ul>
                                 </div>
                               )}
-                              
+
                               <div>
                                 <Label>Submitted By</Label>
                                 <p className="text-sm">{submission.submittedBy}</p>
                               </div>
-                              
+
                               <div>
                                 <Label>Submitted Date</Label>
                                 <p className="text-sm">{submission.submittedDate}</p>
@@ -272,28 +276,28 @@ export default function ModerationDashboard() {
 
                                 <div>
                                   <Label>Moderation Notes (Internal)</Label>
-                                  <Textarea 
+                                  <Textarea
                                     placeholder="Add notes for other moderators..."
                                     rows={3}
                                   />
                                 </div>
 
                                 <div className="flex gap-2">
-                                  <Button 
+                                  <Button
                                     onClick={() => handleApprove(submission.id)}
                                     className="flex-1"
                                   >
                                     <CheckCircle className="h-4 w-4 mr-2" />
                                     Approve & Publish
                                   </Button>
-                                  <Button 
+                                  <Button
                                     variant="outline"
                                     onClick={() => handleRequestChanges(submission.id)}
                                   >
                                     <Edit className="h-4 w-4 mr-2" />
                                     Request Changes
                                   </Button>
-                                  <Button 
+                                  <Button
                                     variant="destructive"
                                     onClick={() => handleReject(submission.id)}
                                   >

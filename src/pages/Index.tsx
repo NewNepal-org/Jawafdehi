@@ -5,6 +5,7 @@ import { StatCard } from "@/components/StatCard";
 import { CaseCard } from "@/components/CaseCard";
 import { FileText, Users, Eye, CheckCircle2, Shield, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { getCases, getStatistics } from "@/services/jds-api";
@@ -39,11 +40,11 @@ const Index = () => {
   // Transform API cases to CaseCard format
   const featuredCases = useMemo(() => {
     if (!casesData?.results) return [];
-    
+
     return casesData.results.slice(0, 3).map((caseItem) => {
       const primaryEntity = caseItem.alleged_entities[0]?.display_name || "Unknown Entity";
       const primaryLocation = caseItem.locations[0]?.display_name || "Unknown Location";
-      const formattedDate = caseItem.case_start_date 
+      const formattedDate = caseItem.case_start_date
         ? formatDate(caseItem.case_start_date, 'PPP')
         : formatDate(caseItem.created_at, 'PPP');
 
@@ -64,6 +65,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>Jawafdehi Nepal | Transparency & Anti-Corruption</title>
+        <meta name="description" content="Jawafdehi documents corruption cases in Nepal. Browse verified cases, track accountability, and promote transparency." />
+      </Helmet>
       <Header />
 
       <main className="flex-1">

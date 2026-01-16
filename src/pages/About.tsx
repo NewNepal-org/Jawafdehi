@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Users, Eye, Target, CheckCircle2, Mail, Linkedin, Facebook, Github, Globe } from "lucide-react";
 import { Mermaid } from "@/components/Mermaid";
+import { Helmet } from "react-helmet-async";
 
 type ContactType = "email" | "facebook" | "linkedin" | "github" | "website";
 
@@ -100,6 +101,13 @@ const About = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>About | Jawafdehi</title>
+        <meta name="description" content="About Jawafdehi" />
+        <meta property="og:title" content="About | Jawafdehi" />
+        <meta property="og:description" content="About Jawafdehi" />
+        <meta property="og:type" content="article" />
+      </Helmet>
       <Header />
 
       <main className="flex-1">

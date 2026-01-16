@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
@@ -19,7 +20,7 @@ export default function EntityProfile() {
   const [jawafEntity, setJawafEntity] = useState<JawafEntity | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     async function fetchEntityId() {
       if (!encodedId) {
@@ -30,7 +31,7 @@ export default function EntityProfile() {
 
       const decodedId = decodeURIComponent(encodedId);
       const numericId = parseInt(decodedId, 10);
-      
+
       if (isNaN(numericId)) {
         setError(t("entityProfile.invalidEntityId"));
         setLoading(false);
@@ -52,7 +53,7 @@ export default function EntityProfile() {
       } catch (err) {
         setError(err instanceof Error ? err.message : t("entityProfile.failedToFetch"));
       }
-      
+
       setLoading(false);
     }
 
@@ -61,8 +62,15 @@ export default function EntityProfile() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {jawafEntity && (
+        <Helmet>
+          <title>{jawafEntity.display_name} | Jawafdehi</title>
+          <meta property="og:title" content={jawafEntity.display_name} />
+          <meta property="og:description" content={`View profile and allegations for ${jawafEntity.display_name} on Jawafdehi.`} />
+        </Helmet>
+      )}
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6">
@@ -80,8 +88,8 @@ export default function EntityProfile() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         ) : jawafEntity ? (
-          <EntityDetailContainer 
-            entityId={nesId || undefined} 
+          <EntityDetailContainer
+            entityId={nesId || undefined}
             jawafEntityId={jawafEntity.id}
             jawafEntityName={jawafEntity.display_name}
             hasNesData={!!nesId}

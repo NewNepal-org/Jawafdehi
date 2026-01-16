@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -69,12 +70,12 @@ const Cases = () => {
         2000
       );
       setCases(response.results);
-      
+
       // Resolve entities from NES if they have nes_id
       const allEntities = response.results.flatMap(c => [...c.alleged_entities, ...c.locations]);
       const entitiesWithNesId = allEntities.filter(e => e.nes_id);
       const uniqueNesIds = [...new Set(entitiesWithNesId.map(e => e.nes_id!))];
-      
+
       const entityPromises = uniqueNesIds.map(async (nesId) => {
         try {
           const entity = await getEntityById(nesId);
@@ -83,7 +84,7 @@ const Cases = () => {
           return null;
         }
       });
-      
+
       const entities = await Promise.all(entityPromises);
       const entitiesMap = entities.reduce((acc, item) => {
         if (item) acc[item.id] = item.entity;
@@ -116,6 +117,10 @@ const Cases = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>Cases | Jawafdehi</title>
+        <meta name="description" content={t("cases.hero.description")} />
+      </Helmet>
       <Header />
 
       <main className="flex-1 py-12">

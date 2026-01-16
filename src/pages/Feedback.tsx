@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { MessageSquare, Plus, X, Mail, Phone, MessageCircle, HelpCircle, Loader2, AlertCircle } from "lucide-react";
+import { MessageSquare, Plus, X, Mail, Phone, MessageCircle, HelpCircle, Loader2, AlertCircle, Instagram, Facebook } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { submitFeedback, JDSApiError, type FeedbackSubmission, type ContactMethod as ApiContactMethod, type FeedbackType, type ContactMethodType } from "@/services/jds-api";
 
@@ -33,7 +34,7 @@ interface ValidationError {
 
 export default function Feedback() {
   const { t } = useTranslation();
-  
+
   // Form state
   const [formData, setFormData] = useState<FeedbackFormData>({
     feedbackType: "",
@@ -42,7 +43,7 @@ export default function Feedback() {
     relatedPage: "",
     name: "",
   });
-  
+
   const [contactMethods, setContactMethods] = useState<ContactMethod[]>([
     { type: "email", value: "" }
   ]);
@@ -132,7 +133,7 @@ export default function Feedback() {
       const hasContactInfo = formData.name.trim() || contactMethods.some(m => m.value.trim());
       if (hasContactInfo) {
         submission.contactInfo = {};
-        
+
         if (formData.name.trim()) {
           submission.contactInfo.name = formData.name;
         }
@@ -157,7 +158,7 @@ export default function Feedback() {
 
     } catch (error) {
       console.error('Feedback submission error:', error);
-      
+
       if (error instanceof JDSApiError) {
         // Handle API errors
         if (error.statusCode === 400 && error.validationErrors) {
@@ -170,7 +171,7 @@ export default function Feedback() {
           });
         } else if (error.statusCode === 429) {
           // Rate limit exceeded
-          const retryMessage = error.retryAfter 
+          const retryMessage = error.retryAfter
             ? `Please try again in ${Math.ceil(error.retryAfter / 60)} minutes.`
             : "You've submitted too much feedback. Please try again in an hour.";
           setGeneralError(error.message);
@@ -221,6 +222,10 @@ export default function Feedback() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>Feedback | Jawafdehi</title>
+        <meta name="description" content={t("feedback.description")} />
+      </Helmet>
       <Header />
 
       <main className="flex-1">
@@ -249,12 +254,12 @@ export default function Feedback() {
                 {/* Feedback Type */}
                 <div className="space-y-2">
                   <Label htmlFor="feedbackType">{t("feedback.feedbackType")} *</Label>
-                  <Select 
-                    required 
+                  <Select
+                    required
                     value={formData.feedbackType}
                     onValueChange={(value) => setFormData({ ...formData, feedbackType: value as FeedbackType })}
                   >
-                    <SelectTrigger 
+                    <SelectTrigger
                       id="feedbackType"
                       className={getFieldError("feedbackType") ? "border-destructive" : ""}
                     >
@@ -400,10 +405,10 @@ export default function Feedback() {
                             type={method.type === "email" ? "email" : method.type === "phone" || method.type === "whatsapp" ? "tel" : "text"}
                             placeholder={
                               method.type === "email" ? t("feedback.emailPlaceholder") :
-                              method.type === "phone" ? t("feedback.phonePlaceholder") :
-                              method.type === "whatsapp" ? t("feedback.whatsappPlaceholder") :
-                              method.type === "other" ? t("feedback.otherPlaceholder") :
-                              "@username"
+                                method.type === "phone" ? t("feedback.phonePlaceholder") :
+                                  method.type === "whatsapp" ? t("feedback.whatsappPlaceholder") :
+                                    method.type === "other" ? t("feedback.otherPlaceholder") :
+                                      "@username"
                             }
                             value={method.value}
                             onChange={(e) => updateContactMethod(index, "value", e.target.value)}
