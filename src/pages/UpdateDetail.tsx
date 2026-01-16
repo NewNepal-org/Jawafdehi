@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { updates } from "@/data/updates";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, FileText, Download } from "lucide-react";
@@ -7,6 +8,14 @@ import NotFound from "./NotFound";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useTranslation } from "react-i18next";
+
+const stripMarkdown = (markdown: string) => {
+    return markdown
+        .replace(/!\[.*?\]\(.*?\)/g, "") // remove images
+        .replace(/[#*`]/g, "") // remove formatting chars
+        .replace(/\n/g, " ") // replace newlines with spaces
+        .trim();
+};
 
 const UpdateDetail = () => {
     const { id } = useParams();
@@ -19,6 +28,16 @@ const UpdateDetail = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-background">
+            <Helmet>
+                <title>{update.title} | Jawafdehi</title>
+                <meta name="description" content={stripMarkdown(update.content).slice(0, 160)} />
+                <meta property="og:title" content={update.title} />
+                <meta property="og:description" content={stripMarkdown(update.content).slice(0, 160)} />
+                <meta property="og:type" content="article" />
+                {update.thumbnail && <meta property="og:image" content={update.thumbnail} />}
+                <meta name="twitter:card" content="summary_large_image" />
+                {update.thumbnail && <meta name="twitter:image" content={update.thumbnail} />}
+            </Helmet>
             <Header />
 
             <main className="flex-1 py-12">

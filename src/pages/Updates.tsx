@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { updates } from "@/data/updates";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -11,6 +12,10 @@ const Updates = () => {
     const { t } = useTranslation();
     return (
         <div className="min-h-screen flex flex-col bg-background">
+            <Helmet>
+                <title>Updates | Jawafdehi</title>
+                <meta name="description" content={t("updates.description")} />
+            </Helmet>
             <Header />
 
             <main className="flex-1 py-12">
