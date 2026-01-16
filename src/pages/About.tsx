@@ -81,6 +81,17 @@ const teamMembers: TeamMember[] = [
       { type: "linkedin", value: "https://www.linkedin.com/in/rohanrajgautam/" },
     ],
   },
+  {
+    displayName: {
+      en: "Shikshita Bhandari",
+      ne: "शिक्षिता भण्डारी",
+    },
+    description: "PhD Student in Earth Systems Science, Stanford University",
+    thumb: "https://s3.jawafdehi.org/team/shikshita.jpeg",
+    contacts: [
+      { type: "linkedin", value: "https://www.linkedin.com/in/shikshitab" },
+    ],
+  },
 ];
 
 const About = () => {
