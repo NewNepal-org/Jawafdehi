@@ -11,13 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info } from "lucide-react";
+import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MessageCircle } from "lucide-react";
 import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { toast } from "sonner";
 import { formatDate, formatDateWithBS, formatCaseDateRange } from "@/utils/date";
+import { ReportCaseDialog } from "@/components/ReportCaseDialog";
+import { JAWAFDEHI_WHATSAPP_NUMBER, JAWAFDEHI_EMAIL } from "@/config/constants";
 
 const CaseDetail = () => {
   const { t } = useTranslation();
@@ -153,12 +155,21 @@ const CaseDetail = () => {
 
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-5xl">
-          <Button variant="ghost" asChild className="mb-6">
-            <Link to="/cases">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {t("caseDetail.backToCases")}
-            </Link>
-          </Button>
+          <div className="flex justify-between mb-4">
+            <Button variant="outline" asChild className="mb-2">
+              <Link to="/cases">
+                <ArrowLeft className="h-4 w-4" />
+                <span className="mt-[5px]">
+                  {t("caseDetail.backToCases")}
+                </span>
+              </Link>
+            </Button>
+
+            <ReportCaseDialog
+              caseId={id || ""}
+              caseTitle={caseData.title}
+            />
+          </div>
 
           {/* Disclaimer Banner */}
           <Alert className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
@@ -374,7 +385,7 @@ const CaseDetail = () => {
           )}
 
           {/* Audit Trail */}
-          {caseData.audit_history && (
+          {caseData.audit_history && caseData.audit_history.versions?.length > 0 && (
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>{t("caseDetail.audit_history")}</CardTitle>
@@ -400,6 +411,39 @@ const CaseDetail = () => {
               </CardContent>
             </Card>
           )}
+
+          <Separator className="my-8" />
+
+          {/* Contact and Edit Section */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-muted/30 rounded-xl border border-dashed border-muted-foreground/30">
+            <div className="space-y-2 text-center md:text-left">
+              <h3 className="font-semibold text-lg">{t("caseDetail.contact")}</h3>
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Mail className="h-4 w-4" />
+                  <span className="mt-1">{t("caseDetail.emailLabel")}: {JAWAFDEHI_EMAIL}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="h-4 w-4" />
+                  <span className="mt-1">{t("caseDetail.whatsappLabel")}: {JAWAFDEHI_WHATSAPP_NUMBER}</span>
+                </div>
+              </div>
+            </div>
+
+            <Button variant="outline" size="lg" asChild className="shrink-0">
+              <a
+                href={`https://portal.jawafdehi.org/admin/cases/case/${id}/change/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span className="mt-1.5">
+                  {t("caseDetail.editCase")}
+                </span>
+              </a>
+            </Button>
+          </div>
         </div>
       </main>
 
