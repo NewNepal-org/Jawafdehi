@@ -113,6 +113,13 @@
     "version": "Version",
     "failedToLoad": "Failed to load case details",
     "notFound": "Case not found",
+    "reportInfo": "Report missing/wrong information",
+    "reportInfoDesc": "If you find any inaccurate or missing information in this case, please let us know.",
+    "editCase": "Edit Case",
+    "contact": "Contact Us",
+    "contactDesc": "You can also reach us via email or WhatsApp for any inquiries or to provide additional information.",
+    "emailLabel": "Email",
+    "whatsappLabel": "WhatsApp",
     "status": {
       "ongoing": "Ongoing",
       "resolved": "Resolved",
