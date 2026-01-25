@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info } from "lucide-react";
+import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MessageCircle } from "lucide-react";
 import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
@@ -19,7 +19,7 @@ import type { Entity } from "@/types/nes";
 import { toast } from "sonner";
 import { formatDate, formatDateWithBS, formatCaseDateRange } from "@/utils/date";
 import { ReportCaseDialog } from "@/components/ReportCaseDialog";
-import { Mail, MessageCircle } from "lucide-react";
+import { JAWAFDEHI_WHATSAPP_NUMBER, JAWAFDEHI_EMAIL } from "@/config/constants";
 
 const CaseDetail = () => {
   const { t } = useTranslation();
@@ -421,11 +421,11 @@ const CaseDetail = () => {
               <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Mail className="h-4 w-4" />
-                  <span className="mt-1">{t("caseDetail.emailLabel")}: inquiry@jawafdehi.org</span>
+                  <span className="mt-1">{t("caseDetail.emailLabel")}: {JAWAFDEHI_EMAIL}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <MessageCircle className="h-4 w-4" />
-                  <span className="mt-1">{t("caseDetail.whatsappLabel")}: +977-9801123456</span>
+                  <span className="mt-1">{t("caseDetail.whatsappLabel")}: {JAWAFDEHI_WHATSAPP_NUMBER}</span>
                 </div>
               </div>
             </div>
