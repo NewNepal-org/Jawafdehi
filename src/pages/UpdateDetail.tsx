@@ -71,11 +71,20 @@ const UpdateDetail = () => {
                             <Markdown
                                 // remarkPlugins={[remarkGfm]}
                                 components={{
+                                    h2: ({ node, ...props }) => (
+                                        <h2 className="text-2xl font-bold mt-10 mb-4" {...props} />
+                                    ),
+                                    h3: ({ node, ...props }) => (
+                                        <h3 className="text-xl font-semibold mt-8 mb-3" {...props} />
+                                    ),
                                     p: ({ node, ...props }) => (
                                         <p className="my-6 leading-relaxed" {...props} />
                                     ),
                                     li: ({ node, ...props }) => (
                                         <li className="ml-5 my-2 list-disc" {...props} />
+                                    ),
+                                    a: ({ node, ...props }) => (
+                                        <a className="text-primary underline hover:text-primary/80 transition-colors" {...props} />
                                     ),
                                     img: ({ node, ...props }) => (
                                         <img
