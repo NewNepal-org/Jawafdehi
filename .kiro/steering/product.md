@@ -31,7 +31,7 @@ React-based public-facing web application for browsing and interacting with Nepa
 ## Project Structure
 
 ```
-services/Jawafdehi/
+services/jawafdehi-frontend/
 ├── src/
 │   ├── components/       # React components
 │   │   └── ui/          # Reusable UI components (shadcn)

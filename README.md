@@ -1,6 +1,14 @@
-# Public Accountability Platform (PAP) - Nepal
+# Jawafdehi Frontend
 
 A civic tech platform built by Let's Build Nepal (LBN) and NewNepal.org to promote transparency and accountability in Nepali governance by documenting corruption cases and holding public entities accountable.
+
+## About the Meta Repository
+
+Contributors to this repository should be aware of the [Jawafdehi meta-repository](https://github.com/NewNepal-org/jawafdehi-meta). The meta repo provides documentation, specs, and other shared resources across the Jawafdehi product family. 
+
+**For Jawafdehi team members and interns**: Working from the meta repo setup is strongly encouraged, as it provides rich context for AI-powered development tools (Cursor, Kiro, GitHub Copilot, etc.) and makes cross-service coordination easier.
+
+**For open source contributors**: You can contribute directly to this repository by cloning it and submitting a PR. The meta repo is optional for external contributors.
 
 ## Features Implemented
 

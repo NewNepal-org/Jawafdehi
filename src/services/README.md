@@ -313,9 +313,9 @@ See `/src/types/nes.ts` for complete type definitions.
 
 ## References
 
-- **Backend Types:** https://github.com/NewNepal-org/NepalEntityService-Tundikhel/blob/main/src/common/nes-types.ts
+- **Backend Types:** https://github.com/NewNepal-org/nes-tundikhel/blob/main/src/common/nes-types.ts
 - **Live Reference:** https://tundikhel.nes.newnepal.org
-- **Core NES:** https://github.com/NewNepal-org/NepalEntityService
+- **Core NES:** https://github.com/NewNepal-org/nes
 
 ---
 
