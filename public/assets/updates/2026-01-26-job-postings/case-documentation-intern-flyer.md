@@ -9,8 +9,8 @@ At _jawafdehi.org_, we're creating an open database of corruption cases for Nepa
 Join us in documenting corruption and strengthening accountability through rigorous research and structured data.
 
 See example cases:
-- Rabi Lamichhane cooperative fraud: https://beta.jawafdehi.org/case/207
-- Giri Bandhu land swap scandal: https://beta.jawafdehi.org/case/175
+- Rabi Lamichhane cooperative fraud: https://jawafdehi.org/case/207
+- Giri Bandhu land swap scandal: https://jawafdehi.org/case/175
 
 ---
 

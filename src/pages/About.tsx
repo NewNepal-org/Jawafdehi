@@ -369,7 +369,7 @@ const About = () => {
                 <div className="text-muted-foreground">
                   <p>
                     <strong className="text-foreground">
-                      <a href="https://beta.jawafdehi.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      <a href="https://jawafdehi.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                         Jawafdehi Web App
                       </a>
                     </strong> - Mockup of the web application for browsing and submitting corruption cases.
