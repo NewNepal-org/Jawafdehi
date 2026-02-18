@@ -41,7 +41,6 @@ export const Header = () => {
             <span className="text-2xl font-bold text-foreground">
               {t("header.title")}
             </span>
-            <sup className="text-xs font-semibold text-red-600">Beta</sup>
           </div>
         </Link>
 

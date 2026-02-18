@@ -19,8 +19,8 @@ export const updates: Update[] = [
 We're expanding our team to strengthen Nepal's accountability infrastructure. Both positions are fully remote with flexible salary based on experience and match. We particularly encourage applications from candidates outside Kathmandu Valley and those from underrepresented backgrounds. A bachelor's degree (or currently pursuing) in relevant fields is preferred.
 
 See example cases:
-- Rabi Lamichhane cooperative fraud: [https://beta.jawafdehi.org/case/207](https://beta.jawafdehi.org/case/207)
-- Giri Bandhu land swap scandal: [https://beta.jawafdehi.org/case/175](https://beta.jawafdehi.org/case/175)
+- Rabi Lamichhane cooperative fraud: [https://jawafdehi.org/case/207](https://jawafdehi.org/case/207)
+- Giri Bandhu land swap scandal: [https://jawafdehi.org/case/175](https://jawafdehi.org/case/175)
 
 **Case Documentation Intern** - We're looking for a detail-oriented researcher to help build a comprehensive corruption case database. You'll investigate corruption allegations from news sources, court documents, and public records, then structure this information into timelines with verified evidence. This role involves working with different tools to extract data from documents, cross-referencing sources for accuracy, and contributing to [Nepal Entity Service](https://nes.newnepal.org) and [Nepal Government Modernization](https://github.com/NewNepal-org/ngm) judicial data projects. You'll play a crucial role in documenting corruption and building Nepal's institutional memory against misconduct.
 

@@ -109,14 +109,12 @@ bun run deploy
 ## Deployment
 
 - **Platform**: Google Cloud Platform (Cloud Run)
-- **Production URL**: https://beta.jawafdehi.org (this is the production endpoint)
+- **Production URL**: https://jawafdehi.org
 - **Build Output**: `dist/` directory
 - **Development Server Port**: 8080
 - **Development URL Examples**:
-  - Production: https://beta.jawafdehi.org/case/175
+  - Production: https://jawafdehi.org/case/175
   - Local equivalent: http://localhost:8080/case/175
-
-**Note**: Despite having "beta" in the URL, https://beta.jawafdehi.org is the actual production endpoint where the live application runs. This is intentional naming, not a staging environment.
 
 ## Key Principles
 
