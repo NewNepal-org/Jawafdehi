@@ -210,14 +210,7 @@ export function translatePosition(position: string, t: TFunction, currentLang: s
 export function translateSymbolName(symbolName: unknown, t: TFunction, currentLang: string): string {
   if (!symbolName) return '';
   
-<<<<<<< Updated upstream
-  // Extract the value from LangText structure
-  const symbolObj = symbolName as { en?: { value?: string }; ne?: { value?: string } };
-  const enValue = symbolObj.en?.value;
-  const neValue = symbolObj.ne?.value;
-=======
   let value = '';
->>>>>>> Stashed changes
   
   // Handle plain string inputs
   if (typeof symbolName === 'string') {

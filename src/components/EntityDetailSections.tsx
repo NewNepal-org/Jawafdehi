@@ -20,7 +20,6 @@ import type { Entity, Candidacy } from '@/types/nes';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { 
-  translateDynamicText, 
   translateElectionYearType as translateElectionYearTypeUtil,
   translatePosition as translatePositionUtil,
   translateSymbolName as translateSymbolNameUtil
@@ -103,7 +102,7 @@ function formatAttributeValue(value: unknown): string | Record<string, unknown> 
   
   // Handle objects
   if (typeof value === 'object' && value !== null) {
-    const obj = value as Record<string, any>;
+    const obj = value as Record<string, unknown>;
     
     // Check if it's a LangText structure (has en/ne with value)
     if (obj.en?.value || obj.ne?.value) {
@@ -162,7 +161,7 @@ export function EntityDetailSections({ entity }: EntityDetailSectionsProps) {
   const { t, i18n } = useTranslation();
   // Check if entity is a Person type (has electoral_details)
   const isPerson = entity.type === 'person';
-  const personEntity = isPerson ? (entity as any) : null;
+  const personEntity = isPerson ? (entity as { electoral_details?: { candidacies?: Candidacy[] } }) : null;
 
   return (
     <div className="space-y-6">
@@ -275,7 +274,7 @@ export function EntityDetailSections({ entity }: EntityDetailSectionsProps) {
                           </dt>
                           <dd className="text-sm">
                             {typeof formatted === 'object' && !Array.isArray(formatted) && formatted !== null
-                              ? renderNestedFields(formatted as Record<string, any>, t)
+                              ? renderNestedFields(formatted as Record<string, unknown>, t)
                               : String(formatted)}
                           </dd>
                         </div>
