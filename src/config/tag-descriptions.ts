@@ -10,6 +10,16 @@ export interface TagDescription {
 }
 
 export const TAG_DESCRIPTIONS: Record<string, TagDescription> = {
+  // Federal Election 2082 Tags
+  'federal-election-2082-candidate': {
+    en: 'A candidate in Federal election, 2082 B.S.',
+    ne: 'संघीय निर्वाचन, २०८२ बि.सं. मा उम्मेदवार',
+  },
+  'federal-election-2082-elected': {
+    en: 'A winner in Federal election, 2082 B.S.',
+    ne: 'संघीय निर्वाचन, २०८२ बि.सं. मा विजयी',
+  },
+  
   // Federal Election 2079 Tags
   'federal-election-2079-candidate': {
     en: 'A candidate in Federal election, 2079 B.S.',
