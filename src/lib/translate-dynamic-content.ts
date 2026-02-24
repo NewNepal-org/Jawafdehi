@@ -210,21 +210,38 @@ export function translatePosition(position: string, t: TFunction, currentLang: s
 export function translateSymbolName(symbolName: unknown, t: TFunction, currentLang: string): string {
   if (!symbolName) return '';
   
+<<<<<<< Updated upstream
   // Extract the value from LangText structure
   const symbolObj = symbolName as { en?: { value?: string }; ne?: { value?: string } };
   const enValue = symbolObj.en?.value;
   const neValue = symbolObj.ne?.value;
+=======
+  let value = '';
+>>>>>>> Stashed changes
   
-  // If we have the value in current language, use it
-  if (currentLang === 'ne' && neValue) {
-    return neValue;
-  }
-  if (currentLang === 'en' && enValue) {
-    return enValue;
+  // Handle plain string inputs
+  if (typeof symbolName === 'string') {
+    value = symbolName;
+  } else {
+    // Extract the value from LangText structure
+    const symbolObj = symbolName as { en?: { value?: string }; ne?: { value?: string } };
+    const enValue = symbolObj.en?.value;
+    const neValue = symbolObj.ne?.value;
+    
+    // If we have the value in current language, use it
+    if (currentLang === 'ne' && neValue) {
+      return neValue;
+    }
+    if (currentLang === 'en' && enValue) {
+      return enValue;
+    }
+    
+    // Otherwise get the available value
+    value = enValue || neValue || '';
   }
   
-  // Otherwise try to translate the available value
-  const value = enValue || neValue || '';
+  // If no value found, return empty string
+  if (!value) return '';
   
   // Try specific translation keys first
   if (value.toLowerCase().includes('bell')) {
