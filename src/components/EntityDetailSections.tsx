@@ -16,10 +16,10 @@ import {
   Vote,
   ExternalLink,
 } from 'lucide-react';
-import type { Entity } from '@/types/nes';
+import type { Entity, Candidacy } from '@/types/nes';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { 
-  translateDynamicText, 
   translateElectionYearType as translateElectionYearTypeUtil,
   translatePosition as translatePositionUtil,
   translateSymbolName as translateSymbolNameUtil
@@ -31,7 +31,7 @@ interface EntityDetailSectionsProps {
 }
 
 // Helper function to translate attribute keys
-function translateAttributeKey(key: string, t: any): string {
+function translateAttributeKey(key: string, t: TFunction): string {
   const keyMap: Record<string, string> = {
     'election_council_misc': t('entityDetail.electionCouncilMisc'),
     'institution': t('entityDetail.institution'),
@@ -43,22 +43,23 @@ function translateAttributeKey(key: string, t: any): string {
 }
 
 // Helper function to translate election year and type
-function translateElectionYearType(year: string, type: string, t: any, i18n: any): string {
-  return translateElectionYearTypeUtil(year, type, t, i18n.language);
+function translateElectionYearType(year: number, type: string, t: TFunction, i18n: { language: string }): string {
+  return translateElectionYearTypeUtil(String(year), type, t, i18n.language);
 }
 
 // Helper function to translate symbol names
-function translateSymbolName(symbolName: any, t: any, i18n: any): string {
+function translateSymbolName(symbolName: unknown, t: TFunction, i18n: { language: string }): string {
   return translateSymbolNameUtil(symbolName, t, i18n.language);
 }
 
 // Helper function to translate attribution titles
-function translateAttributionTitle(title: any, t: any, i18n: any): string {
+function translateAttributionTitle(title: unknown, t: TFunction, i18n: { language: string }): string {
   if (!title) return t('entityDetail.source');
   
   // Extract values from LangText structure
-  const enValue = title.en?.value;
-  const neValue = title.ne?.value;
+  const titleObj = title as { en?: { value?: string }; ne?: { value?: string } };
+  const enValue = titleObj.en?.value;
+  const neValue = titleObj.ne?.value;
   
   // Get current language
   const currentLang = i18n.language;
@@ -72,23 +73,24 @@ function translateAttributionTitle(title: any, t: any, i18n: any): string {
 }
 
 // Helper function to format and translate position text
-function translatePosition(position: string, t: any, i18n: any): string {
+function translatePosition(position: string, t: TFunction, i18n: { language: string }): string {
   return translatePositionUtil(position, t, i18n.language);
 }
 
 // Helper function to get description in current language
-function getDescription(description: any, i18n: any): string {
+function getDescription(description: unknown, i18n: { language: string }): string {
   if (!description) return '';
   
+  const descObj = description as { en?: { value?: string }; ne?: { value?: string } };
   const currentLang = i18n.language;
   
   if (currentLang === 'ne') {
-    return description.ne?.value || description.en?.value || '';
+    return descObj.ne?.value || descObj.en?.value || '';
   } else {
-    return description.en?.value || description.ne?.value || '';
+    return descObj.en?.value || descObj.ne?.value || '';
   }
 }
-function formatAttributeValue(value: unknown): string | Record<string, any> | null {
+function formatAttributeValue(value: unknown): string | Record<string, unknown> | null {
   if (value === null || value === undefined) {
     return null;
   }
@@ -135,7 +137,7 @@ function formatAttributeValue(value: unknown): string | Record<string, any> | nu
 }
 
 // Helper to render nested object fields
-function renderNestedFields(obj: Record<string, any>, t: any): React.ReactNode {
+function renderNestedFields(obj: Record<string, unknown>, t: TFunction): React.ReactNode {
   const fields: React.ReactNode[] = [];
   
   for (const [key, val] of Object.entries(obj)) {
@@ -405,7 +407,7 @@ export function EntityDetailSections({ entity }: EntityDetailSectionsProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {personEntity.electoral_details.candidacies.map((candidacy: any, index: number) => (
+              {personEntity.electoral_details.candidacies.map((candidacy: Candidacy, index: number) => (
                 <div key={index} className="border-b border-border pb-3 last:border-0 last:pb-0">
                   <div className="flex items-start gap-4">
                     {candidacy.elected !== undefined && (
