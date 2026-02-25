@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { AuditTrail } from "@/components/AuditTrail";
+import { DocumentSourceCard } from "@/components/DocumentSourceCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -353,30 +353,12 @@ const CaseDetail = () => {
                   {caseData.evidence.map((evidence, index) => {
                     const source = resolvedSources[evidence.source_id];
                     return (
-                      <div key={index} className="flex items-start p-3 border rounded-lg">
-                        <FileText className="mr-3 h-5 w-5 text-muted-foreground mt-0.5" />
-                        <div className="flex-1">
-                          <p className="font-medium">
-                            {source?.title || `Source ${evidence.source_id}`}
-                          </p>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {source.description}
-                          </p>
-                          {source?.description && (
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {evidence.description}
-                            </p>
-                          )}
-                          {source?.url && (
-                            <Button variant="outline" size="sm" asChild>
-                              <a href={source.url} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="mr-2 h-4 w-4" />
-                                View Source
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
+                      <DocumentSourceCard
+                        key={index}
+                        source={source}
+                        sourceId={evidence.source_id}
+                        evidenceDescription={evidence.description}
+                      />
                     );
                   })}
                 </div>
