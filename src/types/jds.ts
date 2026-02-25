@@ -15,6 +15,33 @@ export type CaseType =
   | 'CORRUPTION'
   | 'PROMISES';
 
+export type SourceType =
+  | 'LEGAL_COURT_ORDER'
+  | 'LEGAL_PROCEDURAL'
+  | 'OFFICIAL_GOVERNMENT'
+  | 'FINANCIAL_FORENSIC'
+  | 'INTERNAL_CORPORATE'
+  | 'MEDIA_NEWS'
+  | 'INVESTIGATIVE_REPORT'
+  | 'PUBLIC_COMPLAINT'
+  | 'LEGISLATIVE_DOC'
+  | 'SOCIAL_MEDIA'
+  | 'OTHER_VISUAL';
+
+export const SourceTypeLabels: Record<SourceType, string> = {
+  LEGAL_COURT_ORDER: 'Legal: Court Order/Verdict',
+  LEGAL_PROCEDURAL: 'Legal: Procedural/Law Enforcement',
+  OFFICIAL_GOVERNMENT: 'Official (Government)',
+  FINANCIAL_FORENSIC: 'Financial/Forensic Record',
+  INTERNAL_CORPORATE: 'Internal Corporate Doc',
+  MEDIA_NEWS: 'Media/News',
+  INVESTIGATIVE_REPORT: 'Investigative Report',
+  PUBLIC_COMPLAINT: 'Public Complaint/Whistleblower',
+  LEGISLATIVE_DOC: 'Legislative/Policy Doc',
+  SOCIAL_MEDIA: 'Social Media',
+  OTHER_VISUAL: 'Other / Visual Assets',
+};
+
 // ============================================================================
 // Main Types
 // ============================================================================
@@ -78,7 +105,8 @@ export interface DocumentSource {
   source_id: string;
   title: string;
   description: string;
-  url?: string | null;
+  source_type: string; // Source type classification (e.g., 'OFFICIAL_GOVERNMENT', 'MEDIA_NEWS', etc.)
+  url: string[]; // Array of URLs for this source
   related_entities: JawafEntity[]; // Related entities
   created_at: string;
   updated_at: string;
