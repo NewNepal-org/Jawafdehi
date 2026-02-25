@@ -20,9 +20,11 @@ import { toast } from "sonner";
 import { formatDate, formatDateWithBS, formatCaseDateRange } from "@/utils/date";
 import { ReportCaseDialog } from "@/components/ReportCaseDialog";
 import { JAWAFDEHI_WHATSAPP_NUMBER, JAWAFDEHI_EMAIL } from "@/config/constants";
+import { translateDynamicText } from "@/lib/translate-dynamic-content";
 
 const CaseDetail = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language;
   const { id } = useParams();
   const [caseData, setCaseData] = useState<CaseDetailType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -203,7 +205,8 @@ const CaseDetail = () => {
                 <div className="text-sm flex flex-wrap gap-1">
                   {caseData.alleged_entities.map((e, index) => {
                     const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
-                    const displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                    let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                    displayName = translateDynamicText(displayName, currentLang);
                     return (
                       <span key={e.id}>
                         <Link to={`/entity/${e.id}`} className="text-primary hover:underline">
@@ -220,7 +223,8 @@ const CaseDetail = () => {
                 <div className="text-sm flex flex-wrap gap-1">
                   {caseData.locations.length > 0 ? caseData.locations.map((e, index) => {
                     const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
-                    const displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                    let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                    displayName = translateDynamicText(displayName, currentLang);
                     return (
                       <span key={e.id}>
                         <Link to={`/entity/${e.id}`} className="text-primary hover:underline">
@@ -276,7 +280,8 @@ const CaseDetail = () => {
                 <div className="text-sm text-muted-foreground">
                   {caseData.related_entities.map((e, index) => {
                     const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
-                    const displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                    let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                    displayName = translateDynamicText(displayName, currentLang);
                     return (
                       <span key={index}>
                         <Link to={`/entity/${e.id}`} className="text-primary hover:underline">
@@ -352,12 +357,13 @@ const CaseDetail = () => {
                 <div className="space-y-3">
                   {caseData.evidence.map((evidence, index) => {
                     const source = resolvedSources[evidence.source_id];
+                    const viewSourceText = translateDynamicText('View Source', currentLang);
                     return (
                       <div key={index} className="flex items-start p-3 border rounded-lg">
                         <FileText className="mr-3 h-5 w-5 text-muted-foreground mt-0.5" />
                         <div className="flex-1">
                           <p className="font-medium">
-                            {source?.title || `Source ${evidence.source_id}`}
+                            {source?.title || `${translateDynamicText('Source', currentLang)} ${evidence.source_id}`}
                           </p>
                           <p className="text-sm text-muted-foreground mb-2">
                             {source.description}
@@ -371,7 +377,7 @@ const CaseDetail = () => {
                             <Button variant="outline" size="sm" asChild>
                               <a href={source.url} target="_blank" rel="noopener noreferrer">
                                 <ExternalLink className="mr-2 h-4 w-4" />
-                                View Source
+                                {viewSourceText}
                               </a>
                             </Button>
                           )}
