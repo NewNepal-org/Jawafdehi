@@ -126,6 +126,25 @@
       "underInvestigation": "Under Investigation"
     }
   },
+  "documentSource": {
+    "fallbackTitle": "Source {{id}}",
+    "viewSource": "View Source",
+    "viewSourceN": "View Source {{n}}",
+    "opensInNewTab": "(opens in a new tab)"
+  },
+  "sourceType": {
+    "LEGAL_COURT_ORDER": "Legal: Court Order/Verdict",
+    "LEGAL_PROCEDURAL": "Legal: Procedural/Law Enforcement",
+    "OFFICIAL_GOVERNMENT": "Official (Government)",
+    "FINANCIAL_FORENSIC": "Financial/Forensic Record",
+    "INTERNAL_CORPORATE": "Internal Corporate Doc",
+    "MEDIA_NEWS": "Media/News",
+    "INVESTIGATIVE_REPORT": "Investigative Report",
+    "PUBLIC_COMPLAINT": "Public Complaint/Whistleblower",
+    "LEGISLATIVE_DOC": "Legislative/Policy Doc",
+    "SOCIAL_MEDIA": "Social Media",
+    "OTHER_VISUAL": "Other / Visual Assets"
+  },
   "entities": {
     "title": "Public Entities",
     "description": "Browse and search individuals and organizations in public service",

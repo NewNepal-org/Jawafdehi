@@ -126,6 +126,25 @@
       "underInvestigation": "अनुसन्धानमा"
     }
   },
+  "documentSource": {
+    "fallbackTitle": "स्रोत {{id}}",
+    "viewSource": "स्रोत हेर्नुहोस्",
+    "viewSourceN": "स्रोत {{n}} हेर्नुहोस्",
+    "opensInNewTab": "(नयाँ ट्याबमा खुल्छ)"
+  },
+  "sourceType": {
+    "LEGAL_COURT_ORDER": "कानूनी: अदालतको आदेश/फैसला",
+    "LEGAL_PROCEDURAL": "कानूनी: प्रक्रियागत/कानून प्रवर्तन",
+    "OFFICIAL_GOVERNMENT": "आधिकारिक (सरकारी)",
+    "FINANCIAL_FORENSIC": "वित्तीय/फोरेन्सिक रेकर्ड",
+    "INTERNAL_CORPORATE": "आन्तरिक कर्पोरेट कागजात",
+    "MEDIA_NEWS": "मिडिया/समाचार",
+    "INVESTIGATIVE_REPORT": "अनुसन्धानात्मक रिपोर्ट",
+    "PUBLIC_COMPLAINT": "सार्वजनिक उजुरी/व्हिसलब्लोअर",
+    "LEGISLATIVE_DOC": "विधायी/नीति कागजात",
+    "SOCIAL_MEDIA": "सामाजिक सञ्जाल",
+    "OTHER_VISUAL": "अन्य / दृश्य सम्पत्ति"
+  },
   "entities": {
     "title": "व्यक्तिहरू, संस्था, पार्टी, आदि",
     "description": "सार्वजनिक सेवामा व्यक्तिहरू र एकाइहरू ब्राउज र खोज्नुहोस्",
