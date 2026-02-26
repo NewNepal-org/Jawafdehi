@@ -351,10 +351,10 @@ const CaseDetail = () => {
               <CardContent>
                 <div className="space-y-3">
                   {caseData.evidence.map((evidence, index) => {
-                    const source = resolvedSources[evidence.source_id];
+                    const source = resolvedSources[evidence.source_id] ?? null;
                     return (
                       <DocumentSourceCard
-                        key={index}
+                        key={`${evidence.source_id}-${index}`}
                         source={source}
                         sourceId={evidence.source_id}
                         evidenceDescription={evidence.description}
