@@ -68,7 +68,7 @@ export function EntityDetailSections({ entity }: EntityDetailSectionsProps) {
                   <dt className="text-sm font-medium text-muted-foreground">Tundikhel</dt>
                   <dd className="text-sm">
                     <a 
-                      href={`https://tundikhel.nes.newnepal.org/#/entity/${entity.id.replace(/^entity:/, '')}`}
+                      href={`https://tundikhel.newnepal.org/#/entity/${entity.id.replace(/^entity:/, '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline font-mono"
