@@ -15,6 +15,33 @@ export type CaseType =
   | 'CORRUPTION'
   | 'PROMISES';
 
+export type DocumentSourceType =
+  | 'LEGAL_COURT_ORDER'
+  | 'LEGAL_PROCEDURAL'
+  | 'OFFICIAL_GOVERNMENT'
+  | 'FINANCIAL_FORENSIC'
+  | 'INTERNAL_CORPORATE'
+  | 'MEDIA_NEWS'
+  | 'INVESTIGATIVE_REPORT'
+  | 'PUBLIC_COMPLAINT'
+  | 'LEGISLATIVE_DOC'
+  | 'SOCIAL_MEDIA'
+  | 'OTHER_VISUAL';
+
+export const DocumentSourceTypeKeys: Record<DocumentSourceType, string> = {
+  LEGAL_COURT_ORDER: 'sourceType.LEGAL_COURT_ORDER',
+  LEGAL_PROCEDURAL: 'sourceType.LEGAL_PROCEDURAL',
+  OFFICIAL_GOVERNMENT: 'sourceType.OFFICIAL_GOVERNMENT',
+  FINANCIAL_FORENSIC: 'sourceType.FINANCIAL_FORENSIC',
+  INTERNAL_CORPORATE: 'sourceType.INTERNAL_CORPORATE',
+  MEDIA_NEWS: 'sourceType.MEDIA_NEWS',
+  INVESTIGATIVE_REPORT: 'sourceType.INVESTIGATIVE_REPORT',
+  PUBLIC_COMPLAINT: 'sourceType.PUBLIC_COMPLAINT',
+  LEGISLATIVE_DOC: 'sourceType.LEGISLATIVE_DOC',
+  SOCIAL_MEDIA: 'sourceType.SOCIAL_MEDIA',
+  OTHER_VISUAL: 'sourceType.OTHER_VISUAL',
+};
+
 // ============================================================================
 // Main Types
 // ============================================================================
@@ -78,7 +105,8 @@ export interface DocumentSource {
   source_id: string;
   title: string;
   description: string;
-  url?: string | null;
+  source_type: DocumentSourceType | string | null; // DocumentSourceType for known values; plain string covers legacy/unknown backend values; null if not classified
+  url?: string[] | null; // Array of URLs for this source (may be missing or null during migration)
   related_entities: JawafEntity[]; // Related entities
   created_at: string;
   updated_at: string;
