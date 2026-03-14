@@ -18,11 +18,16 @@ from drf_spectacular.utils import (
     extend_schema_view,
 )
 from rest_framework import filters, status, viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
+import jsonpatch
 
+from .caseworker_serializers import BLOCKED_PATH_PREFIXES, CasePatchSerializer
 from .models import Case, CaseState, DocumentSource, JawafEntity
+from .rules.predicates import can_change_case
 from .serializers import (
     CaseDetailSerializer,
     CaseSerializer,
@@ -101,11 +106,12 @@ from .serializers import (
 )
 class CaseViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Public read-only API for Cases.
+    Public read-only API for Cases (with PATCH support for authenticated users).
 
     Provides:
     - List endpoint: GET /api/cases/
     - Retrieve endpoint: GET /api/cases/{id}/ (includes audit history)
+    - Patch endpoint: PATCH /api/cases/{id}/ (authenticated users only)
 
     Filtering:
     - case_type: Filter by case type
@@ -122,6 +128,15 @@ class CaseViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["case_type"]
     search_fields = ["title", "description", "key_allegations"]
+    authentication_classes = [TokenAuthentication]
+
+    def get_permissions(self):
+        """
+        Allow PATCH for authenticated users, read-only for everyone else.
+        """
+        if self.action == "partial_update":
+            return [IsAuthenticated()]
+        return super().get_permissions()
 
     def get_serializer_class(self):
         """
@@ -137,11 +152,17 @@ class CaseViewSet(viewsets.ReadOnlyModelViewSet):
 
         List endpoint: PUBLISHED cases only (respects feature flag)
         Retrieve endpoint: PUBLISHED and IN_REVIEW cases (always, regardless of feature flag)
+        Partial update endpoint: All cases (for authenticated users with permissions)
 
         Implementation:
         1. For retrieve action, return PUBLISHED and IN_REVIEW cases without version filtering
-        2. For list action, determine allowed states based on feature flag and return only highest version per case_id
+        2. For partial_update action, return all cases (permission check happens in the method)
+        3. For list action, determine allowed states based on feature flag and return only highest version per case_id
         """
+        if self.action == "partial_update":
+            # PATCH endpoint: return all cases, permission check happens in partial_update method
+            return Case.objects.all()
+
         if self.action == "retrieve":
             # Detail endpoint: always show both PUBLISHED and IN_REVIEW cases
             queryset = Case.objects.filter(
@@ -196,6 +217,131 @@ class CaseViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.filter(id__in=case_ids_with_tag)
 
         return queryset.order_by("-created_at")
+
+    def partial_update(self, request, pk=None):
+        """
+        PATCH /api/cases/{id}/
+
+        Accepts an RFC 6902 JSON Patch document and applies it against a writable
+        snapshot of the case. The snapshot is validated after patching, then scalar
+        fields are saved via a bulk UPDATE and M2M relations are updated with .set().
+
+        Blocked paths (id, case_id, version, state, contributors, timestamps,
+        versionInfo) are rejected before the patch is applied.
+        """
+        try:
+            case = self.get_object()
+        except Case.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if not can_change_case(request.user, case):
+            return Response(
+                {"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        patch_ops = request.data
+        if not isinstance(patch_ops, list):
+            return Response(
+                {"detail": "Request body must be a JSON array of patch operations."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Reject blocked paths before applying the patch
+        for op in patch_ops:
+            if not isinstance(op, dict):
+                return Response(
+                    {"detail": "Each patch operation must be a JSON object."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            path = op.get("path", "")
+            for blocked in BLOCKED_PATH_PREFIXES:
+                if path == blocked or path.startswith(blocked + "/"):
+                    return Response(
+                        {"detail": f"Patching path '{path}' is not allowed."},
+                        status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    )
+
+        snapshot = self._build_snapshot(case)
+        try:
+            patched = jsonpatch.apply_patch(snapshot, patch_ops)
+        except (jsonpatch.JsonPatchException, jsonpatch.JsonPointerException) as exc:
+            return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = CasePatchSerializer(data=patched)
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
+
+        validated = serializer.validated_data
+
+        # Fields that map directly to Case model columns (updated via bulk UPDATE)
+        scalar_fields = frozenset(
+            [
+                "title",
+                "short_description",
+                "description",
+                "thumbnail_url",
+                "banner_url",
+                "case_start_date",
+                "case_end_date",
+                "tags",
+                "key_allegations",
+                "timeline",
+                "evidence",
+            ]
+        )
+
+        # Maps writable snapshot key → Case M2M attribute name
+        m2m_fields = {
+            "alleged_entity_ids": "alleged_entities",
+            "related_entity_ids": "related_entities",
+            "location_ids": "locations",
+        }
+
+        # Persist scalar field changes
+        scalar_updates = {
+            field: validated[field] for field in scalar_fields if field in validated
+        }
+        if scalar_updates:
+            Case.objects.filter(pk=pk).update(**scalar_updates)
+
+        # Persist M2M changes
+        case.refresh_from_db()
+        for id_field, m2m_attr in m2m_fields.items():
+            if id_field in validated:
+                getattr(case, m2m_attr).set(validated[id_field])
+
+        case.refresh_from_db()
+        return Response(CaseSerializer(case).data, status=status.HTTP_200_OK)
+
+    def _build_snapshot(self, case: Case) -> dict:
+        """Return a writable dict representing the patchable surface of a case."""
+        return {
+            "title": case.title,
+            "short_description": case.short_description,
+            "description": case.description,
+            "thumbnail_url": case.thumbnail_url,
+            "banner_url": case.banner_url,
+            "case_start_date": (
+                str(case.case_start_date) if case.case_start_date else None
+            ),
+            "case_end_date": str(case.case_end_date) if case.case_end_date else None,
+            "case_type": case.case_type,
+            "tags": list(case.tags) if case.tags else [],
+            "key_allegations": (
+                list(case.key_allegations) if case.key_allegations else []
+            ),
+            "timeline": list(case.timeline) if case.timeline else [],
+            "evidence": list(case.evidence) if case.evidence else [],
+            "alleged_entity_ids": list(
+                case.alleged_entities.values_list("id", flat=True)
+            ),
+            "related_entity_ids": list(
+                case.related_entities.values_list("id", flat=True)
+            ),
+            "location_ids": list(case.locations.values_list("id", flat=True)),
+        }
 
 
 @extend_schema_view(

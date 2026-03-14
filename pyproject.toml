@@ -25,6 +25,7 @@ whitenoise = "^6.11.0"
 django-auditlog = "^3.3.0"
 gunicorn = "^23.0.0"
 pydantic = "^2.12.5"
+jsonpatch = "^1.33"
 
 
 [tool.poetry.group.dev.dependencies]
