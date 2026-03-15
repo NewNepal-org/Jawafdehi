@@ -103,6 +103,7 @@ class CaseAdminForm(forms.ModelForm):
         fields = "__all__"
         widgets = {
             "description": TinyMCE(attrs={"cols": 80, "rows": 30}),
+            "notes": TinyMCE(attrs={"cols": 80, "rows": 20}),
             "state": forms.RadioSelect(),
             "case_start_date": forms.DateInput(attrs={"type": "date"}),
             "case_end_date": forms.DateInput(attrs={"type": "date"}),
@@ -460,6 +461,22 @@ class CaseAdmin(admin.ModelAdmin):
                 return form_class(*args, **kwargs)
 
         return FormWithRequest
+
+    def get_fieldsets(self, request, obj=None):
+        """Remove notes from fieldsets for contributors (admin/moderator only)."""
+        fieldsets = super().get_fieldsets(request, obj)
+        if is_contributor(request.user) and not is_admin_or_moderator(request.user):
+            return [
+                (
+                    name,
+                    {
+                        **options,
+                        "fields": tuple(f for f in options["fields"] if f != "notes"),
+                    },
+                )
+                for name, options in fieldsets
+            ]
+        return fieldsets
 
     def save_related(self, request, form, formsets, change):
         """
