@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MessageCircle } from "lucide-react";
+import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MessageCircle, StickyNote } from "lucide-react";
 import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import type { CaseDetail as CaseDetailType, DocumentSource } from "@/types/jds";
@@ -372,6 +372,24 @@ const CaseDetail = () => {
           )}
 
           <Separator className="my-8" />
+
+          {/* Notes */}
+          {caseData.notes && (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <StickyNote className="mr-2 h-5 w-5" />
+                  {t("caseDetail.notes")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="text-muted-foreground leading-relaxed prose prose-sm max-w-none [&_a]:underline [&_p]:mb-4 [&_p:last-child]:mb-0 [&_ul]:space-y-2 [&_ul]:my-4 [&_li]:ml-6 [&_li]:pl-2 [&_table]:w-full [&_table]:border-collapse [&_table]:my-4 [&_table]:border [&_table]:border-border [&_th]:border [&_th]:border-border [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:bg-muted [&_th]:font-semibold [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_tr:nth-child(even)]:bg-muted/50"
+                  dangerouslySetInnerHTML={{ __html: caseData.notes }}
+                />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Contact and Edit Section */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-muted/30 rounded-xl border border-dashed border-muted-foreground/30">

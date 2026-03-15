@@ -80,6 +80,7 @@ export interface Case {
   key_allegations: string[]; // List of key allegation statements
   timeline: TimelineEntry[];
   evidence: EvidenceEntry[];
+  notes: string; // Internal notes (HTML from TinyMCE)
   created_at: string; // ISO datetime
   updated_at: string; // ISO datetime
 }
