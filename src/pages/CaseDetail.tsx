@@ -315,12 +315,12 @@ const CaseDetail = () => {
                           <div className="w-px flex-1 bg-border mt-1" />
                         )}
                       </div>
-                      <div className="flex-1 pb-6">
+                      <div className="flex-1 min-w-0 pb-6">
                         <p className="text-sm font-semibold text-foreground mb-1">
                           {formatDateWithBS(item.date)}
                         </p>
-                        <p className="text-sm font-medium text-foreground mb-1">{item.title}</p>
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                        <p className="text-sm font-medium text-foreground mb-1 break-words">{item.title}</p>
+                        <p className="text-sm text-muted-foreground break-words">{item.description}</p>
                       </div>
                     </div>
                   ))}
