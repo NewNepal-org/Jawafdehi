@@ -145,14 +145,42 @@ const CaseDetail = () => {
     );
   }
 
+  const canonicalUrl = `https://jawafdehi.org/case/${id}`;
+  // Strip HTML tags and normalize whitespace for meta description (always English from API)
+  const plainDescription = caseData.description
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 160);
+  // Fallback to key allegations if description is empty
+  const metaDescription = plainDescription || caseData.key_allegations.slice(0, 2).join('. ').substring(0, 160);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Helmet>
         <title>{caseData.title} | Jawafdehi</title>
-        <meta name="description" content={caseData.description.replace(/<[^>]*>/g, '').substring(0, 160)} />
-        <meta property="og:title" content={caseData.title} />
-        <meta property="og:description" content={caseData.description.replace(/<[^>]*>/g, '').substring(0, 160)} />
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        {/* Open Graph */}
+        <meta property="og:site_name" content="Jawafdehi Nepal" />
         <meta property="og:type" content="article" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:title" content={`${caseData.title} | Jawafdehi`} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content="https://jawafdehi.org/favicon.png" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="article:published_time" content={caseData.created_at} />
+        <meta property="article:modified_time" content={caseData.updated_at} />
+        {caseData.tags.map((tag) => (
+          <meta key={tag} property="article:tag" content={tag} />
+        ))}
+
+        {/* Twitter / X Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${caseData.title} | Jawafdehi`} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content="https://jawafdehi.org/favicon.png" />
       </Helmet>
       <Header />
 
