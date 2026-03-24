@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.utils import timezone
+import mimetypes
 import uuid
 
 from .fields import (
@@ -47,6 +48,86 @@ def validate_url_list(value):
             raise ValidationError("URLs cannot be blank or whitespace-only.")
 
         validator(stripped)
+
+
+# File upload configuration
+ALLOWED_UPLOAD_EXTENSIONS = ["pdf", "doc", "docx", "jpg", "jpeg", "png"]
+ALLOWED_UPLOAD_MIMETYPES = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/jpeg",
+    "image/png",
+]
+MAX_UPLOAD_FILE_SIZE = 10 * 1024 * 1024  # 10 MB in bytes
+
+
+def validate_upload_file_extension(file):
+    """
+    Validate that the uploaded file has an allowed extension.
+
+    Args:
+        file: The uploaded file object
+
+    Raises:
+        ValidationError: If file extension is not allowed
+    """
+    if not file:
+        return
+
+    import os
+
+    ext = os.path.splitext(file.name)[1].lstrip(".").lower()
+    if ext not in ALLOWED_UPLOAD_EXTENSIONS:
+        allowed = ", ".join(ALLOWED_UPLOAD_EXTENSIONS)
+        raise ValidationError(
+            f"File extension '.{ext}' is not allowed. Allowed extensions: {allowed}"
+        )
+
+
+def validate_upload_file_size(file):
+    """
+    Validate that the uploaded file is within size limits.
+
+    Args:
+        file: The uploaded file object
+
+    Raises:
+        ValidationError: If file exceeds max size
+    """
+    if not file:
+        return
+
+    if file.size > MAX_UPLOAD_FILE_SIZE:
+        max_mb = MAX_UPLOAD_FILE_SIZE / (1024 * 1024)
+        raise ValidationError(
+            f"File size is {file.size / (1024 * 1024):.2f} MB, which exceeds the maximum allowed size of {max_mb} MB"
+        )
+
+
+def validate_upload_file_mimetype(file):
+    """
+    Validate that the uploaded file's MIME type is allowed.
+
+    Uses the content_type attribute set by Django's file upload handler.
+    This provides a defence-in-depth check against renamed files that pass
+    the extension validator.
+
+    Args:
+        file: The uploaded file object
+
+    Raises:
+        ValidationError: If MIME type is not in ALLOWED_UPLOAD_MIMETYPES
+    """
+    if not file:
+        return
+
+    content_type = getattr(file, "content_type", None)
+    if content_type and content_type not in ALLOWED_UPLOAD_MIMETYPES:
+        allowed = ", ".join(ALLOWED_UPLOAD_MIMETYPES)
+        raise ValidationError(
+            f"File MIME type '{content_type}' is not allowed. Allowed types: {allowed}"
+        )
 
 
 class JawafEntity(models.Model):
@@ -482,6 +563,37 @@ class DocumentSource(models.Model):
         help_text="List of URLs for this source",
     )
 
+    # Uploaded file fields (for native file uploads)
+    # If uploaded_file is set, this source is considered an uploaded-file source
+    uploaded_file = models.FileField(
+        upload_to="jawafdehi/sources/%Y/%m/%d/",
+        null=True,
+        blank=True,
+        validators=[
+            validate_upload_file_extension,
+            validate_upload_file_size,
+            validate_upload_file_mimetype,
+        ],
+        help_text="Uploaded file (if source is from file upload)",
+    )
+    uploaded_filename = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Original filename for uploaded file",
+    )
+    uploaded_content_type = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="MIME type of uploaded file (e.g., application/pdf)",
+    )
+    uploaded_file_size = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="File size in bytes",
+    )
+
     # Entity relationships
     related_entities = models.ManyToManyField(
         JawafEntity,
@@ -552,6 +664,71 @@ class DocumentSource(models.Model):
         # Run full model and field validation (includes validate_url_list)
         # This calls clean() which normalizes data, then validates
         self.full_clean()
+
+        super().save(*args, **kwargs)
+
+
+class DocumentSourceUpload(models.Model):
+    """Represents one uploaded file attached to a DocumentSource."""
+
+    source = models.ForeignKey(
+        DocumentSource,
+        on_delete=models.CASCADE,
+        related_name="uploaded_files",
+        help_text="Document source this uploaded file belongs to",
+    )
+    file = models.FileField(
+        upload_to="jawafdehi/sources/%Y/%m/%d/",
+        validators=[
+            validate_upload_file_extension,
+            validate_upload_file_size,
+            validate_upload_file_mimetype,
+        ],
+        help_text="Uploaded file",
+    )
+    filename = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Original filename (auto-populated)",
+    )
+    content_type = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="MIME type (auto-populated best-effort)",
+    )
+    file_size = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="File size in bytes (auto-populated)",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.source.source_id} - {self.filename or self.file.name}"
+
+    def save(self, *args, **kwargs):
+        """Auto-populate metadata fields from uploaded file before saving."""
+        if self.file:
+            if not self.filename:
+                self.filename = (self.file.name or "").split("/")[-1]
+
+            if self.file_size in (None, 0):
+                self.file_size = getattr(self.file, "size", None)
+
+            if not self.content_type:
+                uploaded_content_type = getattr(
+                    getattr(self.file, "file", None), "content_type", None
+                )
+                if uploaded_content_type:
+                    self.content_type = uploaded_content_type
+                else:
+                    guessed_content_type, _ = mimetypes.guess_type(self.file.name)
+                    if guessed_content_type:
+                        self.content_type = guessed_content_type
 
         super().save(*args, **kwargs)
 

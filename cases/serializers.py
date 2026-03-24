@@ -151,6 +151,48 @@ class DocumentSourceSerializer(serializers.ModelSerializer):
     """
 
     related_entities = JawafEntitySerializer(many=True, read_only=True)
+    url = serializers.SerializerMethodField(
+        help_text="List of URLs for this source, including uploaded file URL when available"
+    )
+
+    def get_url(self, obj):
+        request = self.context.get("request")
+        merged_urls = []
+        seen = set()
+
+        def add_url(value):
+            if not value:
+                return
+            candidate = value
+            if request is not None:
+                candidate = request.build_absolute_uri(candidate)
+            if candidate not in seen:
+                seen.add(candidate)
+                merged_urls.append(candidate)
+
+        for url in list(obj.url or []):
+            add_url(url)
+
+        if obj.uploaded_file:
+            try:
+                add_url(obj.uploaded_file.url)
+            except Exception:
+                pass
+
+        uploaded_files = getattr(obj, "uploaded_files", None)
+        if uploaded_files is not None:
+            uploads_iterable = (
+                uploaded_files.all()
+                if hasattr(uploaded_files, "all")
+                else uploaded_files
+            )
+            for uploaded_file in uploads_iterable:
+                try:
+                    add_url(uploaded_file.file.url)
+                except Exception:
+                    pass
+
+        return merged_urls
 
     class Meta:
         model = DocumentSource

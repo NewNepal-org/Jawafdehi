@@ -7,12 +7,13 @@ Validates: Requirements 4.1, 6.1, 6.2, 6.3, 8.1, 8.3
 """
 
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from rest_framework.test import APIClient
 
-from cases.models import CaseState, CaseType
+from cases.models import CaseState, CaseType, DocumentSourceUpload
 from tests.conftest import (
     create_case_with_entities,
     create_document_source_with_entities,
@@ -683,3 +684,55 @@ def test_document_source_api_shows_sources_from_published_and_in_review_cases():
     assert (
         in_review_source.source_id in source_ids
     ), "Source referenced by in-review case should appear in API"
+
+
+@pytest.mark.django_db
+def test_document_source_api_merges_url_with_legacy_and_multiple_uploads():
+    """DocumentSource API should include URL list + legacy upload + multi-upload files without duplicates."""
+    legacy_file = SimpleUploadedFile(
+        "legacy-evidence.pdf", b"legacy", content_type="application/pdf"
+    )
+    source = create_document_source_with_entities(
+        title="Merged Source",
+        description="Source with all URL variants",
+        url=["https://example.com/reference.pdf", "https://example.com/reference.pdf"],
+        uploaded_file=legacy_file,
+    )
+
+    upload_one = DocumentSourceUpload.objects.create(
+        source=source,
+        file=SimpleUploadedFile(
+            "attachment-1.pdf", b"one", content_type="application/pdf"
+        ),
+    )
+    upload_two = DocumentSourceUpload.objects.create(
+        source=source,
+        file=SimpleUploadedFile(
+            "attachment-2.pdf", b"two", content_type="application/pdf"
+        ),
+    )
+
+    create_case_with_entities(
+        title="Published Case With Uploads",
+        alleged_entities=["entity:person/test"],
+        key_allegations=["Test allegation"],
+        case_type=CaseType.CORRUPTION,
+        description="Test description",
+        state=CaseState.PUBLISHED,
+        evidence=[
+            {
+                "source_id": source.source_id,
+                "description": "Evidence with file uploads",
+            }
+        ],
+    )
+
+    client = APIClient()
+    response = client.get(f"/api/sources/{source.id}/")
+    assert response.status_code == 200
+
+    merged_urls = response.data["url"]
+    assert merged_urls.count("https://example.com/reference.pdf") == 1
+    assert any(url.endswith(source.uploaded_file.url) for url in merged_urls)
+    assert any(url.endswith(upload_one.file.url) for url in merged_urls)
+    assert any(url.endswith(upload_two.file.url) for url in merged_urls)

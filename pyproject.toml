@@ -26,6 +26,9 @@ django-auditlog = "^3.3.0"
 gunicorn = "^23.0.0"
 pydantic = "^2.12.5"
 jsonpatch = "^1.33"
+boto3 = "^1.35.0"
+django-storages = "^1.14.3"
+python-multipart = "^0.0.18"
 
 
 [tool.poetry.group.dev.dependencies]

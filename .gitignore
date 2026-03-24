@@ -8,5 +8,6 @@ db.sqlite3
 .vscode
 .hypothesis
 staticfiles/
+media/jawafdehi/sources/
 tmp/
 /nes-db

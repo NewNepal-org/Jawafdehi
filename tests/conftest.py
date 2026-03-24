@@ -4,7 +4,12 @@ Pytest configuration for test suite.
 Ensures environment variables are set to their default values during testing.
 """
 
+import os
 import pytest
+
+# Set DATABASE_URL before Django settings are loaded so tests run without a
+# real PostgreSQL instance. This is intentionally only set here (test context).
+os.environ.setdefault("DATABASE_URL", "sqlite:///db.sqlite3")
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission

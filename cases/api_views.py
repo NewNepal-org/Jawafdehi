@@ -479,9 +479,11 @@ class DocumentSourceViewSet(viewsets.ReadOnlyModelViewSet):
                         source_ids.add(evidence_item["source_id"])
 
         # Return sources that are referenced and not soft-deleted
-        return DocumentSource.objects.filter(
-            source_id__in=source_ids, is_deleted=False
-        ).distinct()
+        return (
+            DocumentSource.objects.filter(source_id__in=source_ids, is_deleted=False)
+            .prefetch_related("uploaded_files")
+            .distinct()
+        )
 
     def get_object(self):
         """
