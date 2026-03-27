@@ -228,6 +228,14 @@ const CaseDetail = () => {
             {/* NOTE: Dynamic case content from Entity API remains in English until API-side i18n is implemented */}
             <h1 className="text-4xl font-bold text-foreground mb-6">{caseData.title}</h1>
 
+            {caseData.banner_url && (
+              <img
+                src={caseData.banner_url}
+                alt={caseData.title}
+                className="w-full h-64 object-cover rounded-lg mb-6"
+              />
+            )}
+
             <div className="grid grid-cols-1 gap-4">
               <div className="flex items-start text-muted-foreground">
                 <User className="mr-2 h-5 w-5 flex-shrink-0" />
