@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "rules.apps.AutodiscoverRulesConfig",
     "cases",
     "nesq",
+    "ngm",
 ]
 
 MIDDLEWARE = [
@@ -105,10 +106,20 @@ DATABASES = {
     )
 }
 
+if os.getenv("NGM_DATABASE_URL"):
+    DATABASES["ngm"] = dj_database_url.config(env="NGM_DATABASE_URL")
+
 # Configure connection pooling for PostgreSQL only
 if DATABASES["default"].get("ENGINE") == "django.db.backends.postgresql":
     DATABASES["default"]["CONN_MAX_AGE"] = 60
     DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+
+if (
+    "ngm" in DATABASES
+    and DATABASES["ngm"].get("ENGINE") == "django.db.backends.postgresql"
+):
+    DATABASES["ngm"]["CONN_MAX_AGE"] = 60
+    DATABASES["ngm"]["CONN_HEALTH_CHECKS"] = True
 
 
 # Password validation
@@ -294,6 +305,9 @@ NES_API_URL = os.getenv("NES_API_URL", "https://nes.newnepal.org/api")
 # NES Database Path - required for GitHub Actions queue processing only.
 # Points to the local clone of the nes-db repository.
 NES_DB_PATH = os.getenv("NES_DB_PATH")
+
+# NGM Database Configuration (for read-only SQL endpoint)
+NGM_QUERY_MAX_ROWS = int(os.getenv("NGM_QUERY_MAX_ROWS", "500"))
 
 # Cache Configuration
 CACHES = {

@@ -33,4 +33,5 @@ urlpatterns = [
     ),
     path("api/", include("cases.urls")),
     path("api/", include("nesq.urls")),
+    path("api/", include("ngm.urls")),
 ]
