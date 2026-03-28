@@ -91,7 +91,7 @@ async function main() {
   }
 
   // Dynamic import of SSR bundle (built by `vite build --ssr`, not available at type-check time)
-  // @ts-ignore
+  // @ts-expect-error -- entry-server.js is generated at build time, not resolvable during type-checking
   const { render } = await import('../dist/server/entry-server.js') as {
     render: (url: string) => Promise<RenderResult>;
   };

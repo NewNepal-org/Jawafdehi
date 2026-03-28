@@ -2,12 +2,6 @@ import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 import worker from '../../worker';
 
-// Feature: ssr-seo, Property 13: Worker returns correct pre-rendered HTML for known routes
-// Feature: ssr-seo, Property 14: Worker returns 200 SPA shell for unknown routes
-
-/**
- * Validates: Requirements 11.3
- */
 describe('Property 13: Worker returns correct pre-rendered HTML for known routes', () => {
   it('returns the asset response as-is when ASSETS.fetch returns non-404', async () => {
     await fc.assert(
@@ -33,9 +27,6 @@ describe('Property 13: Worker returns correct pre-rendered HTML for known routes
   });
 });
 
-/**
- * Validates: Requirements 11.4
- */
 describe('Property 14: Worker returns 200 SPA shell for unknown routes', () => {
   it('returns 200 with index.html body when ASSETS.fetch returns 404', async () => {
     await fc.assert(

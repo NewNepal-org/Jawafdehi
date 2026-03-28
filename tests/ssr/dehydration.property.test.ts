@@ -1,11 +1,7 @@
-// Feature: ssr-seo, Property 16: Dehydrate → JSON → parse → hydrate → dehydrate produces equivalent state
 import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 import { QueryClient, dehydrate, hydrate } from '@tanstack/react-query';
 
-/**
- * Validates: Requirements 12.3
- */
 describe('Property 16: Dehydrated state round-trip produces equivalent state', () => {
   it('dehydrate → JSON → parse → hydrate → dehydrate produces equivalent state', async () => {
     await fc.assert(
