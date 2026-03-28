@@ -299,7 +299,7 @@ if not CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
 
 # NES API Configuration
-NES_API_URL = os.getenv("NES_API_URL", "https://nes.newnepal.org/api")
+NES_API_URL = os.getenv("NES_API_URL", "https://nes.jawafdehi.org/api")
 
 # NES Database Path - required for GitHub Actions queue processing only.
 # Points to the local clone of the nes-db repository.

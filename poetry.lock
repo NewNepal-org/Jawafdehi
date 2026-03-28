@@ -1791,7 +1791,7 @@ scraping = ["google-auth (>=2.23.0,<3.0.0)", "google-cloud-aiplatform (>=1.38.0,
 
 [package.source]
 type = "git"
-url = "https://github.com/NewNepal-org/NepalEntityService.git"
+url = "https://github.com/Jawafdehi/NepalEntityService.git"
 reference = "HEAD"
 resolved_reference = "3940b3b0a4b0deddeec21754f987903389ab0177"
 

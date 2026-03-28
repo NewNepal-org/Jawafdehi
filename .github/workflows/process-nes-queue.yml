@@ -46,7 +46,7 @@ jobs:
       - name: Checkout nes-db
         uses: actions/checkout@v4
         with:
-          repository: NewNepal-org/NepalEntityService-database
+          repository: Jawafdehi/NepalEntityService-database
           path: nes-db
           token: ${{ secrets.NES_DB_PUSH_TOKEN }}
 

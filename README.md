@@ -4,7 +4,7 @@ A Django-based public accountability platform for tracking allegations of corrup
 
 ## About the Meta Repository
 
-Contributors to this repository should be aware of the [Jawafdehi meta-repository](https://github.com/NewNepal-org/jawafdehi-meta). The meta repo provides documentation, specs, and other shared resources across the Jawafdehi product family. 
+Contributors to this repository should be aware of the [Jawafdehi meta-repository](https://github.com/Jawafdehi/jawafdehi-meta). The meta repo provides documentation, specs, and other shared resources across the Jawafdehi product family. 
 
 **For Jawafdehi team members and interns**: Working from the meta repo setup is strongly encouraged, as it provides rich context for AI-powered development tools (Cursor, Kiro, GitHub Copilot, etc.) and makes cross-service coordination easier.
 
