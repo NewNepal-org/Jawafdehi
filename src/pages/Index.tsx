@@ -180,9 +180,9 @@ const Index = () => {
               </div>
 
               {/* Right — animated AI chat mock */}
-              <div className="relative hidden lg:block">
+              <div className="relative block">
                 {/* Coming soon badge */}
-                <div className="absolute -top-3 -right-3 z-10 flex items-center gap-1.5 bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                <div className="absolute -top-3 right-0 lg:-right-3 z-10 flex items-center gap-1.5 bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
                   <Sparkles className="h-3.5 w-3.5" />
                   AI Search — Coming Soon
                 </div>
