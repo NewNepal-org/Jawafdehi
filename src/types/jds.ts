@@ -15,6 +15,12 @@ export type CaseType =
   | 'CORRUPTION'
   | 'PROMISES';
 
+export type CaseState =
+  | 'DRAFT'
+  | 'IN_REVIEW'
+  | 'PUBLISHED'
+  | 'CLOSED';
+
 export type DocumentSourceType =
   | 'LEGAL_COURT_ORDER'
   | 'LEGAL_PROCEDURAL'
@@ -50,7 +56,7 @@ export interface JawafEntity {
   id: number;
   nes_id: string | null; // Entity ID from Nepal Entity Service
   display_name: string | null; // Display name for the entity
-  type?: string; // Relationship type: 'alleged', 'related', 'witness', etc.
+  type?: string; // Relationship type: 'accused', 'alleged', 'related', 'witness', 'location', etc.
   notes?: string; // Additional notes about the relationship
   alleged_cases?: number[]; // Case IDs where entity is alleged
   related_cases?: number[]; // Case IDs where entity is related
@@ -71,6 +77,7 @@ export interface Case {
   id: number;
   case_id: string; // Unique identifier shared across versions
   case_type: CaseType;
+  state: CaseState; // Current state in the workflow
   title: string;
   case_start_date: string | null; // ISO date format
   case_end_date: string | null; // ISO date format

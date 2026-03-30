@@ -18,7 +18,7 @@
   "footer": {
     "title": "Jawafdehi",
     "subtitle": "Nepal",
-    "description": "A civic tech initiative to promote transparency and accountability in Nepal.",
+    "description": "Nepal's permanent public archive of CIAA corruption cases — every filing, every document, forever.",
     "navigation": "Navigation",
     "partners": "Partners",
     "resources": "Resources",
@@ -119,6 +119,7 @@
     "contactDesc": "You can also reach us via email or WhatsApp for any inquiries or to provide additional information.",
     "emailLabel": "Email",
     "whatsappLabel": "WhatsApp",
+    "inReviewBanner": "This case is currently under review by Jawafdehi. Information may be incomplete or subject to revision.",
     "status": {
       "ongoing": "Ongoing",
       "resolved": "Resolved",
@@ -202,10 +203,6 @@
       "lbn": {
         "title": "Let's Build Nepal (LBN)",
         "description": "A civic tech organization focused on building technology solutions for social good in Nepal. LBN brings technical expertise and development resources to the platform."
-      },
-      "newnepal": {
-        "title": "NewNepal.org",
-        "description": "A civil society initiative working towards a more transparent and accountable Nepal. NewNepal.org provides investigative support and policy advocacy expertise."
       }
     },
     "whatWeDo": {
@@ -460,7 +457,8 @@
     }
   },
   "entityCard": {
-    "alleged": "Alleged",
+    "alleged": "Accused",
+    "location": "Location",
     "related": "Related",
     "cases": "Cases",
     "unknown": "Unknown"
@@ -476,9 +474,9 @@
   "entityDetail": {
     "entityNotFound": "Entity not found.",
     "backToEntities": "Back to Entities",
-    "allegedCases": "Alleged Cases",
+    "allegedCases": "Accused Cases",
     "relatedCases": "Related Cases",
-    "noAllegedCases": "No alleged cases found.",
+    "noAllegedCases": "No accused cases found.",
     "noRelatedCases": "No related cases found.",
     "loading": "Loading entity details...",
     "activeCases": "Active Cases",
@@ -545,11 +543,11 @@
     "candidate": "Candidate",
     "party": "Party",
     "constituency": "Constituency",
-    "totalAllegations": "Total Allegations",
+    "totalAllegations": "Total Accusations",
     "cases": "Cases",
     "entityDetails": "Entity Details",
     "noNesDataAlert": "This entity does not have detailed profile information available yet. Only basic information from case records is shown.",
-    "allegedCasesDescription": "Cases where this entity is alleged to be involved",
+    "allegedCasesDescription": "Cases where this entity is accused of involvement",
     "relatedCasesDescription": "Cases where this entity is mentioned or related",
     "bell": "Bell",
     "bellInsideCircle": "Bell inside a circle",

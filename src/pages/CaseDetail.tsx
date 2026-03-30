@@ -1,9 +1,9 @@
+import { Footer } from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { DocumentSourceCard } from "@/components/DocumentSourceCard";
 import { ResponsiveTable } from "@/components/ResponsiveTable";
 import { Button } from "@/components/ui/button";
@@ -115,7 +115,7 @@ const CaseDetail = () => {
             </div>
           </div>
         </main>
-        <Footer />
+  
       </div>
     );
   }
@@ -140,7 +140,7 @@ const CaseDetail = () => {
             </Alert>
           </div>
         </main>
-        <Footer />
+  
       </div>
     );
   }
@@ -210,6 +210,16 @@ const CaseDetail = () => {
             </AlertDescription>
           </Alert>
 
+          {/* In Review Warning Banner */}
+          {caseData.state === 'IN_REVIEW' && (
+            <Alert className="mb-6 border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800">
+              <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              <AlertDescription className="text-yellow-800 dark:text-yellow-200 text-sm">
+                {t("caseDetail.inReviewBanner")}
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Case Header */}
           <div className="mb-8">
             <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -240,7 +250,7 @@ const CaseDetail = () => {
               <div className="flex items-start text-muted-foreground">
                 <User className="mr-2 h-5 w-5 flex-shrink-0" />
                 <div className="text-sm flex flex-wrap gap-1">
-                  {caseData.entities.filter(e => e.type === 'alleged').map((e, index, arr) => {
+                  {caseData.entities.filter(e => e.type === 'accused').map((e, index, arr) => {
                     const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
                     let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
                     displayName = translateDynamicText(displayName, currentLang);
@@ -259,7 +269,7 @@ const CaseDetail = () => {
                 <MapPin className="mr-2 h-5 w-5" />
                 <div className="text-sm flex flex-wrap gap-1">
                   {(() => {
-                    const locations = caseData.entities.filter(e => e.type === 'related' && e.nes_id?.includes('location'));
+                    const locations = caseData.entities.filter(e => e.type === 'location');
                     return locations.length > 0 ? locations.map((e, index) => {
                       const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
                       let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
@@ -311,14 +321,14 @@ const CaseDetail = () => {
           </Card>
 
           {/* Related Entities */}
-          {caseData.entities.filter(e => e.type === 'related' && !e.nes_id?.includes('location')).length > 0 && (
+          {caseData.entities.filter(e => e.type === 'related').length > 0 && (
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>{t("caseDetail.partiesInvolved")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-sm text-muted-foreground">
-                  {caseData.entities.filter(e => e.type === 'related' && !e.nes_id?.includes('location')).map((e, index, arr) => {
+                  {caseData.entities.filter(e => e.type === 'related').map((e, index, arr) => {
                     const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
                     let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
                     displayName = translateDynamicText(displayName, currentLang);
@@ -459,6 +469,8 @@ const CaseDetail = () => {
       </main>
 
       <Footer />
+
+
     </div>
   );
 };

@@ -1,8 +1,8 @@
+import { Footer } from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { CaseCard } from "@/components/CaseCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -223,12 +223,12 @@ const Cases = () => {
               {/* NOTE: Dynamic case content (title, description, entity names) from Entity API
                   remains in English until API-side i18n is implemented. See GitHub issue for i18n. */}
               {filteredCases.map((caseItem) => {
-                // Get alleged and location entities from unified entities array
-                const allegedEntities = caseItem.entities?.filter(e => e.type === 'alleged') || [];
-                const locationEntities = caseItem.entities?.filter(e => e.type === 'related' && e.nes_id?.includes('location')) || [];
-
+                // Get accused and location entities from unified entities array
+                const accusedEntities = caseItem.entities?.filter(e => e.type === 'accused') || [];
+                const locationEntities = caseItem.entities?.filter(e => e.type === 'location') || [];
+                
                 // Translate entity names
-                const entityNames = allegedEntities.map(e => {
+                const entityNames = accusedEntities.map(e => {
                   if (e.nes_id && resolvedEntities[e.nes_id]) {
                     const entity = resolvedEntities[e.nes_id];
                     return entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id;
@@ -259,9 +259,8 @@ const Cases = () => {
                       : formatDateWithBS(caseItem.created_at, 'PPP')}
                     status="ongoing"
                     tags={caseItem.tags || []}
-                    description={caseItem.description.replace(/<[^>]*>/g, '').substring(0, 200)}
-                    allegations={caseItem.key_allegations}
-                    entityIds={allegedEntities.map(e => e.id)}
+                    description={caseItem.key_allegations.join('. ')}
+                    entityIds={accusedEntities.map(e => e.id)}
                     locationIds={locationEntities.map(e => e.id)}
                     thumbnailUrl={caseItem.thumbnail_url ?? undefined}
                   />
@@ -290,6 +289,8 @@ const Cases = () => {
       </main>
 
       <Footer />
+
+
     </div>
   );
 };
