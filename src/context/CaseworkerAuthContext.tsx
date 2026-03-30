@@ -41,8 +41,9 @@ export function CaseworkerAuthProvider({ children }: { children: React.ReactNode
     try {
       await apiLogin(username, password);
       await fetchUser();
-    } catch (err: any) {
-      const msg = err.response?.data?.detail ?? "Login failed. Check your credentials.";
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { detail?: string } } };
+      const msg = e.response?.data?.detail ?? "Login failed. Check your credentials.";
       setState((s) => ({ ...s, loading: false, error: msg }));
       throw new Error(msg);
     }
@@ -67,6 +68,7 @@ export function CaseworkerAuthProvider({ children }: { children: React.ReactNode
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useCaseworkerAuth() {
   const ctx = useContext(CaseworkerAuthContext);
   if (!ctx) throw new Error("useCaseworkerAuth must be used inside CaseworkerAuthProvider");

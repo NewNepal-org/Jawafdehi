@@ -21,8 +21,8 @@ const CaseworkerLogin = () => {
     try {
       await login(username, password);
       navigate("/caseworker/dashboard");
-    } catch (err: any) {
-      setFormError(err.message);
+    } catch (err: unknown) {
+      setFormError((err as Error).message);
     } finally {
       setSubmitting(false);
     }

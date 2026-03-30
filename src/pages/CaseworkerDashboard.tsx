@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCaseworkerAuth } from "@/context/CaseworkerAuthContext";
 import { listSkills, listDrafts, generateSummary } from "@/services/caseworker-api";
@@ -26,7 +26,9 @@ const CaseworkerDashboard = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const currentMessages = chatTabs.find((t) => t.id === activeTabId)?.messages ?? [];
+  const currentMessages = useMemo(() => {
+    return chatTabs.find((t) => t.id === activeTabId)?.messages ?? [];
+  }, [chatTabs, activeTabId]);
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -70,10 +72,11 @@ const CaseworkerDashboard = () => {
         const drafts = draftsData.results ?? [];
         setAllSkills(skills);
         setRecentDrafts(drafts.slice(0, 5));
-      } catch (e: any) {
-        addMessage("error", e.message ?? "Failed to load data");
+      } catch (e: unknown) {
+        addMessage("error", (e as Error).message ?? "Failed to load data");
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -151,8 +154,8 @@ const CaseworkerDashboard = () => {
           );
         }
       }
-    } catch (e: any) {
-      addMessage("error", e.message ?? "Something went wrong");
+    } catch (e: unknown) {
+      addMessage("error", (e as Error).message ?? "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -161,7 +164,7 @@ const CaseworkerDashboard = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as any);
+      handleSubmit(e as unknown as React.FormEvent);
     }
   };
 

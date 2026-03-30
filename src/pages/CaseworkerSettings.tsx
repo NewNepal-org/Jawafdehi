@@ -64,8 +64,8 @@ function SkillsTab() {
         setSkills((p) => p.map((s) => (s.id === updated.id ? updated : s)));
       }
       cancel();
-    } catch (e: any) {
-      setError(e.message ?? "Save failed");
+    } catch (e: unknown) {
+      setError((e as Error).message ?? "Save failed");
     }
   };
 
@@ -73,8 +73,8 @@ function SkillsTab() {
     try {
       await deleteSkill(id);
       setSkills((p) => p.filter((s) => s.id !== id));
-    } catch (e: any) {
-      setError(e.message ?? "Delete failed");
+    } catch (e: unknown) {
+      setError((e as Error).message ?? "Delete failed");
     }
   };
 
@@ -196,15 +196,15 @@ function LLMTab() {
     setError("");
     try {
       if (creating) {
-        const created = await createLLMProvider(form as any);
+        const created = await createLLMProvider(form as Partial<LLMProvider> & { api_key: string });
         setProviders((p) => [...p, created]);
       } else if (editing) {
-        const updated = await updateLLMProvider(editing.id, form as any);
+        const updated = await updateLLMProvider(editing.id, form as Partial<LLMProvider>);
         setProviders((p) => p.map((x) => (x.id === updated.id ? updated : x)));
       }
       cancel();
-    } catch (e: any) {
-      setError(e.message ?? "Save failed");
+    } catch (e: unknown) {
+      setError((e as Error).message ?? "Save failed");
     }
   };
 
@@ -239,7 +239,7 @@ function LLMTab() {
               <select
                 className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background"
                 value={form.provider_type ?? "anthropic"}
-                onChange={(e) => setForm((p) => ({ ...p, provider_type: e.target.value as any }))}
+                onChange={(e) => setForm((p) => ({ ...p, provider_type: e.target.value as LLMProvider["provider_type"] }))}
               >
                 {providerTypes.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
@@ -320,11 +320,11 @@ function MCPTab() {
   const save = async () => {
     setError("");
     try {
-      const created = await createMCPServer(form as any);
+      const created = await createMCPServer(form as Partial<MCPServer> & { auth_token: string });
       setServers((p) => [...p, created]);
       cancel();
-    } catch (e: any) {
-      setError(e.message ?? "Save failed");
+    } catch (e: unknown) {
+      setError((e as Error).message ?? "Save failed");
     }
   };
 
@@ -368,7 +368,7 @@ function MCPTab() {
               <select
                 className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background"
                 value={form.auth_type ?? "bearer"}
-                onChange={(e) => setForm((p) => ({ ...p, auth_type: e.target.value as any }))}
+                onChange={(e) => setForm((p) => ({ ...p, auth_type: e.target.value as MCPServer["auth_type"] }))}
               >
                 <option value="bearer">Bearer Token</option>
                 <option value="api_key">API Key</option>
