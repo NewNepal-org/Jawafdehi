@@ -7,8 +7,12 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { getCases, getStatistics } from "@/services/jds-api";
+import { getEntityById } from "@/services/api";
 import { useMemo, useState, useEffect } from "react";
-import { formatDate } from "@/utils/date";
+import { formatDateWithBS } from "@/utils/date";
+import type { Entity } from "@/types/nes";
+import { translateDynamicText } from "@/lib/translate-dynamic-content";
+import { useTranslation } from "react-i18next";
 
 // Animated chat phases:
 // 0 = reset/empty
@@ -44,25 +48,36 @@ const TypingDots = () => (
 );
 
 const Index = () => {
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language;
+  const [resolvedEntities, setResolvedEntities] = useState<Record<string, Entity>>({});
   const [chatPhase, setChatPhase] = useState(0);
 
   useEffect(() => {
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    let timeouts: ReturnType<typeof setTimeout>[] = [];
+    let loopTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const runLoop = () => {
       setChatPhase(0);
+      // Clear any existing timeouts before creating new ones
+      timeouts.forEach(clearTimeout);
+      timeouts = [];
+      
       SEQUENCE.forEach(([delay, phase]) => {
         timeouts.push(setTimeout(() => setChatPhase(phase), delay));
       });
-      timeouts.push(setTimeout(runLoop, LOOP_AFTER));
+      loopTimeout = setTimeout(runLoop, LOOP_AFTER);
     };
 
     // Small initial delay before first run
     const start = setTimeout(runLoop, 400);
 
+    // Cleanup function to clear all timeouts
     return () => {
       clearTimeout(start);
+      if (loopTimeout) clearTimeout(loopTimeout);
       timeouts.forEach(clearTimeout);
+      timeouts = [];
     };
   }, []);
 
@@ -85,30 +100,85 @@ const Index = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Resolve location entities from NES
+  useEffect(() => {
+    if (!casesData?.results) return;
+
+    let isMounted = true;
+
+    const resolveEntities = async () => {
+      const allEntities = casesData.results.flatMap(c => c.entities || []);
+      const locationEntities = allEntities.filter(e => e.type === 'location');
+      const uniqueNesIds = [...new Set(locationEntities.map(e => e.nes_id!).filter(Boolean))];
+
+      const entityPromises = uniqueNesIds.map(async (nesId) => {
+        try {
+          const entity = await getEntityById(nesId);
+          return { id: nesId, entity };
+        } catch {
+          return null;
+        }
+      });
+
+      const entities = await Promise.all(entityPromises);
+      
+      // Only update state if component is still mounted
+      if (isMounted) {
+        const entitiesMap = entities.reduce((acc, item) => {
+          if (item) acc[item.id] = item.entity;
+          return acc;
+        }, {} as Record<string, Entity>);
+        setResolvedEntities(entitiesMap);
+      }
+    };
+
+    resolveEntities();
+
+    // Cleanup function to prevent state updates on unmounted component
+    return () => {
+      isMounted = false;
+    };
+  }, [casesData]);
+
+  // Transform API cases to CaseCard format
   const featuredCases = useMemo(() => {
     if (!casesData?.results) return [];
     return casesData.results.slice(0, 3).map((caseItem) => {
+      // Get accused entities and locations from unified entities array
       const accusedEntities = caseItem.entities?.filter(e => e.type === 'accused') || [];
       const locationEntities = caseItem.entities?.filter(e => e.type === 'location') || [];
+
       const primaryEntity = accusedEntities[0]?.display_name || "Unknown Entity";
-      const primaryLocation = locationEntities[0]?.display_name || "Unknown Location";
-      const formattedDate = caseItem.case_start_date
-        ? formatDate(caseItem.case_start_date, 'PPP')
-        : formatDate(caseItem.created_at, 'PPP');
+
+      // Translate location names using NES resolution
+      const locationNames = locationEntities.map(e => {
+        if (e.nes_id && resolvedEntities[e.nes_id]) {
+          const entity = resolvedEntities[e.nes_id];
+          const name = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id;
+          return translateDynamicText(name, currentLang);
+        }
+        const name = e.display_name || e.nes_id || 'Unknown';
+        return translateDynamicText(name, currentLang);
+      }).join(', ') || translateDynamicText('Unknown Location', currentLang);
+
+      const formattedDate = formatDateWithBS(caseItem.created_at, 'PPP');
+
       return {
         id: caseItem.id.toString(),
         title: caseItem.title,
         entity: primaryEntity,
-        location: primaryLocation,
+        location: locationNames,
         date: formattedDate,
-        status: "ongoing" as const,
+        status: "ongoing" as const, // All published cases shown as ongoing
         description: caseItem.description.replace(/<[^>]*>/g, '').substring(0, 200),
+        allegations: caseItem.key_allegations, // Pass key allegations to CaseCard
+        thumbnailUrl: caseItem.thumbnail_url ?? undefined,
         tags: caseItem.tags,
         entityIds: accusedEntities.map(e => e.id),
         locationIds: locationEntities.map(l => l.id),
       };
     });
-  }, [casesData]);
+  }, [casesData, resolvedEntities, currentLang]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

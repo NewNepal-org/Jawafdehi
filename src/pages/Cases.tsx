@@ -15,7 +15,7 @@ import { getEntityById } from "@/services/api";
 import type { Case } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { toast } from "sonner";
-import { formatDate } from "@/utils/date";
+import { formatDateWithBS } from "@/utils/date";
 import { translateDynamicText } from "@/lib/translate-dynamic-content";
 
 // Retry helper for rate-limited requests
@@ -254,12 +254,14 @@ const Cases = () => {
                     title={caseItem.title}
                     entity={entityNames}
                     location={locationNames}
-                    date={formatDate(caseItem.created_at)}
+                    date={formatDateWithBS(caseItem.created_at, 'PPP')}
                     status="ongoing"
                     tags={caseItem.tags || []}
-                    description={caseItem.key_allegations.join('. ')}
+                    description={caseItem.description.replace(/<[^>]*>/g, '').substring(0, 200)}
+                    allegations={caseItem.key_allegations}
                     entityIds={accusedEntities.map(e => e.id)}
                     locationIds={locationEntities.map(e => e.id)}
+                    thumbnailUrl={caseItem.thumbnail_url ?? undefined}
                   />
                 );
               })}
