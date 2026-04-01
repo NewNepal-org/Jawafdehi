@@ -105,9 +105,11 @@ export const teamMembers: TeamMember[] = [
   },
   {
     displayName: { en: "Rujit Kafle", ne: "रुजित काफ्ले" },
-    thumb: undefined,
+    thumb: "https://jawafdehi.org/assets/teammembers/rujit.jpg",
     description: "Case Documentation Intern, Jawafdehi.org",
-    contacts: [],
+    contacts: [
+      { type: "email", value: "rujitkafle77@gmail.com" },
+    ],
   },
   {
     displayName: { en: "Gaurav Karki", ne: "गौरव कार्की" },
