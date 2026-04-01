@@ -572,6 +572,7 @@
   "share": {
     "share": "साझेदारी गर्नुहोस्",
     "shareVia": "यसमार्फत साझेदारी गर्नुहोस्",
+    "shareThisCase": "यो मुद्दा साझेदारी गर्नुहोस्",
     "copyLink": "लिंक प्रतिलिपि गर्नुहोस्",
     "linkCopied": "लिंक क्लिपबोर्डमा प्रतिलिपि गरियो!",
     "copyFailed": "लिंक प्रतिलिपि गर्न असफल भयो",
@@ -590,10 +591,13 @@
     "pdfHint": "PDF को रूपमा बचत गर्न आफ्नो ब्राउजरको प्रिन्ट संवाद प्रयोग गर्नुहोस्",
     "shareOnFacebook": "Facebook मा साझेदारी गर्नुहोस्",
     "shareOnTwitter": "Twitter मा साझेदारी गर्नुहोस्",
+    "shareOnX": "X मा साझेदारी गर्नुहोस्",
     "shareOnWhatsApp": "WhatsApp मा साझेदारी गर्नुहोस्",
     "shareOnLinkedIn": "LinkedIn मा साझेदारी गर्नुहोस्",
     "shareOnTelegram": "Telegram मा साझेदारी गर्नुहोस्",
     "shareOnViber": "Viber मा साझेदारी गर्नुहोस्",
-    "shareOnReddit": "Reddit मा साझेदारी गर्नुहोस्"
+    "shareOnReddit": "Reddit मा साझेदारी गर्नुहोस्",
+    "shareOnMessenger": "Messenger मा साझेदारी गर्नुहोस्",
+    "shareOnThreads": "Threads मा साझेदारी गर्नुहोस्"
   }
 }
