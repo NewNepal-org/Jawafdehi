@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
 import { DocumentSourceCard } from "@/components/DocumentSourceCard";
 import { ResponsiveTable } from "@/components/ResponsiveTable";
-import { ShareButton } from "@/components/ShareButton";
+import { FloatingShareSidebar } from "@/components/FloatingShareSidebar";
+import { InlineShareButtons } from "@/components/InlineShareButtons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -183,15 +184,16 @@ const CaseDetail = () => {
             </Button>
 
             <div className="flex gap-2">
-              <ShareButton
-                url={canonicalUrl}
-                title={caseData.title}
-                description={plainDescription}
-              />
-              
               <ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />
             </div>
           </div>
+
+          {/* Floating share sidebar - desktop only */}
+          <FloatingShareSidebar
+            url={canonicalUrl}
+            title={caseData.title}
+            description={plainDescription}
+          />
 
           <Alert className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 no-print">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -420,6 +422,21 @@ const CaseDetail = () => {
 
           </div>
           {/* PRINTABLE CONTENT ENDS HERE */}
+
+          {/* Share This Case Section - Bottom of article */}
+          <div 
+            id="bottom-share-section"
+            className="flex flex-col items-center gap-4 py-8 mb-8 border-y border-border no-print"
+          >
+            <p className="text-sm font-medium text-muted-foreground">
+              {t("share.shareThisCase")}
+            </p>
+            <InlineShareButtons
+              url={canonicalUrl}
+              title={caseData.title}
+              description={plainDescription}
+            />
+          </div>
 
           {/* Contact and Edit Section - NOT PRINTED */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-muted/30 rounded-xl border border-dashed border-muted-foreground/30 no-print">
