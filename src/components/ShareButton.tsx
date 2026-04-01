@@ -277,6 +277,8 @@ export const ShareButton = ({
                 size="sm"
                 className="w-full justify-between text-muted-foreground hover:text-foreground"
                 onClick={() => setShowMore(!showMore)}
+                aria-expanded={showMore}
+                aria-controls="share-more-options-panel"
               >
                 <span className="text-xs font-medium">{t("share.moreOptions")}</span>
                 {showMore ? (
@@ -287,7 +289,12 @@ export const ShareButton = ({
               </Button>
 
               {showMore && (
-                <div className="space-y-2 pt-2 animate-in fade-in-50 slide-in-from-top-2">
+                <div 
+                  id="share-more-options-panel"
+                  className="space-y-2 pt-2 animate-in fade-in-50 slide-in-from-top-2"
+                  role="region"
+                  aria-label={t("share.moreOptions")}
+                >
                   <Separator />
                   
                   <div className="grid grid-cols-2 gap-2">
@@ -312,7 +319,7 @@ export const ShareButton = ({
                       size="sm"
                       className="justify-start transition-all hover:bg-muted"
                       onClick={handleShowQR}
-                      aria-label={t("share.showQRCode")}
+                      aria-label={t("share.qrCode")}
                     >
                       <QrCode className="h-4 w-4 mr-2" />
                       <span className="mt-0.5">{t("share.qrCode")}</span>
