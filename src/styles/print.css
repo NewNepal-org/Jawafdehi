@@ -77,16 +77,16 @@
     font-family: "Noto Sans Devanagari", "Noto Sans", Arial, sans-serif !important;
   }
 
-  /* Card and section styling */
-  .card {
+  /* Card and section styling - use explicit print class since shadcn/ui doesn't emit .card */
+  .print-card {
     border: 1px solid #ddd !important;
     box-shadow: none !important;
     page-break-inside: avoid;
     margin-bottom: 12pt !important;
   }
 
-  /* Badge styling for print */
-  .badge {
+  /* Badge styling for print - use explicit print class since shadcn/ui doesn't emit .badge */
+  .print-badge {
     border: 1px solid #333 !important;
     padding: 2pt 6pt !important;
     display: inline-block !important;
@@ -184,8 +184,8 @@
     margin: 12pt 0 !important;
   }
 
-  /* Alert/Banner styling */
-  .alert {
+  /* Alert/Banner styling - use explicit print class since shadcn/ui doesn't emit .alert */
+  .print-alert {
     border: 1px solid #ddd !important;
     padding: 8pt !important;
     margin-bottom: 8pt !important;
