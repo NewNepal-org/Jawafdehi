@@ -5,8 +5,13 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "i18next";
 
 // Mock disqus-react
+interface MockDiscussionEmbedProps {
+  shortname: string;
+  config: { identifier: string };
+}
+
 vi.mock("disqus-react", () => ({
-  DiscussionEmbed: vi.fn(({ shortname, config }) => (
+  DiscussionEmbed: vi.fn(({ shortname, config }: MockDiscussionEmbedProps) => (
     <div data-testid="disqus-embed" data-shortname={shortname} data-identifier={config.identifier}>
       Disqus Comments Widget
     </div>
@@ -80,7 +85,7 @@ afterEach(() => {
 describe("DisqusComments", () => {
   const defaultProps = {
     caseId: "123",
-    caseTitle: "Test Corruption Case",
+    caseTitle: "भ्रष्टाचार मुद्दा",
     caseUrl: "https://jawafdehi.org/case/123",
   };
 
