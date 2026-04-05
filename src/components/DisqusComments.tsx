@@ -34,6 +34,13 @@ export function DisqusComments({ caseId, caseTitle, caseUrl }: DisqusCommentsPro
   useEffect(() => {
     if (!disqusShortname) return;
 
+    // SSR guard: if IntersectionObserver is unavailable, skip lazy-loading
+    if (typeof IntersectionObserver === "undefined") {
+      setIsVisible(true);
+      setShouldLoad(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -61,8 +68,8 @@ export function DisqusComments({ caseId, caseTitle, caseUrl }: DisqusCommentsPro
     return null;
   }
 
-  // Map i18n language to Disqus language code
-  const disqusLanguage = i18n.language === "ne" ? "ne" : "en";
+  // Map i18n language to Disqus language code (handles variants like "ne-NP")
+  const disqusLanguage = i18n.language.startsWith("ne") ? "ne" : "en";
 
   const disqusConfig = {
     url: caseUrl,
