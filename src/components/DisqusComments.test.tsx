@@ -22,6 +22,9 @@ vi.mock("disqus-react", () => ({
 const mockIntersectionObserverObserve = vi.fn();
 const mockIntersectionObserverDisconnect = vi.fn();
 
+// Save original IntersectionObserver to restore after tests
+const originalIntersectionObserver = globalThis.IntersectionObserver;
+
 class MockIntersectionObserver {
   private callback: IntersectionObserverCallback;
 
@@ -80,6 +83,8 @@ beforeEach(() => {
 afterEach(() => {
   vi.clearAllMocks();
   vi.unstubAllEnvs();
+  vi.useRealTimers();
+  globalThis.IntersectionObserver = originalIntersectionObserver;
 });
 
 describe("DisqusComments", () => {
@@ -156,8 +161,6 @@ describe("DisqusComments", () => {
       });
 
       expect(screen.getByTestId("disqus-embed")).toBeTruthy();
-      
-      vi.useRealTimers();
     });
 
     it("should have correct ARIA attributes for accessibility", () => {
@@ -167,7 +170,7 @@ describe("DisqusComments", () => {
         </I18nextProvider>
       );
 
-      const section = screen.getByRole("region", { hidden: true }) || 
+      const section = screen.queryByRole("region", { hidden: true }) ?? 
                       document.querySelector("section[aria-labelledby='comments-heading']");
       
       expect(section?.getAttribute("aria-labelledby")).toBe("comments-heading");
@@ -207,8 +210,6 @@ describe("DisqusComments", () => {
       const disqusEmbed = screen.getByTestId("disqus-embed");
       expect(disqusEmbed.getAttribute("data-identifier")).toBe("case-123");
       expect(disqusEmbed.getAttribute("data-shortname")).toBe("jawafdehi-nepal");
-      
-      vi.useRealTimers();
     });
   });
 
