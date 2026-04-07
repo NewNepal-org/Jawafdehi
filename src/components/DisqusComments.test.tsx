@@ -94,24 +94,7 @@ describe("DisqusComments", () => {
     caseUrl: "https://jawafdehi.org/case/123",
   };
 
-  describe("when Disqus shortname is not configured", () => {
-    it("should render nothing", () => {
-      vi.stubEnv("VITE_DISQUS_SHORTNAME", "");
-      
-      const { container } = render(
-        <I18nextProvider i18n={i18n}>
-          <DisqusComments {...defaultProps} />
-        </I18nextProvider>
-      );
-
-      expect(container.firstChild).toBeNull();
-    });
-  });
-
-  describe("when Disqus shortname is configured", () => {
-    beforeEach(() => {
-      vi.stubEnv("VITE_DISQUS_SHORTNAME", "test-shortname");
-    });
+  describe("when Disqus is rendered", () => {
 
     it("should render the comments section with correct heading", () => {
       render(
@@ -189,11 +172,7 @@ describe("DisqusComments", () => {
   });
 
   describe("Disqus configuration", () => {
-    beforeEach(() => {
-      vi.stubEnv("VITE_DISQUS_SHORTNAME", "jawafdehi-nepal");
-    });
-
-    it("should pass correct identifier to Disqus", async () => {
+    it("should pass correct identifier and hardcoded shortname to Disqus", async () => {
       vi.useFakeTimers();
       
       render(
@@ -209,15 +188,11 @@ describe("DisqusComments", () => {
 
       const disqusEmbed = screen.getByTestId("disqus-embed");
       expect(disqusEmbed.getAttribute("data-identifier")).toBe("case-123");
-      expect(disqusEmbed.getAttribute("data-shortname")).toBe("jawafdehi-nepal");
+      expect(disqusEmbed.getAttribute("data-shortname")).toBe("jawafdehi-initiative");
     });
   });
 
   describe("language switching", () => {
-    beforeEach(() => {
-      vi.stubEnv("VITE_DISQUS_SHORTNAME", "test-shortname");
-    });
-
     it("should display Nepali translations when language is ne", async () => {
       await i18n.changeLanguage("ne");
       

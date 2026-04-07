@@ -20,11 +20,10 @@ interface DisqusCommentsProps {
  * - Bilingual support (English/Nepali)
  * - Print exclusion (hidden when printing)
  * - Accessible with proper ARIA labels and heading hierarchy
- * - Graceful fallback when Disqus shortname is not configured
  */
 export function DisqusComments({ caseId, caseTitle, caseUrl }: DisqusCommentsProps) {
   const { t, i18n } = useTranslation();
-  const disqusShortname = import.meta.env.VITE_DISQUS_SHORTNAME;
+  const disqusShortname = "jawafdehi-initiative";
   
   const [isVisible, setIsVisible] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(false);
@@ -32,8 +31,6 @@ export function DisqusComments({ caseId, caseTitle, caseUrl }: DisqusCommentsPro
 
   // Lazy load: Start loading Disqus when section comes into view
   useEffect(() => {
-    if (!disqusShortname) return;
-
     // SSR guard: if IntersectionObserver is unavailable, skip lazy-loading
     if (typeof IntersectionObserver === "undefined") {
       setIsVisible(true);
@@ -61,12 +58,7 @@ export function DisqusComments({ caseId, caseTitle, caseUrl }: DisqusCommentsPro
     }
 
     return () => observer.disconnect();
-  }, [disqusShortname]);
-
-  // Don't render anything if Disqus is not configured
-  if (!disqusShortname) {
-    return null;
-  }
+  }, []);
 
   // Map i18n language to Disqus language code (handles variants like "ne-NP")
   const disqusLanguage = i18n.language.startsWith("ne") ? "ne" : "en";
