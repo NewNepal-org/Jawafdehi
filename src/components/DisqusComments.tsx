@@ -23,6 +23,9 @@ interface DisqusCommentsProps {
  */
 export function DisqusComments({ caseId, caseTitle, caseUrl }: DisqusCommentsProps) {
   const { t, i18n } = useTranslation();
+  
+  // Hardcoded for single-organization deployment (Jawafdehi Initiative)
+  // No environment variable needed - comments are always enabled
   const disqusShortname = "jawafdehi-initiative";
   
   const [isVisible, setIsVisible] = useState(false);
