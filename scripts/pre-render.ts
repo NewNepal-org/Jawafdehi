@@ -141,6 +141,11 @@ async function main() {
     { path: '/information', outFile: join(ROOT, 'dist/information/index.html') },
     { path: '/feedback', outFile: join(ROOT, 'dist/feedback/index.html') },
     { path: '/report', outFile: join(ROOT, 'dist/report/index.html') },
+    { path: '/team', outFile: join(ROOT, 'dist/team/index.html') },
+    { path: '/products', outFile: join(ROOT, 'dist/products/index.html') },
+    { path: '/commitment', outFile: join(ROOT, 'dist/commitment/index.html') },
+    { path: '/our-process', outFile: join(ROOT, 'dist/our-process/index.html') },
+    { path: '/volunteer', outFile: join(ROOT, 'dist/volunteer/index.html') },
   ];
 
   // Fetch cases and entity IDs
