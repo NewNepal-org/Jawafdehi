@@ -6,4 +6,5 @@ export const JAWAFDEHI_SOCIALS = {
   youtube: "https://www.youtube.com/@Jawafdehi_Initiative",
   linkedin: "https://www.linkedin.com/company/jawafdehi-initiative",
   whatsapp: "https://api.whatsapp.com/send?phone=12065309098",
+  linktree: "https://linktr.ee/jawafdehi",
 };

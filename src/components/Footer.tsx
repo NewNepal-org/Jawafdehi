@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaFacebook, FaYoutube, FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { SiLinktree } from "react-icons/si";
 import { JAWAFDEHI_SOCIALS } from "@/config/constants";
 
 export const Footer = () => {
@@ -173,6 +174,15 @@ export const Footer = () => {
               aria-label={t("footer.social.whatsapp")}
             >
               <FaWhatsapp className="h-5 w-5" />
+            </a>
+            <a
+              href={JAWAFDEHI_SOCIALS.linktree}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label={t("footer.social.linktree")}
+            >
+              <SiLinktree className="h-5 w-5" />
             </a>
           </div>
           <p className="text-xs text-muted-foreground italic text-center max-w-4xl mx-auto mb-3">
