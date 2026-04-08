@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { FaFacebook, FaYoutube, FaLinkedin, FaWhatsapp } from "react-icons/fa";
 
 export const Footer = () => {
   const { t } = useTranslation();
@@ -134,6 +135,45 @@ export const Footer = () => {
 
         {/* Bottom bar */}
         <div className="mt-10 pt-6 border-t border-border">
+          {/* Social links */}
+          <div className="flex justify-center gap-5 mb-4">
+            <a
+              href="https://www.facebook.com/jawafdehi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="Facebook"
+            >
+              <FaFacebook className="h-5 w-5" />
+            </a>
+            <a
+              href="https://www.youtube.com/@Jawafdehi_Initiative"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="YouTube"
+            >
+              <FaYoutube className="h-5 w-5" />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/jawafdehi-initiative"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="LinkedIn"
+            >
+              <FaLinkedin className="h-5 w-5" />
+            </a>
+            <a
+              href="https://api.whatsapp.com/send?phone=12065309098"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="WhatsApp"
+            >
+              <FaWhatsapp className="h-5 w-5" />
+            </a>
+          </div>
           <p className="text-xs text-muted-foreground italic text-center max-w-4xl mx-auto mb-3">
             {t("footer.disclaimer")}
           </p>
