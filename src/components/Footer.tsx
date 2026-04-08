@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaFacebook, FaYoutube, FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { JAWAFDEHI_SOCIALS } from "@/config/constants";
 
 export const Footer = () => {
   const { t } = useTranslation();
@@ -138,38 +139,38 @@ export const Footer = () => {
           {/* Social links */}
           <div className="flex justify-center gap-5 mb-4">
             <a
-              href="https://www.facebook.com/jawafdehi"
+              href={JAWAFDEHI_SOCIALS.facebook}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors"
-              aria-label="Facebook"
+              aria-label={t("footer.social.facebook")}
             >
               <FaFacebook className="h-5 w-5" />
             </a>
             <a
-              href="https://www.youtube.com/@Jawafdehi_Initiative"
+              href={JAWAFDEHI_SOCIALS.youtube}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors"
-              aria-label="YouTube"
+              aria-label={t("footer.social.youtube")}
             >
               <FaYoutube className="h-5 w-5" />
             </a>
             <a
-              href="https://www.linkedin.com/company/jawafdehi-initiative"
+              href={JAWAFDEHI_SOCIALS.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors"
-              aria-label="LinkedIn"
+              aria-label={t("footer.social.linkedin")}
             >
               <FaLinkedin className="h-5 w-5" />
             </a>
             <a
-              href="https://api.whatsapp.com/send?phone=12065309098"
+              href={JAWAFDEHI_SOCIALS.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors"
-              aria-label="WhatsApp"
+              aria-label={t("footer.social.whatsapp")}
             >
               <FaWhatsapp className="h-5 w-5" />
             </a>
