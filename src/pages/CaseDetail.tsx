@@ -68,15 +68,20 @@ const CaseDetail = () => {
     })),
   });
 
-  // Track once per id change to avoid duplicates on refetch while allowing revisits
+  // Track once per loaded case id to avoid duplicates while excluding error/404 views
   useEffect(() => {
-    if (!id || trackedCaseIdRef.current === id) {
+    const loadedCaseId = caseData?.id?.toString();
+    if (!id || !loadedCaseId || isError) {
       return;
     }
 
-    trackEvent('case_view', { case_id: id });
-    trackedCaseIdRef.current = id;
-  }, [id]);
+    if (loadedCaseId !== id || trackedCaseIdRef.current === loadedCaseId) {
+      return;
+    }
+
+    trackEvent('case_view', { case_id: loadedCaseId });
+    trackedCaseIdRef.current = loadedCaseId;
+  }, [id, caseData?.id, isError]);
 
   // Build lookup maps
   const resolvedSources: Record<number, DocumentSource> = {};
