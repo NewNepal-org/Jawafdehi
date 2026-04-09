@@ -23,6 +23,9 @@ export type AnalyticsEvent =
   | { name: 'language_switch'; params: { from_lang: string; to_lang: string } }
   | { name: 'allegation_submitted'; params?: Record<string, never> };
 
+type AnalyticsEventParams<T extends AnalyticsEvent['name']> =
+  Extract<AnalyticsEvent, { name: T }>['params'];
+
 /**
  * Track a custom event in Google Analytics
  * 
@@ -39,7 +42,9 @@ export type AnalyticsEvent =
  */
 export function trackEvent<T extends AnalyticsEvent['name']>(
   eventName: T,
-  params?: Extract<AnalyticsEvent, { name: T }>['params']
+  ...[params]: undefined extends AnalyticsEventParams<T>
+    ? [params?: AnalyticsEventParams<T>]
+    : [params: AnalyticsEventParams<T>]
 ): void {
   // SSR-safe: check for window
   if (typeof window === 'undefined') {
