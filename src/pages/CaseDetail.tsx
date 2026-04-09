@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Footer } from "@/components/Footer";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -34,6 +34,7 @@ const CaseDetail = () => {
   const currentLang = i18n.language;
   const { id } = useParams();
   const caseId = id ? parseInt(id) : undefined;
+  const trackedCaseIdsRef = useRef<Set<string>>(new Set());
 
   // Fetch case data
   const { data: caseData, isLoading, isError } = useQuery({
@@ -67,12 +68,15 @@ const CaseDetail = () => {
     })),
   });
 
-  // Track case view event when case data is loaded
+  // Track case view event once per case id to avoid duplicates on refetch
   useEffect(() => {
-    if (caseData && id) {
-      trackEvent('case_view', { case_id: id });
+    if (!id || trackedCaseIdsRef.current.has(id)) {
+      return;
     }
-  }, [caseData, id]);
+
+    trackEvent('case_view', { case_id: id });
+    trackedCaseIdsRef.current.add(id);
+  }, [id]);
 
   // Build lookup maps
   const resolvedSources: Record<number, DocumentSource> = {};

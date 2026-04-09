@@ -41,7 +41,7 @@ export default function EntityProfile() {
   useEffect(() => {
     if (jawafEntity) {
       trackEvent('entity_view', {
-        entity_type: jawafEntity.entity_type || 'unknown',
+        entity_type: jawafEntity.type || 'unknown',
         entity_slug: jawafEntity.id.toString(),
       });
     }
