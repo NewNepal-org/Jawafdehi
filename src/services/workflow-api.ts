@@ -6,6 +6,7 @@
  */
 
 import axios from "axios";
+import { handleInterceptorError } from "./auth-utils";
 import type {
   WorkflowRun,
   WorkflowRunDetail,
@@ -32,25 +33,7 @@ client.interceptors.request.use((config) => {
 
 client.interceptors.response.use(
   (r) => r,
-  async (error) => {
-    if (error.response?.status === 401) {
-      const refresh = localStorage.getItem("cw_refresh_token");
-      if (refresh) {
-        try {
-          const baseApi = import.meta.env.VITE_JDS_API_BASE_URL || "https://portal.jawafdehi.org/api";
-          const { data } = await axios.post(`${baseApi}/caseworker/auth/token/refresh/`, { refresh });
-          localStorage.setItem("cw_access_token", data.access);
-          error.config.headers.Authorization = `Bearer ${data.access}`;
-          return client.request(error.config);
-        } catch {
-          localStorage.removeItem("cw_access_token");
-          localStorage.removeItem("cw_refresh_token");
-          window.location.href = "/caseworker/login";
-        }
-      }
-    }
-    return Promise.reject(error);
-  },
+  (error) => handleInterceptorError(error, client)
 );
 
 // ---------------------------------------------------------------------------
@@ -177,7 +160,7 @@ export function computeStepStatuses(run: WorkflowRunDetail): StepDisplayInfo[] {
 
     if (record?.status === "complete") {
       status = "complete";
-    } else if (!foundActiveStep && !run.is_complete) {
+    } else if (!foundActiveStep) {
       foundActiveStep = true;
       status = run.has_failed ? "failed" : "in-progress";
     } else {
@@ -208,7 +191,10 @@ export function formatFileSize(bytes: number): string {
 /** Compute duration between two ISO timestamps. */
 export function formatDuration(start: string | null, end: string | null): string {
   if (!start || !end) return "—";
-  const ms = new Date(end).getTime() - new Date(start).getTime();
+  const startMs = new Date(start).getTime();
+  const endMs = new Date(end).getTime();
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) return "—";
+  const ms = endMs - startMs;
   if (ms < 0) return "—";
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);

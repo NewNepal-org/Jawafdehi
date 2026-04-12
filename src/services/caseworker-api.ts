@@ -1,6 +1,8 @@
 import axios from "axios";
 import type { Skill, MCPServer, Summary, Draft, LLMProvider, CaseworkerUser } from "@/types/caseworker";
 
+import { handleInterceptorError } from "./auth-utils";
+
 const BASE_URL = `${import.meta.env.VITE_JDS_API_BASE_URL || 'https://portal.jawafdehi.org/api'}/caseworker`;
 
 const client = axios.create({ baseURL: BASE_URL });
@@ -15,24 +17,7 @@ client.interceptors.request.use((config) => {
 
 client.interceptors.response.use(
   (r) => r,
-  async (error) => {
-    if (error.response?.status === 401) {
-      const refresh = localStorage.getItem("cw_refresh_token");
-      if (refresh) {
-        try {
-          const { data } = await axios.post(`${BASE_URL}/auth/token/refresh/`, { refresh });
-          localStorage.setItem("cw_access_token", data.access);
-          error.config.headers.Authorization = `Bearer ${data.access}`;
-          return client.request(error.config);
-        } catch {
-          localStorage.removeItem("cw_access_token");
-          localStorage.removeItem("cw_refresh_token");
-          window.location.href = "/caseworker/login";
-        }
-      }
-    }
-    return Promise.reject(error);
-  }
+  (error) => handleInterceptorError(error, client)
 );
 
 // Auth
