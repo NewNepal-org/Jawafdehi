@@ -446,7 +446,7 @@ const CaseworkerSettings = () => {
       <div className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/caseworker/dashboard"><ArrowLeft className="h-4 w-4 mr-1" /> Dashboard</Link>
+            <Link to="/caseworker/dashboard"><ArrowLeft className="h-4 w-4" /></Link>
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-foreground">Settings</h1>

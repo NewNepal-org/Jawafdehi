@@ -6,7 +6,7 @@ import type { Skill, Draft, ChatMessage, ChatTab } from "@/types/caseworker";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { SendHorizonal, Plus, X, Settings, LogOut } from "lucide-react";
+import { SendHorizonal, Plus, X, Settings, LogOut, Activity } from "lucide-react";
 
 const CaseworkerDashboard = () => {
   const { user, isAdmin, logout } = useCaseworkerAuth();
@@ -186,11 +186,18 @@ const CaseworkerDashboard = () => {
           </div>
           <div className="flex items-center gap-2">
             {isAdmin && (
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/caseworker/settings">
-                  <Settings className="h-4 w-4 mr-1" /> Settings
-                </Link>
-              </Button>
+              <>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/caseworker/workflow-runs">
+                    <Activity className="h-4 w-4 mr-1" /> Workflows
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/caseworker/settings">
+                    <Settings className="h-4 w-4 mr-1" /> Settings
+                  </Link>
+                </Button>
+              </>
             )}
             <Button
               variant="ghost"

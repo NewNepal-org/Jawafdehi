@@ -25,6 +25,7 @@ import { CaseworkerAuthProvider } from "./context/CaseworkerAuthContext";
 import CaseworkerLogin from "./pages/CaseworkerLogin";
 import CaseworkerDashboard from "./pages/CaseworkerDashboard";
 import CaseworkerSettings from "./pages/CaseworkerSettings";
+import WorkflowRuns from "./pages/WorkflowRuns";
 
 const App = () => (
   <TooltipProvider>
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="login" element={<CaseworkerLogin />} />
               <Route path="dashboard" element={<CaseworkerDashboard />} />
               <Route path="settings" element={<CaseworkerSettings />} />
+              <Route path="workflow-runs" element={<WorkflowRuns />} />
             </Routes>
           </CaseworkerAuthProvider>
         }
