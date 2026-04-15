@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface GuestChatInputProps {
   value?: string;
+  onValueChange?: (value: string) => void;
   defaultValue?: string;
   placeholder: string;
   submitLabel: string;
@@ -17,6 +18,7 @@ interface GuestChatInputProps {
 
 export function GuestChatInput({
   value,
+  onValueChange,
   defaultValue = "",
   placeholder,
   submitLabel,
@@ -45,9 +47,12 @@ export function GuestChatInput({
   }, [currentValue, maxHeight]);
 
   const handleChange = (nextValue: string) => {
-    if (!controlled) {
-      setInternalValue(nextValue);
+    if (controlled) {
+      onValueChange?.(nextValue);
+      return;
     }
+
+    setInternalValue(nextValue);
   };
 
   const handleSubmit = () => {
@@ -71,7 +76,11 @@ export function GuestChatInput({
           value={currentValue}
           onChange={(event) => handleChange(event.target.value)}
           onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
               event.preventDefault();
               handleSubmit();
             }

@@ -214,7 +214,11 @@ const CaseDetail = () => {
                 className="gap-1.5 px-2.5"
               >
                 <MessageSquareText className="h-4 w-4" />
-                <span className="mt-[5px]">{isAskDrawerOpen ? "Hide chat" : "Ask Jawafdehi"}</span>
+                <span className="mt-[5px]">
+                  {isAskDrawerOpen
+                    ? t("caseDetail.hideChat")
+                    : t("caseDetail.askJawafdehi")}
+                </span>
               </Button>
               <ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />
             </div>

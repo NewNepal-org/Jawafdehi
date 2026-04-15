@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Sparkles, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { BotTypingBubble } from "@/components/guest/BotTypingBubble";
 import { GuestChatInput } from "@/components/guest/GuestChatInput";
 import { Badge } from "@/components/ui/badge";
@@ -23,15 +24,6 @@ interface GuestCaseChatDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const defaultSuggestedQuestions = [
-  "What are the key allegations?",
-  "Summarize the timeline",
-  "Which sources support this case?",
-  "Who are the related entities?",
-  "What does the evidence say?",
-];
-
-
 export function GuestCaseChatDrawer({
   caseId,
   caseTitle,
@@ -40,17 +32,46 @@ export function GuestCaseChatDrawer({
   open,
   onOpenChange,
 }: GuestCaseChatDrawerProps) {
+  const { t } = useTranslation();
+  const defaultSuggestedQuestions = useMemo(
+    () => [
+      t("guestCaseChatDrawer.prompts.keyAllegations"),
+      t("guestCaseChatDrawer.prompts.timeline"),
+      t("guestCaseChatDrawer.prompts.sources"),
+      t("guestCaseChatDrawer.prompts.relatedEntities"),
+      t("guestCaseChatDrawer.prompts.evidence"),
+    ],
+    [t]
+  );
   const [messages, setMessages] = useState<GuestCaseChatMessage[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [followups, setFollowups] = useState<string[]>(defaultSuggestedQuestions);
+  const previousDefaultSuggestedQuestionsRef = useRef(defaultSuggestedQuestions);
 
   useEffect(() => {
     setMessages([]);
     setError(null);
     setIsSubmitting(false);
     setFollowups(defaultSuggestedQuestions);
+    previousDefaultSuggestedQuestionsRef.current = defaultSuggestedQuestions;
   }, [caseId, caseTitle]);
+
+  useEffect(() => {
+    const previousDefaultSuggestedQuestions =
+      previousDefaultSuggestedQuestionsRef.current;
+
+    setFollowups((current) =>
+      current.length === 0 ||
+      current.every((prompt) =>
+        previousDefaultSuggestedQuestions.includes(prompt)
+      )
+        ? defaultSuggestedQuestions
+        : current
+    );
+
+    previousDefaultSuggestedQuestionsRef.current = defaultSuggestedQuestions;
+  }, [defaultSuggestedQuestions]);
 
   const caseContext = useMemo(
     () => ({
@@ -100,14 +121,13 @@ export function GuestCaseChatDrawer({
       ]);
       setFollowups(result.followups.length > 0 ? result.followups : defaultSuggestedQuestions);
     } catch {
-      setError("We could not answer that case question right now. Please try again.");
+      setError(t("guestCaseChatDrawer.errors.answerFailed"));
       setMessages((current) => [
         ...current.filter((message) => message.id !== loadingMessageId),
         {
           id: `assistant-error-${Date.now()}`,
           role: "assistant",
-          content:
-            "I could not answer that case-specific question right now. Please try again in a moment.",
+          content: t("guestCaseChatDrawer.errors.answerFailedMessage"),
           timestamp: new Date().toISOString(),
           origin: "public-read-adapter",
           isError: true,
@@ -132,22 +152,30 @@ export function GuestCaseChatDrawer({
             <div className="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
               <img
                 src="/assets/bot.svg"
-                alt="Jawafdehi assistant"
+                alt={t("guestCommon.assistantAlt")}
                 className="h-8 w-8"
               />
             </div>
             <div className="min-w-0 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Ask about this case</p>
+              <p className="text-sm font-semibold text-foreground">
+                {t("guestCaseChatDrawer.title")}
+              </p>
               <p className="line-clamp-2 text-sm text-muted-foreground">{caseTitle}</p>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary" className="rounded-full">
-                  {caseContext.allegationCount} allegation{caseContext.allegationCount === 1 ? "" : "s"}
+                  {t("guestCaseChatDrawer.allegationCount", {
+                    count: caseContext.allegationCount,
+                  })}
                 </Badge>
                 <Badge variant="outline" className="rounded-full">
-                  {caseContext.timelineCount} timeline item{caseContext.timelineCount === 1 ? "" : "s"}
+                  {t("guestCaseChatDrawer.timelineCount", {
+                    count: caseContext.timelineCount,
+                  })}
                 </Badge>
                 <Badge variant="outline" className="rounded-full">
-                  {caseContext.sourceCount} source{caseContext.sourceCount === 1 ? "" : "s"}
+                  {t("guestCaseChatDrawer.sourceCount", {
+                    count: caseContext.sourceCount,
+                  })}
                 </Badge>
               </div>
             </div>
@@ -157,7 +185,7 @@ export function GuestCaseChatDrawer({
             size="icon"
             className="rounded-full"
             onClick={() => onOpenChange(false)}
-            aria-label="Close case chat"
+            aria-label={t("guestCaseChatDrawer.closeChat")}
           >
             <X className="h-4 w-4" />
           </Button>
@@ -169,9 +197,11 @@ export function GuestCaseChatDrawer({
           <div className="flex min-h-full flex-col items-center justify-center px-4 py-8 text-center">
             <div className="w-full max-w-md space-y-6">
               <div className="space-y-3">
-                <p className="text-2xl font-semibold text-foreground">How can I help you today?</p>
+                <p className="text-2xl font-semibold text-foreground">
+                  {t("guestCaseChatDrawer.emptyTitle")}
+                </p>
                 <p className="text-sm leading-7 text-muted-foreground">
-                  Ask for a quick summary, supporting sources, a timeline recap, or who appears in this public case record.
+                  {t("guestCaseChatDrawer.emptyDescription")}
                 </p>
               </div>
 
@@ -207,7 +237,7 @@ export function GuestCaseChatDrawer({
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                         <img
                           src="/assets/bot.svg"
-                          alt="Jawafdehi assistant"
+                          alt={t("guestCommon.assistantAlt")}
                           className="h-8 w-8"
                         />
                       </div>
@@ -257,14 +287,14 @@ export function GuestCaseChatDrawer({
           <p className="mb-3 text-sm text-destructive">{error}</p>
         ) : null}
         <GuestChatInput
-          placeholder="Ask a question..."
-          submitLabel="Ask"
-          loadingLabel="Answering…"
+          placeholder={t("guestChatInput.askCasePlaceholder")}
+          submitLabel={t("guestChatInput.submit")}
+          loadingLabel={t("guestChatInput.answering")}
           isSubmitting={isSubmitting}
           onSubmit={submitQuestion}
         />
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          AI-generated content may contain errors. Verify with original sources.
+          {t("guestCaseChatDrawer.disclaimer")}
         </p>
       </div>
     </aside>

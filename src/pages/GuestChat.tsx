@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { AlertCircle, PencilLine } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { Footer } from "@/components/Footer";
 import { BotTypingBubble } from "@/components/guest/BotTypingBubble";
@@ -12,13 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { askGuestQuestion } from "@/services/guest-chat-adapter";
 import type { GuestAskResponse } from "@/types/guest-chat";
-
-const suggestedPrompts = [
-  "Is there any case related to Rabi Lamichhane?",
-  "How many cases have been registered in 2082 BS?",
- 
- 
-];
 
 function GuestPromptGrid({
   prompts,
@@ -56,9 +50,14 @@ function GuestPromptGrid({
 }
 
 export default function GuestChat() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [submittedQuestion, setSubmittedQuestion] = useState("");
   const seededQuestion = searchParams.get("q") || "";
+  const suggestedPrompts = [
+    t("guestChat.prompts.rabiLamichhane"),
+    t("guestChat.prompts.registeredIn2082"),
+  ];
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<GuestAskResponse | null>(null);
@@ -72,7 +71,7 @@ export default function GuestChat() {
     try {
       setResponse(await askGuestQuestion(question));
     } catch {
-      setError("We could not load public case results right now. Please try again.");
+      setError(t("guestChat.errors.loadFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -88,10 +87,10 @@ export default function GuestChat() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Ask Jawafdehi</title>
+        <title>{t("guestChat.metaTitle")}</title>
         <meta
           name="description"
-          content="Ask questions about Jawafdehi cases."
+          content={t("guestChat.metaDescription")}
         />
       </Helmet>
 
@@ -103,7 +102,7 @@ export default function GuestChat() {
             <div className="mb-4">
               <Button variant="ghost" className="rounded-full px-3" onClick={resetConversation}>
                 <PencilLine className="h-4 w-4" />
-                New chat
+                {t("guestChat.newChat")}
               </Button>
             </div>
           ) : null}
@@ -116,13 +115,13 @@ export default function GuestChat() {
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-primary/15 bg-primary/10 text-primary">
                       <img
                         src="/assets/bot.svg"
-                        alt="Jawafdehi assistant"
+                        alt={t("guestCommon.assistantAlt")}
                         className="h-16 w-16"
                       />
                     </div>
                     <div className="space-y-3">
                       <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-                        Ask Jawafdehi
+                        {t("guestChat.title")}
                       </h1>
                     </div>
                   </div>
@@ -180,17 +179,16 @@ export default function GuestChat() {
                 ) : null}
                 <GuestChatInput
                   defaultValue={!response && !isLoading && !error ? seededQuestion : undefined}
-                  placeholder={response || isLoading ? "Ask another public question" : "Ask a question..."}
-                  submitLabel="Ask"
-                  loadingLabel="Searching…"
+                  placeholder={
+                    response || isLoading
+                      ? t("guestChatInput.askAnotherPlaceholder")
+                      : t("guestChatInput.askQuestionPlaceholder")
+                  }
+                  submitLabel={t("guestChatInput.submit")}
+                  loadingLabel={t("guestChatInput.searching")}
                   isSubmitting={isLoading}
                   onSubmit={handleSubmit}
                 />
-                <div className="space-y-1 pt-2 text-center">
-                  <p className="text-xs text-muted-foreground/80">
-                    5 queries left for today
-                  </p>
-                </div>
               </div>
             </div>
           </section>

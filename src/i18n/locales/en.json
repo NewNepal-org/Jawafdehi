@@ -126,6 +126,8 @@
     "contactDesc": "You can also reach us via email or WhatsApp for any inquiries or to provide additional information.",
     "emailLabel": "Email",
     "whatsappLabel": "WhatsApp",
+    "hideChat": "Hide chat",
+    "askJawafdehi": "Ask Jawafdehi",
     "inReviewBanner": "This case is currently under review by Jawafdehi. Information may be incomplete or subject to revision.",
     "status": {
       "ongoing": "Ongoing",
@@ -137,6 +139,61 @@
       "loading": "Loading comments...",
       "joinDiscussion": "Join the discussion and share your thoughts on this case.",
       "loadComments": "Load Comments"
+    }
+  },
+  "guestCommon": {
+    "assistantAlt": "Jawafdehi assistant",
+    "assistantTyping": "Jawafdehi assistant is typing"
+  },
+  "guestChatInput": {
+    "submit": "Ask",
+    "searching": "Searching…",
+    "answering": "Answering…",
+    "askQuestionPlaceholder": "Ask a question...",
+    "askAnotherPlaceholder": "Ask another public question",
+    "askCasePlaceholder": "Ask a question about this case..."
+  },
+  "guestAnswerBlock": {
+    "resultSummary": "{{count}} matching public case results shown below."
+  },
+  "guestCaseResults": {
+    "empty": "No public cases matched this question yet.",
+    "title": "Related public cases",
+    "description": "Open any case to continue on the public case page.",
+    "openCase": "Open case"
+  },
+  "guestCaseChatDrawer": {
+    "title": "Ask about this case",
+    "closeChat": "Close case chat",
+    "emptyTitle": "How can I help you today?",
+    "emptyDescription": "Ask for a quick summary, supporting sources, a timeline recap, or who appears in this public case record.",
+    "allegationCount": "{{count}} allegations",
+    "timelineCount": "{{count}} timeline items",
+    "sourceCount": "{{count}} sources",
+    "disclaimer": "AI-generated content may contain errors. Verify with original sources.",
+    "prompts": {
+      "keyAllegations": "What are the key allegations?",
+      "timeline": "Summarize the timeline",
+      "sources": "Which sources support this case?",
+      "relatedEntities": "Who are the related entities?",
+      "evidence": "What does the evidence say?"
+    },
+    "errors": {
+      "answerFailed": "We could not answer that case question right now. Please try again.",
+      "answerFailedMessage": "I could not answer that case-specific question right now. Please try again in a moment."
+    }
+  },
+  "guestChat": {
+    "metaTitle": "Ask Jawafdehi",
+    "metaDescription": "Ask questions about Jawafdehi cases.",
+    "title": "Ask Jawafdehi",
+    "newChat": "New chat",
+    "prompts": {
+      "rabiLamichhane": "Is there any case related to Rabi Lamichhane?",
+      "registeredIn2082": "How many cases have been registered in 2082 BS?"
+    },
+    "errors": {
+      "loadFailed": "We could not load public case results right now. Please try again."
     }
   },
   "documentSource": {

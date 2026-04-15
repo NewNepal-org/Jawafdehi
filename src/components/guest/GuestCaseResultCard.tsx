@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, FileText } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { GuestCaseResultItem } from "@/types/guest-chat";
@@ -11,6 +12,7 @@ interface GuestCaseResultCardProps {
 export function GuestCaseResultCard({
   result,
 }: GuestCaseResultCardProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -50,7 +52,7 @@ export function GuestCaseResultCard({
           onClick={() => navigate(`/case/${result.caseItem.id}`)}
         >
           <FileText className="mr-2 h-4 w-4" />
-          Open case
+          {t("guestCaseResults.openCase")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
