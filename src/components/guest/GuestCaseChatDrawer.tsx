@@ -46,7 +46,7 @@ export function GuestCaseChatDrawer({
   const [followups, setFollowups] = useState<string[]>(defaultSuggestedQuestions);
 
   useEffect(() => {
-   
+    setMessages([]);
     setError(null);
     setIsSubmitting(false);
     setFollowups(defaultSuggestedQuestions);

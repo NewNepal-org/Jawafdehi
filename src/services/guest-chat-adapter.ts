@@ -54,9 +54,7 @@ async function getAllPublicCases(): Promise<Case[]> {
 
 function getCaseSummary(caseItem: Case): string {
   return (
-    stripHtml(caseItem.short_description) ||
-    caseItem.key_allegations[0] ||
-    stripHtml(caseItem.description)
+    caseItem.key_allegations[0] || stripHtml(caseItem.description)
   );
 }
 
@@ -84,7 +82,6 @@ function buildCaseResult(
     title: caseItem.title,
     state: caseItem.state,
     case_type: caseItem.case_type,
-    short_description: getCaseSummary(caseItem),
     tags: caseItem.tags,
     matched_entity_names: matchedEntityNames,
     caseItem,

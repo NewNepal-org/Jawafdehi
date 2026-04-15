@@ -39,8 +39,7 @@ export function GuestCaseResultCard({
           </div>
         ) : null}
         <p className="line-clamp-4 text-sm text-muted-foreground">
-          {result.caseItem.short_description ||
-            result.caseItem.key_allegations?.[0] ||
+          {result.caseItem.key_allegations?.[0] ||
             result.caseItem.description.replace(/<[^>]*>/g, " ")}
         </p>
       </div>

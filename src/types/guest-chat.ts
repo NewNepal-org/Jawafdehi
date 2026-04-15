@@ -18,7 +18,6 @@ export interface GuestCaseResultItem {
   title: string;
   state: CaseDetail["state"];
   case_type: CaseDetail["case_type"];
-  short_description: string;
   tags: string[];
   matched_entity_names: string[];
   caseItem: CaseDetail;
