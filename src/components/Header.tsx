@@ -93,7 +93,7 @@ export const Header = () => {
 
           {/* AI Search */}
           <Link
-            to="/caseworker/login"
+            to="/ask"
             className="flex items-center gap-1.5 text-sm text-amber-600/80 hover:text-amber-700 transition-colors"
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -161,7 +161,7 @@ export const Header = () => {
                     <Link to="/cases">{t("header.viewCases")}</Link>
                   </Button>
                   <Link
-                    to="/caseworker/login"
+                    to="/ask"
                     className="flex items-center justify-center gap-2 py-2 text-sm text-amber-600/80 hover:text-amber-700 transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
