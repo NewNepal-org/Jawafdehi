@@ -8,7 +8,7 @@ export interface GuestEntityMatch {
 }
 
 export interface GuestAnswerModel {
-  kind: "entity_match";
+  kind: "entity_match" | "topic_summary" | "institutional_explainer" | "case_collection";
   text: string;
   confidence: "high" | "medium" | "low";
 }
@@ -22,6 +22,7 @@ export interface GuestCaseResultItem {
   matched_entity_names: string[];
   caseItem: CaseDetail;
   matchReason: string;
+  exampleDescription?: string;
   matchedEntityIds: number[];
   matchedEntityNames: string[];
 }
