@@ -90,11 +90,12 @@ export const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <LanguageToggle />
         </nav>
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center space-x-3">
-          <LanguageToggle />
           <Button asChild>
             <Link to="/ask" className="inline-flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
