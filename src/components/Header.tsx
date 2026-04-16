@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { Menu, ChevronDown, Users, Info, Package } from "lucide-react";
+import { Menu, ChevronDown, Users, Info, Package, MessageCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,7 +96,10 @@ export const Header = () => {
         <div className="hidden lg:flex items-center space-x-3">
           <LanguageToggle />
           <Button asChild>
-            <Link to="/ask">{t("header.askJawafdehi")}</Link>
+            <Link to="/ask" className="inline-flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              <span>{t("header.askJawafdehi")}</span>
+            </Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/cases">{t("header.viewCases")}</Link>
@@ -152,7 +155,10 @@ export const Header = () => {
                 </Link>
                 <div className="pt-4 space-y-3 border-t border-border">
                   <Button asChild className="w-full" onClick={() => setIsOpen(false)}>
-                    <Link to="/ask">{t("header.askJawafdehi")}</Link>
+                    <Link to="/ask" className="inline-flex items-center justify-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      <span>{t("header.askJawafdehi")}</span>
+                    </Link>
                   </Button>
                   <Button asChild variant="outline" className="w-full" onClick={() => setIsOpen(false)}>
                     <Link to="/cases">{t("header.viewCases")}</Link>
