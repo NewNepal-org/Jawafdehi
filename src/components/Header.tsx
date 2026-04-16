@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { Sparkles, Menu, ChevronDown, Users, Info, Package } from "lucide-react";
+import { Menu, ChevronDown, Users, Info, Package } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -90,21 +90,15 @@ export const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* AI Search */}
-          <Link
-            to="/ask"
-            className="flex items-center gap-1.5 text-sm text-amber-600/80 hover:text-amber-700 transition-colors"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>AI Search</span>
-          </Link>
         </nav>
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center space-x-3">
           <LanguageToggle />
           <Button asChild>
+            <Link to="/ask">{t("header.askJawafdehi")}</Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/cases">{t("header.viewCases")}</Link>
           </Button>
         </div>
@@ -158,16 +152,11 @@ export const Header = () => {
                 </Link>
                 <div className="pt-4 space-y-3 border-t border-border">
                   <Button asChild className="w-full" onClick={() => setIsOpen(false)}>
+                    <Link to="/ask">{t("header.askJawafdehi")}</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full" onClick={() => setIsOpen(false)}>
                     <Link to="/cases">{t("header.viewCases")}</Link>
                   </Button>
-                  <Link
-                    to="/ask"
-                    className="flex items-center justify-center gap-2 py-2 text-sm text-amber-600/80 hover:text-amber-700 transition-colors"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    <span>AI Search</span>
-                  </Link>
                 </div>
               </nav>
             </SheetContent>
