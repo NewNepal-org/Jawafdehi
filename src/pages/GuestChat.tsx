@@ -11,8 +11,14 @@ import { GuestChatInput } from "@/components/guest/GuestChatInput";
 import { GuestCaseResultList } from "@/components/guest/GuestCaseResultList";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { askGuestQuestion } from "@/services/guest-chat-adapter";
+import { useGuestAsk } from "@/hooks/useGuestAsk";
 import type { GuestAskResponse } from "@/types/guest-chat";
+
+interface GuestChatTurn {
+  id: string;
+  question: string;
+  response: GuestAskResponse;
+}
 
 function GuestPromptGrid({
   prompts,
@@ -50,55 +56,70 @@ function GuestPromptGrid({
 }
 
 export default function GuestChat() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [submittedQuestion, setSubmittedQuestion] = useState("");
+  const [history, setHistory] = useState<GuestChatTurn[]>([]);
   const seededQuestion = searchParams.get("q") || "";
   const suggestedPrompts = [
-    t("guestChat.prompts.rabiLamichhane"),
-    t("guestChat.prompts.registeredIn2082"),
+    t("guestChat.prompts.procurementCorruption"),
+    t("guestChat.prompts.ciaaProcess"),
+    t("guestChat.prompts.bigCorruptionCases"),
   ];
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [response, setResponse] = useState<GuestAskResponse | null>(null);
+  const {
+    response,
+    error,
+    isLoading,
+    submitQuestion,
+    resetConversation: resetGuestAsk,
+  } = useGuestAsk(i18n.language);
 
   const handleSubmit = async (question: string) => {
-    setSubmittedQuestion(question);
-    setIsLoading(true);
-    setError(null);
-    setResponse(null);
-
-    try {
-      setResponse(await askGuestQuestion(question));
-    } catch {
-      setError(t("guestChat.errors.loadFailed"));
-    } finally {
-      setIsLoading(false);
+    if (isLoading) {
+      return;
     }
+
+    if (response) {
+      setHistory((current) => {
+        if (current.some((turn) => turn.response.query === response.query)) {
+          return current;
+        }
+
+        return [
+          ...current,
+          {
+            id: `turn-${Date.now()}`,
+            question: response.query,
+            response,
+          },
+        ];
+      });
+    }
+
+    setSubmittedQuestion(question);
+    await submitQuestion(question);
   };
 
   const resetConversation = () => {
     setSubmittedQuestion("");
-    setError(null);
-    setResponse(null);
-    setIsLoading(false);
+    setHistory([]);
+    resetGuestAsk();
   };
+
+  const hasConversation = response || isLoading || history.length > 0;
 
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
         <title>{t("guestChat.metaTitle")}</title>
-        <meta
-          name="description"
-          content={t("guestChat.metaDescription")}
-        />
+        <meta name="description" content={t("guestChat.metaDescription")} />
       </Helmet>
 
       <Header />
 
       <main className="container mx-auto h-[calc(100vh-5rem)] px-4 py-6 md:h-[calc(100vh-5.5rem)] md:py-8">
         <div className="mx-auto flex h-full max-w-[768px] flex-col">
-          {response || isLoading ? (
+          {hasConversation ? (
             <div className="mb-4">
               <Button variant="ghost" className="rounded-full px-3" onClick={resetConversation}>
                 <PencilLine className="h-4 w-4" />
@@ -109,7 +130,7 @@ export default function GuestChat() {
 
           <section className="flex min-h-0 flex-1 flex-col">
             <div className="min-h-0 flex-1 overflow-y-auto">
-              {!response && !isLoading && !error ? (
+              {!response && !isLoading && !error && history.length === 0 ? (
                 <div className="flex min-h-full flex-col justify-center">
                   <div className="space-y-5 pt-6 text-center md:pt-12">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-primary/15 bg-primary/10 text-primary">
@@ -137,17 +158,39 @@ export default function GuestChat() {
               {error ? (
                 <Alert variant="destructive" className="mt-6">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>{t("guestChat.errors.loadFailed")}</AlertDescription>
                 </Alert>
               ) : null}
 
-              {response || isLoading ? (
+              {hasConversation ? (
                 <div className="space-y-5 pt-4 pb-8">
-                  <div className="flex justify-end">
-                    <div className="max-w-[85%] rounded-[28px] bg-primary px-5 py-4 text-sm leading-7 text-primary-foreground shadow-sm">
-                      {submittedQuestion || response?.query}
+                  {history.map((turn) => (
+                    <div key={turn.id} className="space-y-5">
+                      <div className="flex justify-end">
+                        <div className="max-w-[85%] rounded-[28px] bg-primary px-5 py-4 text-sm leading-7 text-primary-foreground shadow-sm">
+                          {turn.question}
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <GuestAnswerBlock
+                          answer={turn.response.answer.text}
+                          resultCount={turn.response.case_results.length}
+                        />
+                        <div className="ml-12">
+                          <GuestCaseResultList results={turn.response.case_results} />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
+
+                  {(submittedQuestion || response?.query || isLoading) ? (
+                    <div className="flex justify-end">
+                      <div className="max-w-[85%] rounded-[28px] bg-primary px-5 py-4 text-sm leading-7 text-primary-foreground shadow-sm">
+                        {submittedQuestion || response?.query}
+                      </div>
+                    </div>
+                  ) : null}
 
                   {isLoading && !response ? (
                     <BotTypingBubble />
@@ -158,9 +201,7 @@ export default function GuestChat() {
                         resultCount={response.case_results.length}
                       />
                       <div className="ml-12">
-                        <GuestCaseResultList
-                          results={response.case_results}
-                        />
+                        <GuestCaseResultList results={response.case_results} />
                       </div>
                     </div>
                   ) : null}
@@ -178,9 +219,9 @@ export default function GuestChat() {
                   />
                 ) : null}
                 <GuestChatInput
-                  defaultValue={!response && !isLoading && !error ? seededQuestion : undefined}
+                  defaultValue={!response && !isLoading && !error && history.length === 0 ? seededQuestion : undefined}
                   placeholder={
-                    response || isLoading
+                    response || isLoading || history.length > 0
                       ? t("guestChatInput.askAnotherPlaceholder")
                       : t("guestChatInput.askQuestionPlaceholder")
                   }
