@@ -58,17 +58,17 @@ const Commitment = () => {
         <meta property="og:url" content="https://jawafdehi.org/commitment" />
         <meta property="og:title" content="Our Commitment — Jawafdehi" />
         <meta property="og:description" content="Jawafdehi's commitments to the Nepali public: permanent records, factual accuracy, open source technology, and free access forever." />
-        <meta property="og:image" content="https://jawafdehi.org/og-favicon.png" />
+        <meta property="og:image" content="https://jawafdehi.org/logo.PNG" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Our Commitment — Jawafdehi" />
         <meta name="twitter:description" content="Jawafdehi's commitments to the Nepali public: permanent records, factual accuracy, open source technology, and free access forever." />
-        <meta name="twitter:image" content="https://jawafdehi.org/og-favicon.png" />
+        <meta name="twitter:image" content="https://jawafdehi.org/logo.PNG" />
       </Helmet>
       <Header />
 
       <main className="flex-1">
         {/* Header */}
-        <section className="bg-primary py-16 md:py-24">
+        <section className="bg-gradient-to-br from-primary via-navy-dark to-slate-800 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-widest text-primary-foreground/50 mb-4">
