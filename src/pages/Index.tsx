@@ -176,7 +176,7 @@ const Index = () => {
 
               {/* Left — headline + stats + CTAs */}
               <div className="flex h-full flex-col justify-center">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-white/80 mb-5">
+                <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-white/80">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
                   CIAA Cases &nbsp;·&nbsp; Official Documents &nbsp;·&nbsp; Verified Facts
                 </div>

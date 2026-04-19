@@ -101,10 +101,6 @@ export function HeroChatDemo() {
 
   return (
     <div className="relative block lg:flex lg:h-full">
-      <div className="absolute -top-3 right-0 z-10 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-primary shadow-lg ring-1 ring-primary/10 lg:right-2">
-        Demo
-      </div>
-
       <div className="ml-auto flex h-[560px] w-full max-w-[740px] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-background/95 shadow-2xl ring-1 ring-white/10 backdrop-blur">
         <div className="border-b border-border/60 px-4 py-3.5">
           <div className="flex items-center justify-between gap-4">
@@ -129,7 +125,7 @@ export function HeroChatDemo() {
               size="sm"
               className="hidden rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 sm:inline-flex"
             >
-              <Link to="/cases">Browse archive</Link>
+              <Link to="/cases">Demo</Link>
             </Button>
           </div>
         </div>
@@ -181,7 +177,7 @@ export function HeroChatDemo() {
                       </div>
                     </div>
                   ) : demoPhase === "answer" ? (
-                    <div className="flex min-h-[220px] flex-col rounded-[24px] border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,248,252,0.94))] p-4 shadow-sm">
+                    <div className="flex min-h-[220px] flex-col rounded-[24px] border border-border/70 bg-card p-4 shadow-sm">
                       <p className="mb-3 text-sm leading-6 text-foreground">
                         CIAA typically becomes visible to the public during investigation and court filing. Earlier complaint stages are often not publicly documented.
                       </p>
@@ -197,8 +193,8 @@ export function HeroChatDemo() {
                               className={`relative rounded-[18px] border p-4 pl-[3.9rem] transition-all duration-300 ${
                                 isVisible
                                   ? isActive
-                                    ? "border-primary/25 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.08)]"
-                                    : "border-border/70 bg-white/88 shadow-[0_8px_24px_rgba(15,23,42,0.05)]"
+                                    ? "border-primary/25 bg-background shadow-[0_12px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.35)]"
+                                    : "border-border/70 bg-background/80 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:bg-background/60 dark:shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
                                   : "border-transparent bg-transparent opacity-0"
                               }`}
                               style={{
@@ -206,7 +202,7 @@ export function HeroChatDemo() {
                               }}
                             >
                               <div className="absolute left-4 top-4 flex items-center">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-primary text-sm font-semibold text-primary-foreground shadow-sm">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-primary text-sm font-semibold text-primary-foreground shadow-sm">
                                   {index + 1}
                                 </div>
                               </div>
@@ -246,7 +242,7 @@ export function HeroChatDemo() {
               </div>
               <Button asChild size="sm" className="h-10 shrink-0 rounded-xl px-4 text-sm font-semibold shadow-sm">
                 <Link to="/ask">
-                  <Sparkles className="mr-2 h-4 w-4" />
+                 
                   Try it yourself
                 </Link>
               </Button>
