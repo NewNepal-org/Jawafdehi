@@ -8,16 +8,17 @@ import { BotTypingBubble } from "@/components/guest/BotTypingBubble";
 import { Header } from "@/components/Header";
 import { GuestAnswerBlock } from "@/components/guest/GuestAnswerBlock";
 import { GuestChatInput } from "@/components/guest/GuestChatInput";
-import { GuestCaseResultList } from "@/components/guest/GuestCaseResultList";
+import { PublicChatRelatedCases } from "@/components/guest/PublicChatRelatedCases";
+import { PublicChatSources } from "@/components/guest/PublicChatSources";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useGuestAsk } from "@/hooks/useGuestAsk";
-import type { GuestAskResponse } from "@/types/guest-chat";
+import { usePublicChat } from "@/hooks/usePublicChat";
+import type { PublicChatResponse } from "@/types/public-chat";
 
 interface GuestChatTurn {
   id: string;
   question: string;
-  response: GuestAskResponse;
+  response: PublicChatResponse;
 }
 
 function GuestPromptGrid({
@@ -73,32 +74,31 @@ export default function GuestChat() {
     isLoading,
     submitQuestion,
     resetConversation: resetGuestAsk,
-  } = useGuestAsk(i18n.language);
+  } = usePublicChat(i18n.language);
 
   const handleSubmit = async (question: string) => {
     if (isLoading) {
       return;
     }
 
-    if (response) {
-      setHistory((current) => {
-        if (current.some((turn) => turn.response.query === response.query)) {
-          return current;
-        }
+    const requestHistory = history.flatMap((turn) => [
+      { role: "user" as const, content: turn.question },
+      { role: "assistant" as const, content: turn.response.answer_text },
+    ]);
 
-        return [
-          ...current,
-          {
-            id: `turn-${Date.now()}`,
-            question: response.query,
-            response,
-          },
-        ];
-      });
+    if (response && submittedQuestion) {
+      setHistory((current) => [
+        ...current,
+        {
+          id: `turn-${Date.now()}`,
+          question: submittedQuestion,
+          response,
+        },
+      ]);
     }
 
     setSubmittedQuestion(question);
-    await submitQuestion(question);
+    await submitQuestion(question, requestHistory);
   };
 
   const resetConversation = () => {
@@ -180,22 +180,27 @@ export default function GuestChat() {
 
                       <div className="space-y-4">
                         <GuestAnswerBlock
-                          answer={turn.response.answer.text}
-                          resultCount={turn.response.case_results.length}
+                          answer={turn.response.answer_text}
+                          resultCount={turn.response.related_cases.length}
                         />
-                        {turn.response.case_results.length > 0 ? (
+                        {turn.response.sources.length > 0 ? (
                           <div className="ml-12">
-                            <GuestCaseResultList results={turn.response.case_results} />
+                            <PublicChatSources sources={turn.response.sources} />
+                          </div>
+                        ) : null}
+                        {turn.response.related_cases.length > 0 ? (
+                          <div className="ml-12">
+                            <PublicChatRelatedCases cases={turn.response.related_cases} />
                           </div>
                         ) : null}
                       </div>
                     </div>
                   ))}
 
-                  {(submittedQuestion || response?.query || isLoading) ? (
+                  {(submittedQuestion || isLoading) ? (
                     <div className="flex justify-end">
                       <div className="max-w-[85%] rounded-[28px] bg-primary px-5 py-4 text-sm leading-7 text-primary-foreground shadow-sm">
-                        {submittedQuestion || response?.query}
+                        {submittedQuestion}
                       </div>
                     </div>
                   ) : null}
@@ -205,12 +210,17 @@ export default function GuestChat() {
                   ) : response ? (
                     <div className="space-y-4">
                       <GuestAnswerBlock
-                        answer={response.answer.text}
-                        resultCount={response.case_results.length}
+                        answer={response.answer_text}
+                        resultCount={response.related_cases.length}
                       />
-                      {response.case_results.length > 0 ? (
+                      {response.sources.length > 0 ? (
                         <div className="ml-12">
-                          <GuestCaseResultList results={response.case_results} />
+                          <PublicChatSources sources={response.sources} />
+                        </div>
+                      ) : null}
+                      {response.related_cases.length > 0 ? (
+                        <div className="ml-12">
+                          <PublicChatRelatedCases cases={response.related_cases} />
                         </div>
                       ) : null}
                     </div>
@@ -223,7 +233,7 @@ export default function GuestChat() {
               <div className="mx-auto w-full max-w-[736px] space-y-3">
                 {response ? (
                   <GuestPromptGrid
-                    prompts={response.suggested_followups}
+                    prompts={response.follow_up_questions}
                     onPromptClick={handleSubmit}
                     compact
                   />
@@ -237,7 +247,7 @@ export default function GuestChat() {
                   }
                   submitLabel={t("guestChatInput.submit")}
                   loadingLabel={t("guestChatInput.searching")}
-                  disabled
+                  disabled={false}
                   isSubmitting={isLoading}
                   onSubmit={handleSubmit}
                 />
