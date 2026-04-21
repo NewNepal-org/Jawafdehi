@@ -217,14 +217,11 @@ const CaseDetail = () => {
       <CaseDetailBanner
         caseData={caseData}
         resolvedEntities={resolvedEntities}
+        actions={<ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />}
       />
 
       <main className="flex-1 py-8">
         <div className="container mx-auto max-w-8xl px-4">
-          <div className="mb-6 flex justify-center no-print">
-            <ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />
-          </div>
-
           <div className={cn(
             "grid gap-8 transition-[grid-template-columns] duration-300 ease-out",
             isAskDrawerOpen && "xl:grid-cols-[minmax(0,1fr)_460px] 2xl:grid-cols-[minmax(0,1fr)_520px] xl:items-start"

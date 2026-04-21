@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, ChevronRight, MapPin, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ interface CaseDetailBannerProps {
   resolvedEntities: Record<string, Entity>;
   homeLabel?: string;
   casesLabel?: string;
+  actions?: ReactNode;
 }
 
 export function CaseDetailBanner({
@@ -20,6 +22,7 @@ export function CaseDetailBanner({
   resolvedEntities,
   homeLabel,
   casesLabel,
+  actions,
 }: CaseDetailBannerProps) {
   const { t, i18n } = useTranslation();
   const currentLang = i18n.language;
@@ -139,6 +142,12 @@ export function CaseDetailBanner({
             </span>
           </div>
         </div>
+
+        {actions ? (
+          <div className="mt-7 flex flex-wrap items-center gap-3 no-print">
+            {actions}
+          </div>
+        ) : null}
       </div>
     </section>
   );
