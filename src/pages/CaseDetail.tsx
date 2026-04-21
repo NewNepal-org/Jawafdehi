@@ -9,13 +9,13 @@ import { DocumentSourceCard } from "@/components/DocumentSourceCard";
 import { ResponsiveTable } from "@/components/ResponsiveTable";
 import { FloatingShareSidebar } from "@/components/FloatingShareSidebar";
 import { InlineShareButtons } from "@/components/InlineShareButtons";
+import { CaseDetailBanner } from "@/components/CaseDetailBanner";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MessageCircle, MessageSquareText, StickyNote } from "lucide-react";
+import { Calendar, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, StickyNote, User } from "lucide-react";
 import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import type { DocumentSource } from "@/types/jds";
@@ -213,22 +213,15 @@ const CaseDetail = () => {
         <link rel="alternate" type="application/json" href={`https://portal.jawafdehi.org/api/cases/${id}/`} title="Case data (JSON API)" />
       </Helmet>
       <Header />
+      <CaseDetailBanner
+        caseData={caseData}
+        resolvedEntities={resolvedEntities}
+      />
 
-      <main className="flex-1 py-12">
+      <main className="flex-1 py-8">
         <div className={cn("container mx-auto px-4", isAskDrawerOpen ? "max-w-[1500px]" : "max-w-5xl")}>
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 mb-4 no-print">
-            <Button variant="outline" asChild>
-              <Link to="/cases">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="mt-[5px]">
-                  {t("caseDetail.backToCases")}
-                </span>
-              </Link>
-            </Button>
-
-            <div className="flex gap-2">
-              <ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />
-            </div>
+          <div className="mb-6 flex justify-center no-print">
+            <ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />
           </div>
 
           <div className={cn("grid gap-8", isAskDrawerOpen && "xl:grid-cols-[minmax(0,1fr)_460px] 2xl:grid-cols-[minmax(0,1fr)_520px] xl:items-start")}>
@@ -256,84 +249,64 @@ const CaseDetail = () => {
               )}
 
               <div id="print-content" className="print-content">
-            <div className="mb-8">
-              <div className="flex flex-wrap items-center gap-3 mb-4 no-print">
-                <Badge className="bg-alert text-alert-foreground">
-                  {(() => {
-                    const stateMap: Record<string, string> = {
-                      'DRAFT': 'caseDetail.status.underInvestigation',
-                      'IN_REVIEW': 'caseDetail.status.underInvestigation',
-                      'PUBLISHED': 'caseDetail.status.ongoing',
-                      'CLOSED': 'caseDetail.status.resolved'
-                    };
-                    const statusKey = caseData.state ? stateMap[caseData.state] : 'caseDetail.status.ongoing';
-                    return t(statusKey || 'caseDetail.status.ongoing');
-                  })()}
-                </Badge>
-                <Badge variant="outline" className={caseData.case_type === 'CORRUPTION' ? 'bg-destructive/20 text-destructive' : 'bg-orange-500/20 text-orange-700'}>
-                  {caseData.case_type === 'CORRUPTION' ? t("cases.type.corruption") : t("cases.type.brokenPromise")}
-                </Badge>
-                {caseData.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">{tag}</Badge>
-                ))}
-              </div>
-            <h1 className="text-4xl font-bold text-foreground mb-6">{caseData.title}</h1>
+            <div className="mb-8 hidden print:block">
+              <h1 className="text-4xl font-bold text-foreground mb-6">{caseData.title}</h1>
 
-            {caseData.banner_url && (
-              <img
-                src={caseData.banner_url}
-                alt={caseData.title}
-                className="w-full h-64 object-cover rounded-lg mb-6"
-              />
-            )}
+              {caseData.banner_url && (
+                <img
+                  src={caseData.banner_url}
+                  alt={caseData.title}
+                  className="w-full h-64 object-cover rounded-lg mb-6"
+                />
+              )}
 
-            <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-start text-muted-foreground">
-                <User className="mr-2 h-5 w-5 flex-shrink-0" />
-                <div className="text-sm flex flex-wrap gap-1">
-                  {caseData.entities.filter(e => e.type === 'accused').map((e, index, arr) => {
-                    const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
-                    let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
-                    displayName = translateDynamicText(displayName, currentLang);
-                    return (
-                      <span key={e.id}>
-                        <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
-                        {index < arr.length - 1 && ', '}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="flex items-center text-muted-foreground">
-                <MapPin className="mr-2 h-5 w-5" />
-                <div className="text-sm flex flex-wrap gap-1">
-                  {(() => {
-                    const locations = caseData.entities.filter(e => e.type === 'location');
-                    return locations.length > 0 ? locations.map((e, index) => {
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-start text-muted-foreground">
+                  <User className="mr-2 h-5 w-5 flex-shrink-0" />
+                  <div className="text-sm flex flex-wrap gap-1">
+                    {caseData.entities.filter(e => e.type === 'accused').map((e, index, arr) => {
                       const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
                       let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
                       displayName = translateDynamicText(displayName, currentLang);
                       return (
                         <span key={e.id}>
                           <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
-                          {index < locations.length - 1 && ', '}
+                          {index < arr.length - 1 && ', '}
                         </span>
                       );
-                    }) : 'N/A';
-                  })()}
+                    })}
+                  </div>
+                </div>
+                <div className="flex items-center text-muted-foreground">
+                  <MapPin className="mr-2 h-5 w-5" />
+                  <div className="text-sm flex flex-wrap gap-1">
+                    {(() => {
+                      const locations = caseData.entities.filter(e => e.type === 'location');
+                      return locations.length > 0 ? locations.map((e, index) => {
+                        const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
+                        let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                        displayName = translateDynamicText(displayName, currentLang);
+                        return (
+                          <span key={e.id}>
+                            <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
+                            {index < locations.length - 1 && ', '}
+                          </span>
+                        );
+                      }) : 'N/A';
+                    })()}
+                  </div>
+                </div>
+                <div className="flex items-center text-muted-foreground">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  <span className="text-sm">
+                    {t("caseDetail.period")}:{" "}
+                    {formatCaseDateRange(caseData.case_start_date, caseData.case_end_date, t("cases.status.ongoing"))}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center text-muted-foreground">
-                <Calendar className="mr-2 h-5 w-5" />
-                <span className="text-sm">
-                  {t("caseDetail.period")}:{" "}
-                  {formatCaseDateRange(caseData.case_start_date, caseData.case_end_date, t("cases.status.ongoing"))}
-                </span>
-              </div>
             </div>
-          </div>
 
-          <Separator className="mb-8" />
+          <Separator className="mb-8 hidden print:block" />
 
           <Card className="mb-8">
             <CardHeader>
