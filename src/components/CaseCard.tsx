@@ -11,7 +11,7 @@ const nepaliDigits = ["०", "१", "२", "३", "४", "५", "६", "७", "�
 
 interface CaseCardProps {
   id: string;
-  slug: string; // URL-friendly slug for navigation
+  slug?: string | null; // URL-friendly slug for navigation
   title: string;
   entity: string;
   entityNames?: string[];
