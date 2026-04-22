@@ -29,11 +29,21 @@ import CaseworkerSettings from "./pages/CaseworkerSettings";
 
 const GuestChat = lazy(() => import("./pages/GuestChat"));
 
+const RouteLoadingFallback = () => (
+  <div
+    className="flex min-h-screen items-center justify-center px-4"
+    role="status"
+    aria-live="polite"
+  >
+    <span className="text-sm text-muted-foreground">Loading...</span>
+  </div>
+);
+
 const App = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
-    <Suspense fallback={null}>
+    <Suspense fallback={<RouteLoadingFallback />}>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/cases" element={<Cases />} />
