@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { CaseDetail, JawafEntity } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { formatCaseDateRange } from "@/utils/date";
+import { getPrimaryName } from "@/utils/nes-helpers";
 import { translateDynamicText } from "@/lib/translate-dynamic-content";
 
 interface CaseDetailBannerProps {
@@ -42,7 +43,15 @@ export function CaseDetailBanner({
 
   const getEntityDisplayName = (caseEntity: JawafEntity) => {
     const entity = caseEntity.nes_id ? resolvedEntities[caseEntity.nes_id] : null;
-    const displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || caseEntity.display_name || caseEntity.nes_id || "Unknown";
+    const lang = currentLang === "ne" ? "ne" : "en";
+    const fallbackLang = lang === "ne" ? "en" : "ne";
+    const displayName =
+      (entity
+        ? getPrimaryName(entity.names, lang) || getPrimaryName(entity.names, fallbackLang)
+        : "") ||
+      caseEntity.display_name ||
+      caseEntity.nes_id ||
+      "Unknown";
     return translateDynamicText(displayName, currentLang);
   };
 
