@@ -16,7 +16,7 @@ import { translateDynamicText } from "@/lib/translate-dynamic-content";
 import { useTranslation } from "react-i18next";
 
 const Index = () => {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const currentLang = i18n.language;
   const [resolvedEntities, setResolvedEntities] = useState<Record<string, Entity>>({});
 
