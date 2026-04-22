@@ -108,19 +108,24 @@ export default function EntityResponse() {
 
                 {/* Supporting Evidence */}
                 <div className="space-y-2">
-                  <Label htmlFor="evidence">Supporting Documents (optional)</Label>
-                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                  <label htmlFor="evidence" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Supporting Documents (optional)
+                  </label>
+                  <label
+                    htmlFor="evidence"
+                    className="block cursor-pointer rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary has-[:focus-visible]:border-primary has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2"
+                  >
                     <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-sm text-muted-foreground mb-1">Upload supporting documents</p>
                     <p className="text-xs text-muted-foreground">Legal documents, official records, etc. (Max 10MB per file)</p>
                     <Input
                       id="evidence"
                       type="file"
-                      className="hidden"
+                      className="sr-only"
                       multiple
                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                     />
-                  </div>
+                  </label>
                 </div>
 
                 {/* Contact Information */}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { SendHorizonal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +29,7 @@ export function GuestChatInput({
 }: GuestChatInputProps) {
   const [internalValue, setInternalValue] = useState(defaultValue);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const textareaId = useId();
   const controlled = value != null;
   const currentValue = controlled ? value : internalValue;
   const maxHeight = 96;
@@ -71,7 +72,11 @@ export function GuestChatInput({
   return (
     <div className="rounded-[28px] border border-border/80 bg-card p-3 shadow-sm">
       <div className="flex items-end gap-3">
+        <label htmlFor={textareaId} className="sr-only">
+          {placeholder}
+        </label>
         <Textarea
+          id={textareaId}
           ref={textareaRef}
           value={currentValue}
           onChange={(event) => handleChange(event.target.value)}
@@ -91,6 +96,7 @@ export function GuestChatInput({
           className="min-h-[24px] max-h-[96px] flex-1 resize-none overflow-y-hidden border-0 bg-transparent py-1 text-sm leading-6 shadow-none focus-visible:ring-0"
         />
         <Button
+          type="button"
           onClick={handleSubmit}
           disabled={disabled || isSubmitting || !currentValue.trim()}
           className="h-9 shrink-0 rounded-xl px-4"

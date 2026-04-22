@@ -250,7 +250,10 @@ export function FeedbackForm({
                             value={method.type}
                             onValueChange={(value) => updateContactMethod(index, "type", value)}
                         >
-                            <SelectTrigger className="w-[120px]">
+                            <SelectTrigger
+                                className="w-[120px]"
+                                aria-label={`${t("feedback.contactInfo")} ${index + 1} type`}
+                            >
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -264,6 +267,7 @@ export function FeedbackForm({
                         </Select>
                         <Input
                             className="flex-1"
+                            aria-label={`${t("feedback.contactInfo")} ${index + 1}`}
                             placeholder={method.type === "email" ? "email@example.com" : "+977..."}
                             value={method.value}
                             onChange={(e) => updateContactMethod(index, "value", e.target.value)}
@@ -273,6 +277,7 @@ export function FeedbackForm({
                                 type="button"
                                 variant="ghost"
                                 size="icon"
+                                aria-label={`Remove ${method.type} contact method ${index + 1}`}
                                 onClick={() => removeContactMethod(index)}
                             >
                                 <X className="h-4 w-4" />
@@ -314,6 +319,7 @@ export function FeedbackForm({
                                 type="button"
                                 variant="ghost"
                                 size="icon"
+                                aria-label={t("feedback.removeAttachment", { defaultValue: "Remove attachment" })}
                                 onClick={() => {
                                     setAttachment(null);
                                     if (fileInputRef.current) fileInputRef.current.value = "";
