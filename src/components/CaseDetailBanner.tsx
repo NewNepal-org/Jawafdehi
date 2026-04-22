@@ -102,7 +102,7 @@ export function CaseDetailBanner({
           </Badge>
           {caseData.tags.map((tag) => (
             <Badge key={tag} variant="secondary" className="rounded-full bg-white/10 px-3 py-1 text-xs text-white hover:bg-white/20">
-              {tag}
+              {translateDynamicText(tag, currentLang)}
             </Badge>
           ))}
         </div>
