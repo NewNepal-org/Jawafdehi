@@ -39,7 +39,7 @@ export default function ReportAllegation() {
       <Header />
 
       <main className="flex-1">
-        <div className="container mx-auto px-4 py-12 max-w-3xl">
+        <div className="container mx-auto px-4 py-8 md:py-12 max-w-3xl">
           <Card>
             <CardHeader>
               <CardTitle className="text-3xl">{t("report.title")}</CardTitle>
@@ -239,19 +239,24 @@ export default function ReportAllegation() {
 
                   {/* Evidence Upload */}
                   <div className="space-y-2">
-                    <Label htmlFor="evidence">{t("report.evidence")}</Label>
-                    <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                    <label htmlFor="evidence" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      {t("report.evidence")}
+                    </label>
+                    <label
+                      htmlFor="evidence"
+                      className="block cursor-pointer rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary has-[:focus-visible]:border-primary has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2"
+                    >
                       <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground mb-1">{t("report.evidenceUpload")}</p>
                       <p className="text-xs text-muted-foreground">{t("report.evidenceFormat")}</p>
                       <Input
                         id="evidence"
                         type="file"
-                        className="hidden"
+                        className="sr-only"
                         multiple
                         accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                       />
-                    </div>
+                    </label>
                   </div>
 
                   {/* Contributor Information */}

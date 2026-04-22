@@ -209,7 +209,7 @@ const CaseworkerDashboard = () => {
           {/* Chat panel */}
           <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-border flex flex-col" style={{ minHeight: "600px" }}>
             {/* tabs */}
-            <div className="flex items-center gap-1 px-4 pt-3 border-b border-border overflow-x-auto">
+            <div className="flex items-center gap-1 px-4 pt-3 border-b border-border overflow-x-auto" role="tablist" aria-label="Caseworker chats">
               {chatTabs.map((tab) => (
                 <div
                   key={tab.id}
@@ -232,16 +232,22 @@ const CaseworkerDashboard = () => {
                       autoFocus
                     />
                   ) : (
-                    <span
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeTabId === tab.id}
+                      className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       onClick={() => setActiveTabId(tab.id)}
                       onDoubleClick={() => { setRenamingTabId(tab.id); setNewTabName(tab.name); }}
                     >
                       {tab.name}
-                    </span>
+                    </button>
                   )}
                   {chatTabs.length > 1 && (
                     <button
+                      type="button"
                       onClick={() => closeTab(tab.id)}
+                      aria-label={`Close ${tab.name}`}
                       className="text-muted-foreground hover:text-destructive"
                     >
                       <X className="h-3 w-3" />
@@ -250,7 +256,9 @@ const CaseworkerDashboard = () => {
                 </div>
               ))}
               <button
+                type="button"
                 onClick={createTab}
+                aria-label="Create new chat"
                 className="px-2 py-1.5 text-muted-foreground hover:text-primary hover:bg-muted rounded transition"
               >
                 <Plus className="h-4 w-4" />
@@ -303,7 +311,11 @@ const CaseworkerDashboard = () => {
 
             {/* input */}
             <form onSubmit={handleSubmit} className="border-t border-border p-4 flex gap-3 items-end">
+              <label htmlFor="caseworker-message" className="sr-only">
+                Message
+              </label>
               <Textarea
+                id="caseworker-message"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -312,7 +324,7 @@ const CaseworkerDashboard = () => {
                 disabled={loading}
                 className="resize-none flex-1"
               />
-              <Button type="submit" size="icon" disabled={loading || !userInput.trim()}>
+              <Button type="submit" size="icon" aria-label="Send message" disabled={loading || !userInput.trim()}>
                 <SendHorizonal className="h-4 w-4" />
               </Button>
             </form>

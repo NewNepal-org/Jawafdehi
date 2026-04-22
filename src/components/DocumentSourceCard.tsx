@@ -1,12 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { ExternalLink, FileText } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
 import type { DocumentSource, DocumentSourceType } from "@/types/jds";
 import { DocumentSourceTypeKeys } from "@/types/jds";
+import { getSourceTypeBadgeClass } from "@/utils/source-type-badge";
 
 interface DocumentSourceCardProps {
   source: DocumentSource | null;
   sourceId: number;
+  itemNumber: number;
   evidenceDescription?: string;
 }
 
@@ -24,6 +26,7 @@ const normalizeUrls = (url: string[] | string | null | undefined): string[] => {
 export function DocumentSourceCard({ 
   source, 
   sourceId, 
+  itemNumber,
   evidenceDescription
 }: DocumentSourceCardProps) {
   const { t } = useTranslation();
@@ -36,66 +39,67 @@ export function DocumentSourceCard({
         ? t(DocumentSourceTypeKeys[source.source_type as DocumentSourceType])
         : source.source_type)
     : null;
+  const sourceTypeClass = getSourceTypeBadgeClass(source?.source_type);
   
   return (
-    <article className="flex items-start p-4 border rounded-lg">
-      <FileText className="mr-3 h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" aria-hidden="true" />
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium mb-1 break-words">
-          {source?.title || t("documentSource.fallbackTitle", { id: sourceId })}
-        </h3>
-        
-        {/* Show Source Type */}
-        {sourceTypeLabel && (
-          <p className="text-sm text-muted-foreground mb-2 break-words">
-            {sourceTypeLabel}
-          </p>
-        )}
-        
-        {/* Show source description if available */}
-        {source?.description && source.description.trim() !== '.' && source.description.trim() && (
-          <p className="text-sm text-muted-foreground mb-2 break-words">
-            {source.description}
-          </p>
-        )}
-        
-        {/* Show evidence description */}
-        {evidenceDescription && evidenceDescription.trim() !== '.' && evidenceDescription.trim() && (
-          <p className="text-sm text-muted-foreground mb-2 break-words">
-            {evidenceDescription}
-          </p>
-        )}
-        
-        {hasUrls && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {urls.map((url, index) => {
-              const linkText = urls.length > 1 
-                ? t("documentSource.viewSourceN", { n: index + 1 })
-                : t("documentSource.viewSource");
-              const ariaLabel = `${linkText} ${t("documentSource.opensInNewTab")}`;
-              
-              return (
-                <Button 
-                  key={`${index}-${url}`}
-                  variant="outline" 
-                  size="sm" 
-                  asChild
-                >
-                  <a 
-                    href={url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    aria-label={ariaLabel}
-                    className="flex items-center gap-2"
-                  >
-                    <ExternalLink className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                    <span className="mt-1.5">{linkText}</span>
-                  </a>
-                </Button>
-              );
-            })}
+    <article className="border-b border-border/70 py-3 last:border-b-0">
+      <div className="flex min-w-0 items-start gap-3">
+        <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
+          {itemNumber}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-col gap-2 md:flex-row md:items-start md:justify-between">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <h3 className="font-medium leading-snug text-foreground break-words">
+                  {source?.title || t("documentSource.fallbackTitle", { id: sourceId })}
+                </h3>
+                {sourceTypeLabel && (
+                  <Badge variant="outline" className={`rounded-full px-2 py-0.5 text-xs font-medium ${sourceTypeClass}`}>
+                    {sourceTypeLabel}
+                  </Badge>
+                )}
+              </div>
+
+              {source?.description && source.description.trim() !== '.' && source.description.trim() && (
+                <p className="mt-1 text-sm leading-5 text-muted-foreground break-words">
+                  {source.description}
+                </p>
+              )}
+            </div>
+
+            {hasUrls && (
+              <div className="flex flex-shrink-0 flex-wrap items-center gap-x-4 gap-y-1 md:justify-end">
+                {urls.map((url, index) => {
+                  const linkText = urls.length > 1 
+                    ? t("documentSource.viewSourceN", { n: index + 1 })
+                    : t("documentSource.viewSource");
+                  const ariaLabel = `${linkText} ${t("documentSource.opensInNewTab")}`;
+                  
+                  return (
+                    <a
+                      key={`${index}-${url}`}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={ariaLabel}
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                      {linkText}
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
+
+          {evidenceDescription && evidenceDescription.trim() !== '.' && evidenceDescription.trim() && (
+            <p className="mt-2 text-sm leading-6 text-muted-foreground break-words">
+              {evidenceDescription}
+            </p>
+          )}
+        </div>
       </div>
     </article>
   );

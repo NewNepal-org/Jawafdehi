@@ -240,7 +240,7 @@ export function HeroChatDemo() {
               <div className="min-h-[24px] flex-1 py-1 text-sm leading-6 text-muted-foreground">
                 {demoTypedQuestion || t("guestChatInput.askQuestionPlaceholder")}
               </div>
-              <Button asChild size="sm" className="h-10 shrink-0 rounded-xl px-4 text-sm font-semibold shadow-sm">
+              <Button asChild variant="primary" >
                 <Link to="/ask">
                  
                   Try it yourself

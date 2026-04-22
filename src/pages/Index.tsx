@@ -168,7 +168,7 @@ const Index = () => {
 
       <main className="flex-1">
         {/* ── Hero ── */}
-        <section className="relative bg-gradient-to-br from-primary via-navy-dark to-slate-800 py-20 md:py-28 overflow-hidden">
+        <section className="relative bg-gradient-to-br from-primary via-navy-dark to-slate-800 py-16 md:py-28 overflow-hidden">
           <div className="absolute inset-0 bg-grid-white/[0.04] bg-[size:24px_24px]" />
 
           <div className="container mx-auto px-4 relative">
@@ -202,15 +202,15 @@ const Index = () => {
                 <div className="flex flex-wrap gap-8 mb-6">
                   <div>
                     <div className="text-3xl font-bold text-white tabular-nums">{getStatValue(stats?.published_cases)}</div>
-                    <div className="text-sm text-white/50 mt-0.5">Cases Documented</div>
+                    <div className="text-sm text-white/65 mt-0.5">Cases Documented</div>
                   </div>
                   <div className="border-l border-white/20 pl-8">
                     <div className="text-3xl font-bold text-white tabular-nums">{getStatValue(stats?.entities_tracked)}</div>
-                    <div className="text-sm text-white/50 mt-0.5">Officials &amp; Entities Tracked</div>
+                    <div className="text-sm text-white/65 mt-0.5">Officials &amp; Entities Tracked</div>
                   </div>
                   <div className="border-l border-white/20 pl-8">
                     <div className="text-3xl font-bold text-amber-400">Free</div>
-                    <div className="text-sm text-white/50 mt-0.5">Forever. No paywall. Ever.</div>
+                    <div className="text-sm text-white/65 mt-0.5">Forever. No paywall. Ever.</div>
                   </div>
                 </div>
 
@@ -265,7 +265,7 @@ const Index = () => {
         </section>
 
         {/* ── Three Pillars ── */}
-        <section className="py-20 bg-background border-b border-border">
+        <section className="py-12 md:py-20 bg-background border-b border-border">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               <div className="space-y-4">
@@ -307,7 +307,7 @@ const Index = () => {
         </section>
 
         {/* ── Recently Documented Cases ── */}
-        <section className="py-16 bg-muted/20">
+        <section className="py-12 md:py-16 bg-muted/20">
           <div className="container mx-auto px-4">
             <div className="flex items-end justify-between mb-10">
               <div>

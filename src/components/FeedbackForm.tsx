@@ -193,7 +193,10 @@ export function FeedbackForm({
                         value={formData.feedbackType}
                         onValueChange={(value) => setFormData({ ...formData, feedbackType: value as FeedbackType })}
                     >
-                        <SelectTrigger id="feedbackType" className={getFieldError("feedbackType") ? "border-destructive" : ""}>
+                        <SelectTrigger
+                            id="feedbackType"
+                            className={getFieldError("feedbackType") ? "rounded-2xl border-destructive" : "rounded-2xl"}
+                        >
                             <SelectValue placeholder={t("feedback.selectFeedbackType")} />
                         </SelectTrigger>
                         <SelectContent>
@@ -215,7 +218,7 @@ export function FeedbackForm({
                     required
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className={getFieldError("subject") ? "border-destructive" : ""}
+                    className={getFieldError("subject") ? "rounded-2xl border-destructive" : "rounded-2xl"}
                 />
             </div>
 
@@ -228,7 +231,7 @@ export function FeedbackForm({
                     rows={5}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className={getFieldError("description") ? "border-destructive" : ""}
+                    className={getFieldError("description") ? "rounded-2xl border-destructive" : "rounded-2xl"}
                 />
             </div>
 
@@ -241,6 +244,7 @@ export function FeedbackForm({
                         placeholder={t("feedback.namePlaceholder")}
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="rounded-2xl"
                     />
                 </div>
 
@@ -250,7 +254,10 @@ export function FeedbackForm({
                             value={method.type}
                             onValueChange={(value) => updateContactMethod(index, "type", value)}
                         >
-                            <SelectTrigger className="w-[120px]">
+                            <SelectTrigger
+                                className="w-[120px] rounded-2xl"
+                                aria-label={`${t("feedback.contactInfo")} ${index + 1} type`}
+                            >
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -263,7 +270,8 @@ export function FeedbackForm({
                             </SelectContent>
                         </Select>
                         <Input
-                            className="flex-1"
+                            className="flex-1 rounded-2xl"
+                            aria-label={`${t("feedback.contactInfo")} ${index + 1}`}
                             placeholder={method.type === "email" ? "email@example.com" : "+977..."}
                             value={method.value}
                             onChange={(e) => updateContactMethod(index, "value", e.target.value)}
@@ -273,6 +281,7 @@ export function FeedbackForm({
                                 type="button"
                                 variant="ghost"
                                 size="icon"
+                                aria-label={`Remove ${method.type} contact method ${index + 1}`}
                                 onClick={() => removeContactMethod(index)}
                             >
                                 <X className="h-4 w-4" />
@@ -306,7 +315,7 @@ export function FeedbackForm({
                             type="file"
                             ref={fileInputRef}
                             onChange={handleFileChange}
-                            className="cursor-pointer"
+                            className="cursor-pointer rounded-2xl"
                             accept="image/*,application/pdf,video/*,.doc,.docx,.xls,.xlsx"
                         />
                         {attachment && (
@@ -314,6 +323,7 @@ export function FeedbackForm({
                                 type="button"
                                 variant="ghost"
                                 size="icon"
+                                aria-label={t("feedback.removeAttachment", { defaultValue: "Remove attachment" })}
                                 onClick={() => {
                                     setAttachment(null);
                                     if (fileInputRef.current) fileInputRef.current.value = "";
