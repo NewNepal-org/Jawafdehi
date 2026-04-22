@@ -154,7 +154,11 @@ const Entities = () => {
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="relative flex-1">
+                  <label htmlFor="entity-search" className="sr-only">
+                    {t("entities.searchPlaceholder")}
+                  </label>
                   <Input
+                    id="entity-search"
                     placeholder={t("entities.searchPlaceholder")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
