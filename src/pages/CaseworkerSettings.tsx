@@ -92,20 +92,21 @@ function SkillsTab() {
           <p className="font-medium text-sm">{creating ? "Create Skill" : "Edit Skill"}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label>Name (slug)</Label>
-              <Input value={form.name ?? ""} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="case-summarizer" />
+              <Label htmlFor="skill-name">Name (slug)</Label>
+              <Input id="skill-name" value={form.name ?? ""} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="case-summarizer" />
             </div>
             <div className="space-y-1">
-              <Label>Display Name</Label>
-              <Input value={form.display_name ?? ""} onChange={(e) => setForm((p) => ({ ...p, display_name: e.target.value }))} placeholder="Case Summarizer" />
+              <Label htmlFor="skill-display-name">Display Name</Label>
+              <Input id="skill-display-name" value={form.display_name ?? ""} onChange={(e) => setForm((p) => ({ ...p, display_name: e.target.value }))} placeholder="Case Summarizer" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <Label>Description</Label>
-              <Input value={form.description ?? ""} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+              <Label htmlFor="skill-description">Description</Label>
+              <Input id="skill-description" value={form.description ?? ""} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <Label>System Prompt</Label>
+              <Label htmlFor="skill-prompt">System Prompt</Label>
               <Textarea
+                id="skill-prompt"
                 value={form.prompt ?? ""}
                 onChange={(e) => setForm((p) => ({ ...p, prompt: e.target.value }))}
                 rows={5}
@@ -115,17 +116,17 @@ function SkillsTab() {
               <p className="text-xs text-muted-foreground">Use <code className="bg-muted px-0.5 rounded">{"{case_data}"}</code> and <code className="bg-muted px-0.5 rounded">{"{query}"}</code> as placeholders.</p>
             </div>
             <div className="space-y-1">
-              <Label>Model</Label>
-              <Input value={form.model ?? ""} onChange={(e) => setForm((p) => ({ ...p, model: e.target.value }))} placeholder="claude-opus-4-6" />
+              <Label htmlFor="skill-model">Model</Label>
+              <Input id="skill-model" value={form.model ?? ""} onChange={(e) => setForm((p) => ({ ...p, model: e.target.value }))} placeholder="claude-opus-4-6" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label>Temperature</Label>
-                <Input type="number" min={0} max={2} step={0.1} value={form.temperature ?? 0.7} onChange={(e) => setForm((p) => ({ ...p, temperature: parseFloat(e.target.value) }))} />
+                <Label htmlFor="skill-temperature">Temperature</Label>
+                <Input id="skill-temperature" type="number" min={0} max={2} step={0.1} value={form.temperature ?? 0.7} onChange={(e) => setForm((p) => ({ ...p, temperature: parseFloat(e.target.value) }))} />
               </div>
               <div className="space-y-1">
-                <Label>Max Tokens</Label>
-                <Input type="number" min={100} max={100000} value={form.max_tokens ?? 2000} onChange={(e) => setForm((p) => ({ ...p, max_tokens: parseInt(e.target.value) }))} />
+                <Label htmlFor="skill-max-tokens">Max Tokens</Label>
+                <Input id="skill-max-tokens" type="number" min={100} max={100000} value={form.max_tokens ?? 2000} onChange={(e) => setForm((p) => ({ ...p, max_tokens: parseInt(e.target.value) }))} />
               </div>
             </div>
           </div>
@@ -149,10 +150,10 @@ function SkillsTab() {
                 <p className="text-xs text-muted-foreground mt-0.5 truncate">{s.description}</p>
               </div>
               <div className="flex gap-1 shrink-0">
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEdit(s)}>
+                <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={`Edit ${s.display_name ?? s.name}`} onClick={() => startEdit(s)}>
                   <Edit2 className="h-3.5 w-3.5" />
                 </Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => remove(s.id)}>
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" aria-label={`Delete ${s.display_name ?? s.name}`} onClick={() => remove(s.id)}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -235,8 +236,9 @@ function LLMTab() {
           <p className="font-medium text-sm">{creating ? "Add LLM Provider" : "Edit LLM Provider"}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label>Provider</Label>
+              <Label htmlFor="llm-provider-type">Provider</Label>
               <select
+                id="llm-provider-type"
                 className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background"
                 value={form.provider_type ?? "anthropic"}
                 onChange={(e) => setForm((p) => ({ ...p, provider_type: e.target.value as LLMProvider["provider_type"] }))}
@@ -245,20 +247,20 @@ function LLMTab() {
               </select>
             </div>
             <div className="space-y-1">
-              <Label>Model</Label>
-              <Input value={form.model ?? ""} onChange={(e) => setForm((p) => ({ ...p, model: e.target.value }))} placeholder="claude-opus-4-6" />
+              <Label htmlFor="llm-model">Model</Label>
+              <Input id="llm-model" value={form.model ?? ""} onChange={(e) => setForm((p) => ({ ...p, model: e.target.value }))} placeholder="claude-opus-4-6" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <Label>API Key</Label>
-              <Input type="password" value={form.api_key ?? ""} onChange={(e) => setForm((p) => ({ ...p, api_key: e.target.value }))} placeholder={editing ? "Leave blank to keep existing" : "sk-..."} />
+              <Label htmlFor="llm-api-key">API Key</Label>
+              <Input id="llm-api-key" type="password" value={form.api_key ?? ""} onChange={(e) => setForm((p) => ({ ...p, api_key: e.target.value }))} placeholder={editing ? "Leave blank to keep existing" : "sk-..."} />
             </div>
             <div className="space-y-1">
-              <Label>Temperature</Label>
-              <Input type="number" min={0} max={2} step={0.1} value={form.temperature ?? 0.7} onChange={(e) => setForm((p) => ({ ...p, temperature: parseFloat(e.target.value) }))} />
+              <Label htmlFor="llm-temperature">Temperature</Label>
+              <Input id="llm-temperature" type="number" min={0} max={2} step={0.1} value={form.temperature ?? 0.7} onChange={(e) => setForm((p) => ({ ...p, temperature: parseFloat(e.target.value) }))} />
             </div>
             <div className="space-y-1">
-              <Label>Max Tokens</Label>
-              <Input type="number" min={100} value={form.max_tokens ?? 2000} onChange={(e) => setForm((p) => ({ ...p, max_tokens: parseInt(e.target.value) }))} />
+              <Label htmlFor="llm-max-tokens">Max Tokens</Label>
+              <Input id="llm-max-tokens" type="number" min={100} value={form.max_tokens ?? 2000} onChange={(e) => setForm((p) => ({ ...p, max_tokens: parseInt(e.target.value) }))} />
             </div>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
@@ -288,7 +290,7 @@ function LLMTab() {
                 <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => test(p.id)} disabled={testing === p.id}>
                   <RefreshCw className={`h-3 w-3 mr-1 ${testing === p.id ? "animate-spin" : ""}`} /> Test
                 </Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEdit(p)}>
+                <Button size="icon" variant="ghost" className="h-7 w-7" aria-label={`Edit ${p.provider_type} provider`} onClick={() => startEdit(p)}>
                   <Edit2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -352,20 +354,21 @@ function MCPTab() {
           <p className="font-medium text-sm">Add MCP Server</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label>Name</Label>
-              <Input value={form.name ?? ""} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="case-system" />
+              <Label htmlFor="mcp-name">Name</Label>
+              <Input id="mcp-name" value={form.name ?? ""} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="case-system" />
             </div>
             <div className="space-y-1">
-              <Label>Display Name</Label>
-              <Input value={form.display_name ?? ""} onChange={(e) => setForm((p) => ({ ...p, display_name: e.target.value }))} placeholder="Case Management System" />
+              <Label htmlFor="mcp-display-name">Display Name</Label>
+              <Input id="mcp-display-name" value={form.display_name ?? ""} onChange={(e) => setForm((p) => ({ ...p, display_name: e.target.value }))} placeholder="Case Management System" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <Label>URL</Label>
-              <Input value={form.url ?? ""} onChange={(e) => setForm((p) => ({ ...p, url: e.target.value }))} placeholder="https://api.example.com/mcp" />
+              <Label htmlFor="mcp-url">URL</Label>
+              <Input id="mcp-url" value={form.url ?? ""} onChange={(e) => setForm((p) => ({ ...p, url: e.target.value }))} placeholder="https://api.example.com/mcp" />
             </div>
             <div className="space-y-1">
-              <Label>Auth Type</Label>
+              <Label htmlFor="mcp-auth-type">Auth Type</Label>
               <select
+                id="mcp-auth-type"
                 className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background"
                 value={form.auth_type ?? "bearer"}
                 onChange={(e) => setForm((p) => ({ ...p, auth_type: e.target.value as MCPServer["auth_type"] }))}
@@ -375,8 +378,8 @@ function MCPTab() {
               </select>
             </div>
             <div className="space-y-1">
-              <Label>Auth Token</Label>
-              <Input type="password" value={form.auth_token ?? ""} onChange={(e) => setForm((p) => ({ ...p, auth_token: e.target.value }))} />
+              <Label htmlFor="mcp-auth-token">Auth Token</Label>
+              <Input id="mcp-auth-token" type="password" value={form.auth_token ?? ""} onChange={(e) => setForm((p) => ({ ...p, auth_token: e.target.value }))} />
             </div>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
