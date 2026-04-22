@@ -48,7 +48,7 @@ export const CaseCard = ({ id, title, entity, location, date, status, tags = [],
             <>
               <img
                 src={imageSrc}
-                alt={`Thumbnail for ${title}`}
+                alt={t("caseCard.thumbnailAlt", { title })}
                 loading="lazy"
                 decoding="async"
                 onError={handleImageError}
