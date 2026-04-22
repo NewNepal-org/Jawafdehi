@@ -25,7 +25,7 @@ export function ReportCaseDialog({ caseId, caseTitle }: ReportCaseDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="default" className="gap-2 shadow-sm border-secondary-foreground/10">
+                <Button variant="primary" className="gap-2 shadow-sm border-secondary-foreground/10">
                     <AlertCircle className="h-4 w-4" />
                     <span className="mt-1.5 font-semibold">
                         {t("caseDetail.reportInfo")}

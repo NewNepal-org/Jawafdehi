@@ -98,7 +98,7 @@ export const Header = () => {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center space-x-3">
-          <Button asChild>
+          <Button asChild variant="primary">
             <Link to="/ask" className="inline-flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
               <span>{t("header.askJawafdehi")}</span>
@@ -158,7 +158,7 @@ export const Header = () => {
                   — Our Products
                 </Link>
                 <div className="pt-4 space-y-3 border-t border-border">
-                  <Button asChild className="w-full" onClick={() => setIsOpen(false)}>
+                  <Button asChild variant="primary" className="w-full" onClick={() => setIsOpen(false)}>
                     <Link to="/ask" className="inline-flex items-center justify-center gap-2">
                       <MessageCircle className="h-4 w-4" />
                       <span>{t("header.askJawafdehi")}</span>
