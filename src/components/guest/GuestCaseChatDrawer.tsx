@@ -71,33 +71,33 @@ export function GuestCaseChatDrawer({
 
   return (
     <aside className="flex h-full min-h-[720px] transform-gpu flex-col overflow-hidden rounded-[28px] border border-border/70 bg-card shadow-sm transition-all duration-300 ease-out no-print xl:h-[calc(100vh-8rem)]">
-      <div className="border-b border-border/70 px-5 py-5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="border-b border-border/70 px-4 py-4 sm:px-5 sm:py-5">
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
+          <div className="min-w-0 flex-1 sm:flex sm:items-start sm:gap-3">
+            <div className="mt-0.5 hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary sm:flex">
               <img
                 src="/assets/bot.svg"
                 alt={t("guestCommon.assistantAlt")}
                 className="h-8 w-8"
               />
             </div>
-            <div className="min-w-0 space-y-2">
-              <p className="text-sm font-semibold text-foreground">
+            <div className="min-w-0 space-y-2 pr-1">
+              <p className="text-sm font-semibold leading-5 text-foreground">
                 {t("guestCaseChatDrawer.title")}
               </p>
-              <p className="line-clamp-2 text-sm text-muted-foreground">{caseTitle}</p>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary" className="rounded-full">
+              <p className="line-clamp-2 text-xs leading-5 text-muted-foreground sm:text-sm">{caseTitle}</p>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                <Badge variant="secondary" className="rounded-full px-2 py-0.5 text-[11px] sm:text-xs">
                   {t("guestCaseChatDrawer.allegationCount", {
                     count: caseContext.allegationCount,
                   })}
                 </Badge>
-                <Badge variant="outline" className="rounded-full">
+                <Badge variant="outline" className="rounded-full px-2 py-0.5 text-[11px] sm:text-xs">
                   {t("guestCaseChatDrawer.timelineCount", {
                     count: caseContext.timelineCount,
                   })}
                 </Badge>
-                <Badge variant="outline" className="rounded-full">
+                <Badge variant="outline" className="rounded-full px-2 py-0.5 text-[11px] sm:text-xs">
                   {t("guestCaseChatDrawer.sourceCount", {
                     count: caseContext.sourceCount,
                   })}
@@ -108,7 +108,7 @@ export function GuestCaseChatDrawer({
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full"
+            className="h-9 w-9 flex-shrink-0 rounded-full sm:h-10 sm:w-10"
             onClick={() => onOpenChange(false)}
             aria-label={t("guestCaseChatDrawer.closeChat")}
           >
@@ -174,7 +174,7 @@ export function GuestCaseChatDrawer({
                       ) : (
                         <>
                           {message.role === "assistant" ? (
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <div className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary sm:flex">
                               <img
                                 src="/assets/bot.svg"
                                 alt={t("guestCommon.assistantAlt")}

@@ -13,7 +13,7 @@ export function BotTypingBubble({
   return (
     <div className={`flex justify-start ${className}`.trim()}>
       <div className="flex max-w-[92%] items-start gap-3">
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <div className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary sm:flex">
           <img
             src="/assets/bot.svg"
             alt={t("guestCommon.assistantAlt")}
