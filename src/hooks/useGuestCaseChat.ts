@@ -21,7 +21,7 @@ export function useGuestCaseChat({
   sourceEntries,
   defaultSuggestedQuestions,
 }: UseGuestCaseChatOptions) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<GuestCaseChatMessage[]>([]);
   const [followups, setFollowups] = useState<string[]>(defaultSuggestedQuestions);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +34,7 @@ export function useGuestCaseChat({
         question,
         caseData,
         sourceEntries,
+        language: i18n.language,
       }),
   });
   const { reset: resetMutation } = mutation;

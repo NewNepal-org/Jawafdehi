@@ -10,7 +10,7 @@ import type {
   GuestEntityMatch,
 } from "@/types/guest-chat";
 
-const MAX_CASE_PAGES = 5;
+const MAX_CASE_PAGES = 50;
 const DEFAULT_FOLLOWUPS_EN = [
   "Open the most relevant case",
   "What are the key allegations in the first case?",
@@ -271,6 +271,12 @@ export async function getAllPublicCases(): Promise<Case[]> {
     }
 
     page += 1;
+  }
+
+  if (page > MAX_CASE_PAGES) {
+    console.warn(
+      `[guest-chat-adapter] Stopped loading public cases at page ${MAX_CASE_PAGES}; results may be truncated.`
+    );
   }
 
   return allCases;
@@ -1097,43 +1103,71 @@ export async function askGuestCaseQuestion(params: {
   question: string;
   caseData?: CaseDetail;
   sourceEntries?: GuestCaseSourceEntry[];
+  language?: string;
 }): Promise<GuestCaseChatResponse> {
   const resolvedContext =
     params.caseData && params.sourceEntries
       ? { caseData: params.caseData, sourceEntries: params.sourceEntries }
       : await resolveCaseSources(params.caseId);
   const { caseData, sourceEntries } = resolvedContext;
+  const language = getGuestLanguage(params.language);
   const normalizedQuestion = normalize(params.question);
   const citations = findRelevantSources(params.question, sourceEntries);
 
-  let answer = `This public case record is titled "${caseData.title}". `;
+  let answer =
+    language === "ne"
+      ? `यो सार्वजनिक मुद्दा अभिलेखको शीर्षक "${caseData.title}" हो।`
+      : `This public case record is titled "${caseData.title}".`;
 
   if (isCaseAllegationQuestion(normalizedQuestion)) {
     answer =
       caseData.key_allegations.length > 0
-        ? `The key public allegations are: ${caseData.key_allegations.join(" ")}`
+        ? language === "ne"
+          ? `सार्वजनिक रूपमा देखिएका मुख्य आरोपहरू यस्ता छन्: ${caseData.key_allegations.join(" ")}`
+          : `The key public allegations are: ${caseData.key_allegations.join(" ")}`
+        : language === "ne"
+        ? "यो सार्वजनिक मुद्दा पृष्ठमा मुख्य आरोपहरू अझै सूचीकृत छैनन्।"
         : "This public case page does not list any key allegations yet.";
   } else if (isCaseTimelineQuestion(normalizedQuestion)) {
     answer =
       caseData.timeline.length > 0
-        ? `The public timeline begins with ${caseData.timeline[0].date}: ${caseData.timeline[0].title}. ${caseData.timeline
-            .slice(1, 3)
-            .map((entry) => `${entry.date}: ${entry.title}.`)
-            .join(" ")}`
+        ? language === "ne"
+          ? `सार्वजनिक समयरेखा ${caseData.timeline[0].date}: ${caseData.timeline[0].title} बाट सुरु हुन्छ। ${caseData.timeline
+              .slice(1, 3)
+              .map((entry) => `${entry.date}: ${entry.title}।`)
+              .join(" ")}`
+          : `The public timeline begins with ${caseData.timeline[0].date}: ${caseData.timeline[0].title}. ${caseData.timeline
+              .slice(1, 3)
+              .map((entry) => `${entry.date}: ${entry.title}.`)
+              .join(" ")}`
+        : language === "ne"
+        ? "यो सार्वजनिक मुद्दा पृष्ठमा समयरेखा अझै समावेश गरिएको छैन।"
         : "This public case page does not include a timeline yet.";
   } else if (isCaseSourceQuestion(normalizedQuestion)) {
     answer =
       sourceEntries.length > 0
-        ? `This case currently references ${sourceEntries.length} public source${sourceEntries.length === 1 ? "" : "s"}: ${sourceEntries
-            .map(({ source, sourceId }) => source?.title || `Source ${sourceId}`)
-            .join(", ")}.`
+        ? language === "ne"
+          ? `यस मुद्दामा अहिले ${sourceEntries.length} वटा सार्वजनिक स्रोत उल्लेख छन्: ${sourceEntries
+              .map(({ source, sourceId }) => source?.title || `स्रोत ${sourceId}`)
+              .join(", ")}।`
+          : `This case currently references ${sourceEntries.length} public source${sourceEntries.length === 1 ? "" : "s"}: ${sourceEntries
+              .map(({ source, sourceId }) => source?.title || `Source ${sourceId}`)
+              .join(", ")}.`
+        : language === "ne"
+        ? "यो सार्वजनिक मुद्दा पृष्ठमा कागजात स्रोतहरू अझै सूचीबद्ध छैनन्।"
         : "This public case page does not list any document sources yet.";
   } else if (isCaseRelatedEntitiesQuestion(normalizedQuestion)) {
     answer =
       caseData.entities.length > 0
-        ? `The related public entities listed on this case are ${caseData.entities
-            .map((entity) => entity.display_name || entity.nes_id || "Unnamed entity")
-            .join(", ")}.`
+        ? language === "ne"
+          ? `यस मुद्दामा सूचीकृत सम्बन्धित सार्वजनिक व्यक्ति वा संस्थाहरू ${caseData.entities
+              .map((entity) => entity.display_name || entity.nes_id || "नाम नखुलेको संस्था")
+              .join(", ")} हुन्।`
+          : `The related public entities listed on this case are ${caseData.entities
+              .map((entity) => entity.display_name || entity.nes_id || "Unnamed entity")
+              .join(", ")}.`
+        : language === "ne"
+        ? "यो सार्वजनिक मुद्दा पृष्ठमा सम्बन्धित व्यक्ति वा संस्थाहरू अझै सूचीबद्ध छैनन्।"
         : "This public case page does not list related entities yet.";
   } else if (isCaseChargeSheetQuestion(normalizedQuestion)) {
     const chargeSheet = sourceEntries.find(({ source, evidenceDescription }) =>
@@ -1144,11 +1178,21 @@ export async function askGuestCaseQuestion(params: {
       )
     );
     answer = chargeSheet?.source
-      ? `${chargeSheet.source.title} is the source most directly related to the charge sheet for this public case.`
+      ? language === "ne"
+        ? `${chargeSheet.source.title} यो सार्वजनिक मुद्दासँग सम्बन्धित आरोपपत्रको सबैभन्दा प्रत्यक्ष स्रोत हो।`
+        : `${chargeSheet.source.title} is the source most directly related to the charge sheet for this public case.`
+      : language === "ne"
+      ? "यो मुद्दा पृष्ठमा आरोपपत्रलाई स्पष्ट रूपमा उल्लेख गर्ने सार्वजनिक स्रोत मैले भेटिनँ।"
       : "I could not identify a public source on this case page that explicitly mentions a charge sheet.";
   } else {
-    answer = `${stripHtml(caseData.description) || "This public case page has limited descriptive text."} ${
-      caseData.key_allegations[0] ? `One key allegation is: ${caseData.key_allegations[0]}` : ""
+    answer = `${stripHtml(caseData.description) || (language === "ne"
+      ? "यो सार्वजनिक मुद्दा पृष्ठमा वर्णनात्मक पाठ सीमित छ।"
+      : "This public case page has limited descriptive text.")} ${
+      caseData.key_allegations[0]
+        ? language === "ne"
+          ? `एक मुख्य आरोप यस्तो छ: ${caseData.key_allegations[0]}`
+          : `One key allegation is: ${caseData.key_allegations[0]}`
+        : ""
     }`.trim();
   }
 
@@ -1159,9 +1203,11 @@ export async function askGuestCaseQuestion(params: {
     grounded: true,
     citations,
     followups: [
-      "What are the key allegations?",
-      "Summarize the timeline",
-      "Which sources support this case?",
+      language === "ne" ? "मुख्य आरोपहरू के हुन्?" : "What are the key allegations?",
+      language === "ne" ? "समयरेखाको सार दिनुहोस्" : "Summarize the timeline",
+      language === "ne"
+        ? "यस मुद्दालाई कुन स्रोतहरूले समर्थन गर्छन्?"
+        : "Which sources support this case?",
     ],
     origin: "public-read-adapter",
   };
