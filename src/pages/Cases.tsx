@@ -129,7 +129,7 @@ const Cases = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as 'all' | 'ongoing' | 'closed' | 'others')}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 rounded-full">
                     <SelectValue placeholder={t("cases.filterByStatus")} />
                   </SelectTrigger>
                   <SelectContent>
