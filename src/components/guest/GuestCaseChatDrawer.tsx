@@ -230,6 +230,7 @@ export function GuestCaseChatDrawer({
               placeholder={t("guestChatInput.askCasePlaceholder")}
               submitLabel={t("guestChatInput.submit")}
               loadingLabel={t("guestChatInput.answering")}
+              disabled
               isSubmitting={isSubmitting}
               onSubmit={submitQuestion}
             />
