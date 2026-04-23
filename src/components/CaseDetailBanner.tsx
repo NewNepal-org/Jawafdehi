@@ -65,13 +65,22 @@ export function CaseDetailBanner({
         <img
           src={bannerUrl}
           alt={title}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-top"
         />
       ) : (
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.22),transparent_34%),linear-gradient(135deg,#0f172a,#020617)]" />
       )}
-      <div className="absolute inset-0 bg-slate-950/80" />
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950/90 to-transparent" />
+      {hasBanner ? (
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(2, 6, 23, 0.86) 0%, rgba(2, 6, 23, 0.76) 34%, rgba(2, 6, 23, 0.28) 62%, rgba(2, 6, 23, 0.06) 82%, rgba(2, 6, 23, 0) 100%), linear-gradient(0deg, rgba(2, 6, 23, 0.42) 0%, rgba(2, 6, 23, 0.18) 38%, rgba(2, 6, 23, 0) 72%)",
+          }}
+        />
+      ) : (
+        <div className="absolute inset-0 bg-slate-950/80" />
+      )}
 
       <div className="container relative z-10 mx-auto max-w-8xl px-4 py-10 sm:py-14 lg:py-16">
         <nav aria-label="breadcrumb" className="mb-5 flex flex-wrap items-center gap-2 text-xs text-white/70">
