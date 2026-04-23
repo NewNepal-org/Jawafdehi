@@ -26,6 +26,8 @@ export const LanguageToggle = () => {
     <button
       type="button"
       onClick={() => handleLanguageChange(nextLanguage)}
+      role="switch"
+      aria-checked={currentLanguage === "en"}
       aria-label={`${t("common.changeLanguage")}: ${nextLanguageLabel}`}
       title={`${t("common.changeLanguage")}: ${nextLanguageLabel}`}
       className="relative inline-flex h-8 w-[78px] items-center rounded-full border border-primary/40 bg-background px-1 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
