@@ -8,11 +8,22 @@ interface GuestCaseResultCardProps {
   result: GuestCaseResultItem;
 }
 
+function decodeHtmlEntities(value: string) {
+  if (typeof document === "undefined") return value;
+
+  const textarea = document.createElement("textarea");
+  textarea.innerHTML = value;
+  return textarea.value;
+}
+
 export function GuestCaseResultCard({
   result,
 }: GuestCaseResultCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const descriptionPreview = decodeHtmlEntities(
+    result.caseItem.description.replace(/<[^>]*>/g, " "),
+  );
 
   return (
     <article className="rounded-[24px] border border-border/70 bg-background/80 p-4 transition-colors hover:border-primary/40">
@@ -22,7 +33,7 @@ export function GuestCaseResultCard({
         </div>
         <p className="line-clamp-4 text-sm text-muted-foreground">
           {result.caseItem.key_allegations?.[0] ||
-            result.caseItem.description.replace(/<[^>]*>/g, " ")}
+            descriptionPreview}
         </p>
       </div>
       <div className="mt-4">
