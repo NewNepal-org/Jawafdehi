@@ -426,7 +426,7 @@ const CaseDetail = () => {
                     title={t("caseDetail.timeline")}
                     className={cn(
                       "print:static print:mb-8",
-                      isAskDrawerOpen ? "hidden print:block" : "mb-8 lg:sticky lg:top-24 lg:self-start"
+                      isAskDrawerOpen ? "hidden print:block" : "mb-8"
                     )}
                   />
                 </div>
