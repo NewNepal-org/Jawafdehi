@@ -563,6 +563,7 @@
     "viewDetails": "View Details →"
   },
   "themeToggle": {
+    "toggleTheme": "Toggle theme",
     "switchToLight": "Switch to light theme",
     "switchToDark": "Switch to dark theme"
   },
