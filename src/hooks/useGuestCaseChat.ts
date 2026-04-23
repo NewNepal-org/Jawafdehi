@@ -88,33 +88,39 @@ export function useGuestCaseChat({
 
     try {
       const result = await mutation.mutateAsync(question);
-      setMessages((current) => [
-        ...current.filter((message) => message.id !== loadingMessageId),
-        {
-          id: `assistant-${Date.now()}`,
-          role: "assistant",
-          content: result.answer,
-          timestamp: new Date().toISOString(),
-          citations: result.citations,
-          origin: result.origin,
-        },
-      ]);
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === loadingMessageId
+            ? {
+                id: `assistant-${Date.now()}`,
+                role: "assistant",
+                content: result.answer,
+                timestamp: new Date().toISOString(),
+                citations: result.citations,
+                origin: result.origin,
+              }
+            : message
+        )
+      );
       setFollowups(
         result.followups.length > 0 ? result.followups : defaultSuggestedQuestions
       );
     } catch {
       setError(t("guestCaseChatDrawer.errors.answerFailed"));
-      setMessages((current) => [
-        ...current.filter((message) => message.id !== loadingMessageId),
-        {
-          id: `assistant-error-${Date.now()}`,
-          role: "assistant",
-          content: t("guestCaseChatDrawer.errors.answerFailedMessage"),
-          timestamp: new Date().toISOString(),
-          origin: "public-read-adapter",
-          isError: true,
-        },
-      ]);
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === loadingMessageId
+            ? {
+                id: `assistant-error-${Date.now()}`,
+                role: "assistant",
+                content: t("guestCaseChatDrawer.errors.answerFailedMessage"),
+                timestamp: new Date().toISOString(),
+                origin: "public-read-adapter",
+                isError: true,
+              }
+            : message
+        )
+      );
     }
   };
 
