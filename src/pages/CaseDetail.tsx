@@ -19,7 +19,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Calendar, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, StickyNote, User } from "lucide-react";
 import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
-import type { DocumentSource } from "@/types/jds";
+import type { DocumentSource, JawafEntity } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { formatCaseDateRange } from "@/utils/date";
@@ -31,6 +31,22 @@ import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
 import "@/styles/print.css";
 
+function getRelatedSectionEntities(entities: JawafEntity[]) {
+  const seen = new Set<number>();
+  const orderedEntities = [
+    ...entities.filter((entity) => entity.type === "accused"),
+    ...entities.filter((entity) => entity.type === "related"),
+  ];
+
+  return orderedEntities.filter((entity) => {
+    if (seen.has(entity.id)) {
+      return false;
+    }
+
+    seen.add(entity.id);
+    return true;
+  });
+}
 
 const CaseDetail = () => {
   const { t, i18n } = useTranslation();
@@ -113,6 +129,10 @@ const CaseDetail = () => {
     const data = entityQueries[i]?.data;
     if (data) resolvedEntities[nesId] = data;
   });
+
+  const relatedSectionEntities = caseData
+    ? getRelatedSectionEntities(caseData.entities)
+    : [];
 
   const chatSources = (caseData?.evidence ?? []).map((evidence) => ({
     sourceId: evidence.source_id,
@@ -344,13 +364,13 @@ const CaseDetail = () => {
                       </CardContent>
                     </Card>
 
-                    {caseData.entities.filter(e => e.type === 'related').length > 0 && (
+                    {relatedSectionEntities.length > 0 && (
                       <section className="mb-8">
                         <h2 className="mb-5 text-2xl font-semibold text-foreground">
                           {t("caseDetail.partiesInvolved")}
                         </h2>
                         <CaseEntityChips
-                          entities={caseData.entities.filter(e => e.type === 'related')}
+                          entities={relatedSectionEntities}
                           resolvedEntities={resolvedEntities}
                           language={currentLang}
                         />
