@@ -219,9 +219,10 @@ function dedupeCaseResults(results: GuestCaseResultItem[]): GuestCaseResultItem[
   const deduped = new Map<number, GuestCaseResultItem>();
 
   for (const result of results) {
-    const existing = deduped.get(result.id);
+    const caseId = result.caseItem.id;
+    const existing = deduped.get(caseId);
     if (!existing || result.matchedEntityNames.length > existing.matchedEntityNames.length) {
-      deduped.set(result.id, result);
+      deduped.set(caseId, result);
     }
   }
 
@@ -236,12 +237,9 @@ function buildCaseResult(
   matchedEntityIds: number[] = []
 ): GuestCaseResultItem {
   return {
-    id: caseItem.id,
-    title: caseItem.title,
     state: caseItem.state,
     case_type: caseItem.case_type,
     tags: caseItem.tags,
-    matched_entity_names: matchedEntityNames,
     caseItem,
     matchReason,
     exampleDescription,
@@ -751,11 +749,11 @@ function buildBigCasesAnswer(caseResults: GuestCaseResultItem[], language: Guest
       const amount = formatCurrency(result.caseItem.bigo);
       if (amount) {
         return language === "ne"
-          ? `${result.title} (${amount})`
-          : `${result.title} (${amount})`;
+          ? `${result.caseItem.title} (${amount})`
+          : `${result.caseItem.title} (${amount})`;
       }
 
-      return result.title;
+      return result.caseItem.title;
     })
     .join(language === "ne" ? " ; " : "; ");
 
@@ -1035,12 +1033,12 @@ async function buildEntitySearchResponse(
       caseResults.length > 0
         ? language === "ne"
           ? [
-              `${caseResults[0].title} खोल`,
+              `${caseResults[0].caseItem.title} खोल`,
               "पहिलो मुद्दालाई कुन सार्वजनिक स्रोतहरूले समर्थन गर्छन्?",
               "पहिलो मुद्दाका मुख्य आरोप के हुन्?",
             ]
           : [
-              `Open ${caseResults[0].title}`,
+              `Open ${caseResults[0].caseItem.title}`,
               "Which public sources support the first case?",
               "What are the key allegations in the first case?",
             ]

@@ -14,12 +14,9 @@ export interface GuestAnswerModel {
 }
 
 export interface GuestCaseResultItem {
-  id: number;
-  title: string;
   state: CaseDetail["state"];
   case_type: CaseDetail["case_type"];
   tags: string[];
-  matched_entity_names: string[];
   caseItem: CaseDetail;
   matchReason: string;
   exampleDescription?: string;
