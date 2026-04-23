@@ -239,9 +239,9 @@ export default function ReportAllegation() {
 
                   {/* Evidence Upload */}
                   <div className="space-y-2">
-                    <label htmlFor="evidence" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <p className="text-sm font-medium leading-none">
                       {t("report.evidence")}
-                    </label>
+                    </p>
                     <label
                       htmlFor="evidence"
                       className="block cursor-pointer rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary has-[:focus-visible]:border-primary has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2"
