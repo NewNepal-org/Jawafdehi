@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Search, Filter, AlertCircle } from "lucide-react";
+import { Search, AlertCircle, Filter } from "lucide-react";
 import { getCases } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import { useQuery, useQueries } from "@tanstack/react-query";
@@ -103,7 +103,7 @@ const Cases = () => {
       </Helmet>
       <Header />
 
-      <main className="flex-1 py-12">
+      <main id="main-content" className="flex-1 py-8 md:py-12">
         <div className="container mx-auto px-4">
           <div className="mb-10">
             <h1 className="text-4xl font-bold text-foreground mb-3">{t("cases.title")}</h1>
@@ -111,21 +111,25 @@ const Cases = () => {
           </div>
 
           {/* Search and Filter Section */}
-          <div className="mb-8 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center">
+            <div className="relative flex-[1.5]">
+              <label htmlFor="case-search" className="sr-only">
+                {t("cases.searchPlaceholder")}
+              </label>
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <Input
+                id="case-search"
                 placeholder={t("cases.searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12"
+                className="h-11 rounded-full pl-11"
               />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as 'all' | 'ongoing' | 'closed' | 'others')}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 rounded-full">
                     <SelectValue placeholder={t("cases.filterByStatus")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -197,7 +201,8 @@ const Cases = () => {
                     return entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id;
                   }
                   return e.display_name || e.nes_id || translateDynamicText('Unknown Entity', currentLang);
-                }).join(', ') || translateDynamicText('Unknown Entity', currentLang);
+                });
+                const entityDisplayName = entityNames.join(', ') || translateDynamicText('Unknown Entity', currentLang);
 
                 // Translate location names
                 const locationNames = locationEntities.map(e => {
@@ -215,7 +220,8 @@ const Cases = () => {
                     key={caseItem.id}
                     id={caseItem.id.toString()}
                     title={caseItem.title}
-                    entity={entityNames}
+                    entity={entityDisplayName}
+                    entityNames={entityNames}
                     location={locationNames}
                     date={formatDateWithBS(caseItem.created_at, 'PPP')}
                     status="ongoing"

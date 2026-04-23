@@ -1,33 +1,52 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Footer } from "@/components/Footer";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
+import { GuestCaseChatDrawer } from "@/components/guest/GuestCaseChatDrawer";
 import { DocumentSourceCard } from "@/components/DocumentSourceCard";
 import { ResponsiveTable } from "@/components/ResponsiveTable";
 import { FloatingShareSidebar } from "@/components/FloatingShareSidebar";
-import { InlineShareButtons } from "@/components/InlineShareButtons";
+import { CaseDetailBanner } from "@/components/CaseDetailBanner";
+import { CaseTimeline } from "@/components/CaseTimeline";
+import { CaseEntityChips } from "@/components/CaseEntityChips";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, MapPin, User, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MessageCircle, StickyNote } from "lucide-react";
+import { Calendar, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, StickyNote, User } from "lucide-react";
 import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
-import type { DocumentSource } from "@/types/jds";
+import type { DocumentSource, JawafEntity } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import { formatDateWithBS, formatCaseDateRange } from "@/utils/date";
+import { formatCaseDateRange } from "@/utils/date";
 import { ReportCaseDialog } from "@/components/ReportCaseDialog";
 import { DisqusComments } from "@/components/DisqusComments";
 import { JAWAFDEHI_WHATSAPP_NUMBER, JAWAFDEHI_EMAIL } from "@/config/constants";
 import { translateDynamicText } from "@/lib/translate-dynamic-content";
 import { trackEvent } from "@/utils/analytics";
+import { cn } from "@/lib/utils";
 import "@/styles/print.css";
 
+function getRelatedSectionEntities(entities: JawafEntity[]) {
+  const seen = new Set<number>();
+  const orderedEntities = [
+    ...entities.filter((entity) => entity.type === "accused"),
+    ...entities.filter((entity) => entity.type === "related"),
+  ];
+
+  return orderedEntities.filter((entity) => {
+    if (seen.has(entity.id)) {
+      return false;
+    }
+
+    seen.add(entity.id);
+    return true;
+  });
+}
 
 const CaseDetail = () => {
   const { t, i18n } = useTranslation();
@@ -35,8 +54,9 @@ const CaseDetail = () => {
   const { id } = useParams();
   const caseId = id ? parseInt(id) : undefined;
   const trackedCaseIdRef = useRef<string | null>(null);
+  const [isAskDrawerOpen, setIsAskDrawerOpen] = useState(false);
+  const [showAskPopup, setShowAskPopup] = useState(false);
 
-  // Fetch case data
   const { data: caseData, isLoading, isError } = useQuery({
     queryKey: ['case', caseId],
     queryFn: () => getCaseById(caseId!),
@@ -44,7 +64,6 @@ const CaseDetail = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch all evidence sources in parallel once we have case data
   const sourceQueries = useQueries({
     queries: (caseData?.evidence ?? []).map((evidence) => ({
       queryKey: ['source', evidence.source_id],
@@ -54,7 +73,6 @@ const CaseDetail = () => {
     })),
   });
 
-  // Fetch all NES entities in parallel
   const uniqueNesIds = caseData
     ? [...new Set(caseData.entities.filter(e => e.nes_id).map(e => e.nes_id!))]
     : [];
@@ -68,7 +86,6 @@ const CaseDetail = () => {
     })),
   });
 
-  // Track once per loaded case id to avoid duplicates while excluding error/404 views
   useEffect(() => {
     const loadedCaseId = caseData?.id?.toString();
     if (!id || !loadedCaseId || isError) {
@@ -83,7 +100,24 @@ const CaseDetail = () => {
     trackedCaseIdRef.current = loadedCaseId;
   }, [id, caseData?.id, isError]);
 
-  // Build lookup maps
+  useEffect(() => {
+    if (isAskDrawerOpen) {
+      setShowAskPopup(false);
+      return;
+    }
+
+    const handleScroll = () => {
+      setShowAskPopup(window.scrollY > 40);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isAskDrawerOpen]);
+
   const resolvedSources: Record<number, DocumentSource> = {};
   (caseData?.evidence ?? []).forEach((evidence, i) => {
     const data = sourceQueries[i]?.data;
@@ -96,11 +130,21 @@ const CaseDetail = () => {
     if (data) resolvedEntities[nesId] = data;
   });
 
+  const relatedSectionEntities = caseData
+    ? getRelatedSectionEntities(caseData.entities)
+    : [];
+
+  const chatSources = (caseData?.evidence ?? []).map((evidence) => ({
+    sourceId: evidence.source_id,
+    source: resolvedSources[evidence.source_id] ?? null,
+    evidenceDescription: evidence.description,
+  }));
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Header />
-        <main className="flex-1 py-12">
+        <main id="main-content" className="flex-1 py-8 md:py-12">
           <div className="container mx-auto px-4 max-w-5xl">
             <Skeleton className="h-10 w-32 mb-6" />
             <div className="space-y-8">
@@ -126,7 +170,7 @@ const CaseDetail = () => {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Header />
-        <main className="flex-1 py-12">
+        <main id="main-content" className="flex-1 py-8 md:py-12">
           <div className="container mx-auto px-4 max-w-5xl">
             <Button variant="ghost" asChild className="mb-6">
               <Link to="/cases">
@@ -148,6 +192,7 @@ const CaseDetail = () => {
   }
 
   const canonicalUrl = `https://jawafdehi.org/case/${id}`;
+  const isAskPopupVisible = showAskPopup && !isAskDrawerOpen;
   const plainDescription = caseData.description
     .replace(/<[^>]*>/g, ' ')
     .replace(/&nbsp;/g, ' ')
@@ -190,310 +235,301 @@ const CaseDetail = () => {
         <link rel="alternate" type="application/json" href={`https://portal.jawafdehi.org/api/cases/${id}/`} title="Case data (JSON API)" />
       </Helmet>
       <Header />
+      <CaseDetailBanner
+        caseData={caseData}
+        resolvedEntities={resolvedEntities}
+        actions={<ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />}
+      />
 
-      <main className="flex-1 py-12">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 mb-4 no-print">
-            <Button variant="outline" asChild>
-              <Link to="/cases">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="mt-[5px]">
-                  {t("caseDetail.backToCases")}
-                </span>
-              </Link>
-            </Button>
-
-            <div className="flex gap-2">
-              <ReportCaseDialog caseId={id || ""} caseTitle={caseData.title} />
-            </div>
-          </div>
-
-          {/* Floating share sidebar - desktop only */}
-          <FloatingShareSidebar
-            url={canonicalUrl}
-            title={caseData.title}
-            description={plainDescription}
-          />
-
-          <Alert className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 no-print">
-            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <AlertDescription className="text-blue-800 dark:text-blue-200 text-sm">
-              {t("footer.disclaimer")}
-            </AlertDescription>
-          </Alert>
-
-          {caseData.state === 'IN_REVIEW' && (
-            <Alert className="mb-6 border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800 no-print">
-              <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-              <AlertDescription className="text-yellow-800 dark:text-yellow-200 text-sm">
-                {t("caseDetail.inReviewBanner")}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* PRINTABLE CONTENT STARTS HERE */}
-          <div id="print-content" className="print-content">
-            <div className="mb-8">
-              <div className="flex flex-wrap items-center gap-3 mb-4 no-print">
-                <Badge className="bg-alert text-alert-foreground">
-                  {(() => {
-                    // Map caseData.state to translation key
-                    const stateMap: Record<string, string> = {
-                      'DRAFT': 'caseDetail.status.underInvestigation',
-                      'IN_REVIEW': 'caseDetail.status.underInvestigation',
-                      'PUBLISHED': 'caseDetail.status.ongoing',
-                      'CLOSED': 'caseDetail.status.resolved'
-                    };
-                    const statusKey = caseData.state ? stateMap[caseData.state] : 'caseDetail.status.ongoing';
-                    return t(statusKey || 'caseDetail.status.ongoing');
-                  })()}
-                </Badge>
-                <Badge variant="outline" className={caseData.case_type === 'CORRUPTION' ? 'bg-destructive/20 text-destructive' : 'bg-orange-500/20 text-orange-700'}>
-                  {caseData.case_type === 'CORRUPTION' ? t("cases.type.corruption") : t("cases.type.brokenPromise")}
-                </Badge>
-                {caseData.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary">{tag}</Badge>
-                ))}
-              </div>
-            <h1 className="text-4xl font-bold text-foreground mb-6">{caseData.title}</h1>
-
-            {caseData.banner_url && (
-              <img
-                src={caseData.banner_url}
-                alt={caseData.title}
-                className="w-full h-64 object-cover rounded-lg mb-6"
+      <main id="main-content" className="flex-1 py-8">
+        <div className="container mx-auto max-w-8xl px-4">
+          <div className={cn(
+            "grid gap-8 transition-[grid-template-columns] duration-300 ease-out",
+            isAskDrawerOpen && "xl:grid-cols-[minmax(0,1fr)_460px] 2xl:grid-cols-[minmax(0,1fr)_520px] xl:items-start"
+          )}>
+            <div className={cn(
+              "min-w-0 transition-all duration-300 ease-out",
+              isAskDrawerOpen && "order-2 xl:order-1"
+            )}>
+              <FloatingShareSidebar
+                url={canonicalUrl}
+                title={caseData.title}
+                description={plainDescription}
               />
-            )}
 
-            <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-start text-muted-foreground">
-                <User className="mr-2 h-5 w-5 flex-shrink-0" />
-                <div className="text-sm flex flex-wrap gap-1">
-                  {caseData.entities.filter(e => e.type === 'accused').map((e, index, arr) => {
-                    const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
-                    let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
-                    displayName = translateDynamicText(displayName, currentLang);
-                    return (
-                      <span key={e.id}>
-                        <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
-                        {index < arr.length - 1 && ', '}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="flex items-center text-muted-foreground">
-                <MapPin className="mr-2 h-5 w-5" />
-                <div className="text-sm flex flex-wrap gap-1">
-                  {(() => {
-                    const locations = caseData.entities.filter(e => e.type === 'location');
-                    return locations.length > 0 ? locations.map((e, index) => {
-                      const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
-                      let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
-                      displayName = translateDynamicText(displayName, currentLang);
-                      return (
-                        <span key={e.id}>
-                          <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
-                          {index < locations.length - 1 && ', '}
-                        </span>
-                      );
-                    }) : 'N/A';
-                  })()}
-                </div>
-              </div>
-              <div className="flex items-center text-muted-foreground">
-                <Calendar className="mr-2 h-5 w-5" />
-                <span className="text-sm">
-                  {t("caseDetail.period")}:{" "}
-                  {formatCaseDateRange(caseData.case_start_date, caseData.case_end_date, t("cases.status.ongoing"))}
-                </span>
-              </div>
-            </div>
-          </div>
+              <Alert className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 no-print">
+                <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <AlertDescription className="text-blue-800 dark:text-blue-200 text-sm">
+                  {t("footer.disclaimer")}
+                </AlertDescription>
+              </Alert>
 
-          <Separator className="mb-8" />
+              {caseData.state === 'IN_REVIEW' && (
+                <Alert className="mb-6 border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800 no-print">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                  <AlertDescription className="text-yellow-800 dark:text-yellow-200 text-sm">
+                    {t("caseDetail.inReviewBanner")}
+                  </AlertDescription>
+                </Alert>
+              )}
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <AlertTriangle className="mr-2 h-5 w-5" />
-                {t("caseDetail.allegations")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {caseData.key_allegations.map((allegation, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-destructive/10 text-destructive text-sm font-semibold mr-3 mt-0.5 flex-shrink-0">
-                      {index + 1}
-                    </span>
-                    <span className="text-muted-foreground">{allegation}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+              <div id="print-content" className="print-content">
+                <div className="mb-8 hidden print:block">
+                  <h1 className="text-4xl font-bold text-foreground mb-6">{caseData.title}</h1>
 
-          {caseData.entities.filter(e => e.type === 'related').length > 0 && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>{t("caseDetail.partiesInvolved")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-muted-foreground">
-                  {caseData.entities.filter(e => e.type === 'related').map((e, index, arr) => {
-                    const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
-                    let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
-                    displayName = translateDynamicText(displayName, currentLang);
-                    return (
-                      <span key={index}>
-                        <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
-                        {index < arr.length - 1 && ', '}
-                      </span>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  {caseData.banner_url && (
+                    <img
+                      src={caseData.banner_url}
+                      alt={caseData.title}
+                      className="w-full h-64 object-cover rounded-lg mb-6"
+                    />
+                  )}
 
-          {caseData.timeline.length > 0 && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>{t("caseDetail.timeline")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {caseData.timeline.map((item, index) => (
-                    <div key={index} className="flex items-start">
-                      <div className="flex flex-col items-center mr-4 min-h-full">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 flex-shrink-0">
-                          <div className="h-2 w-2 rounded-full bg-primary" />
-                        </div>
-                        {index !== caseData.timeline.length - 1 && (
-                          <div className="w-px flex-1 bg-border mt-1" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0 pb-6">
-                        <p className="text-sm font-semibold text-foreground mb-1">{formatDateWithBS(item.date)}</p>
-                        <p className="text-sm font-medium text-foreground mb-1 break-words">{item.title}</p>
-                        <p className="text-sm text-muted-foreground break-words">{item.description}</p>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="flex items-start text-muted-foreground">
+                      <User className="mr-2 h-5 w-5 flex-shrink-0" />
+                      <div className="text-sm flex flex-wrap gap-1">
+                        {caseData.entities.filter(e => e.type === 'accused').map((e, index, arr) => {
+                          const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
+                          let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                          displayName = translateDynamicText(displayName, currentLang);
+                          return (
+                            <span key={e.id}>
+                              <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
+                              {index < arr.length - 1 && ', '}
+                            </span>
+                          );
+                        })}
                       </div>
                     </div>
-                  ))}
+                    <div className="flex items-center text-muted-foreground">
+                      <MapPin className="mr-2 h-5 w-5" />
+                      <div className="text-sm flex flex-wrap gap-1">
+                        {(() => {
+                          const locations = caseData.entities.filter(e => e.type === 'location');
+                          return locations.length > 0 ? locations.map((e, index) => {
+                            const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
+                            let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || 'Unknown';
+                            displayName = translateDynamicText(displayName, currentLang);
+                            return (
+                              <span key={e.id}>
+                                <Link to={`/entity/${e.id}`} className="text-primary hover:underline">{displayName}</Link>
+                                {index < locations.length - 1 && ', '}
+                              </span>
+                            );
+                          }) : 'N/A';
+                        })()}
+                      </div>
+                    </div>
+                    <div className="flex items-center text-muted-foreground">
+                      <Calendar className="mr-2 h-5 w-5" />
+                      <span className="text-sm">
+                        {t("caseDetail.period")}:{" "}
+                        {formatCaseDateRange(caseData.case_start_date, caseData.case_end_date, t("cases.status.ongoing"))}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
-                {t("caseDetail.overview")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="overflow-hidden">
-              <ResponsiveTable html={caseData.description} />
-            </CardContent>
-          </Card>
+                <Separator className="mb-8 hidden print:block" />
 
-          {caseData.evidence.length > 0 && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <FileText className="mr-2 h-5 w-5" />
-                  {t("caseDetail.evidence")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {caseData.evidence.map((evidence, index) => {
-                    const source = resolvedSources[evidence.source_id] ?? null;
-                    return (
-                      <DocumentSourceCard
-                        key={`${evidence.source_id}-${index}`}
-                        source={source}
-                        sourceId={evidence.source_id}
-                        evidenceDescription={evidence.description}
-                      />
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                <div className={cn(
+                  "grid gap-8 transition-[grid-template-columns] duration-300 ease-out print:block",
+                  caseData.timeline.length > 0 && !isAskDrawerOpen && "lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_24rem]"
+                )}>
+                  <div className="min-w-0">
+                    <Card className="mb-6 sm:mb-8">
+                      <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
+                        <CardTitle className="flex items-center text-xl sm:text-2xl">
+                          <AlertTriangle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                          {t("caseDetail.allegations")}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6">
+                        <ul className="space-y-3 sm:space-y-4">
+                          {caseData.key_allegations.map((allegation, index) => (
+                            <li
+                              key={index}
+                              className="flex items-start gap-3 rounded-2xl bg-muted/35 p-3 sm:bg-transparent sm:p-0"
+                            >
+                              <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-xs font-semibold text-destructive sm:h-6 sm:w-6 sm:text-sm">
+                                {index + 1}
+                              </span>
+                              <p className="text-sm leading-7 text-foreground sm:text-base">
+                                {allegation}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
 
-          <Separator className="my-8" />
+                    {relatedSectionEntities.length > 0 && (
+                      <section className="mb-8">
+                        <h2 className="mb-5 text-2xl font-semibold text-foreground">
+                          {t("caseDetail.partiesInvolved")}
+                        </h2>
+                        <CaseEntityChips
+                          entities={relatedSectionEntities}
+                          resolvedEntities={resolvedEntities}
+                          language={currentLang}
+                        />
+                      </section>
+                    )}
 
-          {caseData.notes && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <StickyNote className="mr-2 h-5 w-5" />
-                  {t("caseDetail.notes")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="overflow-hidden">
-                <ResponsiveTable html={caseData.notes} />
-              </CardContent>
-            </Card>
-          )}
+                    <Card className="mb-8">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <FileText className="mr-2 h-5 w-5" />
+                          {t("caseDetail.overview")}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="overflow-hidden">
+                        <ResponsiveTable html={caseData.description} />
+                      </CardContent>
+                    </Card>
 
-          </div>
-          {/* PRINTABLE CONTENT ENDS HERE */}
+                    {caseData.evidence.length > 0 && (
+                      <Card className="mb-8">
+                        <CardHeader>
+                          <CardTitle className="flex items-center">
+                            <FileText className="mr-2 h-5 w-5" />
+                            {t("caseDetail.evidence")}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div>
+                            {caseData.evidence.map((evidence, index) => {
+                              const source = resolvedSources[evidence.source_id] ?? null;
+                              return (
+                                <DocumentSourceCard
+                                  key={`${evidence.source_id}-${index}`}
+                                  source={source}
+                                  sourceId={evidence.source_id}
+                                  itemNumber={index + 1}
+                                  evidenceDescription={evidence.description}
+                                />
+                              );
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
 
-          {/* Share This Case Section - Bottom of article */}
-          <div 
-            id="bottom-share-section"
-            className="flex flex-col items-center gap-4 py-8 mb-8 border-y border-border no-print"
-          >
-            <p className="text-sm font-medium text-muted-foreground">
-              {t("share.shareThisCase")}
-            </p>
-            <InlineShareButtons
-              url={canonicalUrl}
-              title={caseData.title}
-              description={plainDescription}
-            />
-          </div>
+                    {caseData.missing_details && (
+                      <section className="mb-8 border-t border-border pt-5">
+                        <h2 className="mb-3 flex items-center text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          <Info className="mr-2 h-4 w-4" />
+                          {t("caseDetail.missingDetails")}
+                        </h2>
+                        <div className="overflow-hidden text-sm leading-7 text-muted-foreground">
+                          <ResponsiveTable html={caseData.missing_details} />
+                        </div>
+                      </section>
+                    )}
 
-          {/* Contact and Edit Section - NOT PRINTED */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-muted/30 rounded-xl border border-dashed border-muted-foreground/30 no-print">
-            <div className="space-y-2 text-center md:text-left">
-              <h3 className="font-semibold text-lg">{t("caseDetail.contact")}</h3>
-              <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Mail className="h-4 w-4" />
-                  <span className="mt-1">{t("caseDetail.emailLabel")}: {JAWAFDEHI_EMAIL}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <MessageCircle className="h-4 w-4" />
-                  <span className="mt-1">{t("caseDetail.whatsappLabel")}: {JAWAFDEHI_WHATSAPP_NUMBER}</span>
+                    {caseData.notes && (
+                      <section className="mb-8 border-t border-border pt-5">
+                        <h2 className="mb-3 flex items-center text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                          <StickyNote className="mr-2 h-4 w-4" />
+                          {t("caseDetail.notes")}
+                        </h2>
+                        <div className="overflow-hidden text-sm leading-7 text-muted-foreground">
+                          <ResponsiveTable html={caseData.notes} />
+                        </div>
+                      </section>
+                    )}
+                  </div>
+
+                  <CaseTimeline
+                    timeline={caseData.timeline}
+                    title={t("caseDetail.timeline")}
+                    className={cn(
+                      "print:static print:mb-8",
+                      isAskDrawerOpen ? "hidden print:block" : "mb-8"
+                    )}
+                  />
                 </div>
               </div>
-            </div>
-            <Button variant="outline" size="lg" asChild className="shrink-0">
-              <a
-                href={`https://portal.jawafdehi.org/admin/cases/case/${id}/change/`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2"
-              >
-                <ExternalLink className="h-4 w-4" />
-                <span className="mt-1.5">{t("caseDetail.editCase")}</span>
-              </a>
-            </Button>
-          </div>
 
-          {/* Public Discussion / Comments Section */}
-          <DisqusComments
-            caseId={id || ""}
-            caseTitle={caseData.title}
-            caseUrl={canonicalUrl}
-          />
+              <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 bg-muted/30 rounded-xl border border-dashed border-muted-foreground/30 no-print">
+                <div className="space-y-2 text-center md:text-left">
+                  <h3 className="font-semibold text-lg">{t("caseDetail.contact")}</h3>
+                  <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Mail className="h-4 w-4" />
+                      <span className="mt-1">{t("caseDetail.emailLabel")}: {JAWAFDEHI_EMAIL}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageCircle className="h-4 w-4" />
+                      <span className="mt-1">{t("caseDetail.whatsappLabel")}: {JAWAFDEHI_WHATSAPP_NUMBER}</span>
+                    </div>
+                  </div>
+                </div>
+                <Button variant="outline" size="lg" asChild className="shrink-0">
+                  <a
+                    href={`https://portal.jawafdehi.org/admin/cases/case/${id}/change/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span className="mt-1.5">{t("caseDetail.editCase")}</span>
+                  </a>
+                </Button>
+              </div>
+
+              <DisqusComments
+                caseId={id || ""}
+                caseTitle={caseData.title}
+                caseUrl={canonicalUrl}
+              />
+            </div>
+
+            {isAskDrawerOpen ? (
+              <div className="order-1 min-w-0 animate-in fade-in-0 slide-in-from-right-4 duration-300 xl:order-2 xl:sticky xl:top-24 xl:h-[calc(100vh-8rem)]">
+                <GuestCaseChatDrawer
+                  caseId={caseData.id}
+                  caseTitle={caseData.title}
+                  caseData={caseData}
+                  sources={chatSources}
+                  open={isAskDrawerOpen}
+                  onOpenChange={setIsAskDrawerOpen}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
       </main>
+
+      <div
+        className={cn(
+          "pointer-events-none fixed inset-x-4 bottom-5 z-40 flex justify-center transition-all duration-300 no-print sm:inset-x-auto sm:right-6 sm:justify-end xl:right-10",
+          isAskPopupVisible
+            ? "translate-y-0 opacity-100"
+            : "translate-y-4 opacity-0"
+        )}
+        aria-hidden={!isAskPopupVisible}
+      >
+        <button
+          type="button"
+          onClick={() => setIsAskDrawerOpen(true)}
+          tabIndex={isAskPopupVisible ? 0 : -1}
+          className="pointer-events-auto flex w-full max-w-[24rem] items-center gap-3 rounded-full border border-primary  bg-background/95 px-3 py-3 text-left shadow-[0_18px_40px_rgba(15,23,42,0.14),0_0_0_1px_rgba(37,99,235,0.06),0_0_24px_rgba(37,99,235,0.12)] ring-1 ring-primary backdrop-blur transition-[box-shadow,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_22px_44px_rgba(15,23,42,0.16),0_0_0_1px_rgba(37,99,235,0.08),0_0_30px_rgba(37,99,235,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:shadow-[0_22px_44px_rgba(15,23,42,0.16),0_0_0_1px_rgba(37,99,235,0.1),0_0_0_6px_rgba(37,99,235,0.14),0_0_34px_rgba(37,99,235,0.2)] supports-[backdrop-filter]:bg-background/90 sm:w-auto sm:min-w-[22rem]"
+        >
+          <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+            <MessageCircle className="h-5 w-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold text-foreground">
+              {t("caseDetail.askPopupTitle")}
+            </span>
+            <span className="block truncate text-xs text-muted-foreground">
+              {t("caseDetail.askPopupDescription")}
+            </span>
+          </span>
+        </button>
+      </div>
 
       <Footer />
 

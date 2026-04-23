@@ -3,7 +3,8 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { Sparkles, Menu, ChevronDown, Users, Info, Package } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Menu, ChevronDown, Users, Info, Package, MessageCircle, Newspaper } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +37,12 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
+        {t("nav.skipToContent")}
+      </a>
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center space-x-2.5">
           <img src="/favicon.png" alt="Jawafdehi Logo" className="h-9 w-9" />
@@ -46,23 +53,20 @@ export const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-7">
-          <NavLink to="/cases" className={navLinkClass}>
-            {t("nav.cases")}
-          </NavLink>
           <NavLink to="/our-process" className={navLinkClass}>
-            Our Process
+            {t("nav.ourProcess")}
           </NavLink>
           <NavLink to="/volunteer" className={navLinkClass}>
-            Volunteer
+            {t("nav.volunteer")}
           </NavLink>
           <NavLink to="/commitment" className={navLinkClass}>
-            Our Commitment
+            {t("nav.ourCommitment")}
           </NavLink>
 
           {/* About dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={`flex items-center gap-1 text-sm font-medium transition-colors outline-none ${
+              className={`flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                 isAboutActive ? "text-primary" : "text-foreground/70 hover:text-foreground"
               }`}
             >
@@ -73,38 +77,43 @@ export const Header = () => {
               <DropdownMenuItem asChild>
                 <Link to="/about" className="flex items-center gap-2 cursor-pointer">
                   <Info className="h-4 w-4 text-muted-foreground" />
-                  About Jawafdehi
+                  {t("nav.about")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/team" className="flex items-center gap-2 cursor-pointer">
                   <Users className="h-4 w-4 text-muted-foreground" />
-                  Our Team
+                  {t("nav.team")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/products" className="flex items-center gap-2 cursor-pointer">
                   <Package className="h-4 w-4 text-muted-foreground" />
-                  Our Products
+                  {t("nav.products")}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/updates" className="flex items-center gap-2 cursor-pointer">
+                  <Newspaper className="h-4 w-4 text-muted-foreground" />
+                  {t("nav.updates")}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* AI Search */}
-          <Link
-            to="/caseworker/login"
-            className="flex items-center gap-1.5 text-sm text-amber-600/80 hover:text-amber-700 transition-colors"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>AI Search</span>
-          </Link>
+          <LanguageToggle />
+          <ThemeToggle />
         </nav>
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center space-x-3">
-          <LanguageToggle />
-          <Button asChild>
+          <Button asChild variant="primary">
+            <Link to="/ask" className="inline-flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              <span>{t("header.askJawafdehi")}</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/cases">{t("header.viewCases")}</Link>
           </Button>
         </div>
@@ -112,6 +121,7 @@ export const Header = () => {
         {/* Mobile Menu */}
         <div className="flex lg:hidden items-center space-x-2">
           <LanguageToggle />
+          <ThemeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -127,17 +137,14 @@ export const Header = () => {
                 <NavLink to="/" end className={mobileNavLinkClass} onClick={() => setIsOpen(false)}>
                   {t("nav.home")}
                 </NavLink>
-                <NavLink to="/cases" className={mobileNavLinkClass} onClick={() => setIsOpen(false)}>
-                  {t("nav.cases")}
-                </NavLink>
                 <NavLink to="/our-process" className={mobileNavLinkClass} onClick={() => setIsOpen(false)}>
-                  Our Process
+                  {t("nav.ourProcess")}
                 </NavLink>
                 <NavLink to="/volunteer" className={mobileNavLinkClass} onClick={() => setIsOpen(false)}>
-                  Volunteer
+                  {t("nav.volunteer")}
                 </NavLink>
                 <NavLink to="/commitment" className={mobileNavLinkClass} onClick={() => setIsOpen(false)}>
-                  Our Commitment
+                  {t("nav.ourCommitment")}
                 </NavLink>
                 <NavLink to="/about" className={mobileNavLinkClass} onClick={() => setIsOpen(false)}>
                   {t("nav.about")}
@@ -147,27 +154,32 @@ export const Header = () => {
                   className="text-lg font-medium text-foreground/60 hover:text-primary transition-colors py-2 pl-4"
                   onClick={() => setIsOpen(false)}
                 >
-                  — Our Team
+                  — {t("nav.team")}
                 </Link>
                 <Link
                   to="/products"
                   className="text-lg font-medium text-foreground/60 hover:text-primary transition-colors py-2 pl-4"
                   onClick={() => setIsOpen(false)}
                 >
-                  — Our Products
+                  — {t("nav.products")}
+                </Link>
+                <Link
+                  to="/updates"
+                  className="text-lg font-medium text-foreground/60 hover:text-primary transition-colors py-2 pl-4"
+                  onClick={() => setIsOpen(false)}
+                >
+                  — {t("nav.updates")}
                 </Link>
                 <div className="pt-4 space-y-3 border-t border-border">
-                  <Button asChild className="w-full" onClick={() => setIsOpen(false)}>
+                  <Button asChild variant="primary" className="w-full" onClick={() => setIsOpen(false)}>
+                    <Link to="/ask" className="inline-flex items-center justify-center gap-2">
+                      <MessageCircle className="h-4 w-4" />
+                      <span>{t("header.askJawafdehi")}</span>
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full" onClick={() => setIsOpen(false)}>
                     <Link to="/cases">{t("header.viewCases")}</Link>
                   </Button>
-                  <Link
-                    to="/caseworker/login"
-                    className="flex items-center justify-center gap-2 py-2 text-sm text-amber-600/80 hover:text-amber-700 transition-colors"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    <span>AI Search</span>
-                  </Link>
                 </div>
               </nav>
             </SheetContent>

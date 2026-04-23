@@ -143,7 +143,7 @@ const Entities = () => {
       </Helmet>
       <Header />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main id="main-content" className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">{t("entities.title")}</h1>
@@ -154,7 +154,11 @@ const Entities = () => {
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="relative flex-1">
+                  <label htmlFor="entity-search" className="sr-only">
+                    {t("entities.searchPlaceholder")}
+                  </label>
                   <Input
+                    id="entity-search"
                     placeholder={t("entities.searchPlaceholder")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

@@ -96,7 +96,7 @@ export default function ModerationDashboard() {
       </Helmet>
       <Header />
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Moderation Dashboard</h1>
@@ -212,30 +212,30 @@ export default function ModerationDashboard() {
 
                             <div className="space-y-4">
                               <div>
-                                <Label>Entity</Label>
+                                <p className="text-sm font-medium leading-none">Entity</p>
                                 <p className="text-sm">{submission.entity}</p>
                               </div>
 
                               <div>
-                                <Label>Type</Label>
+                                <p className="text-sm font-medium leading-none">Type</p>
                                 <p className="text-sm capitalize">{submission.type}</p>
                               </div>
 
                               {submission.severity && (
                                 <div>
-                                  <Label>Severity</Label>
+                                  <p className="text-sm font-medium leading-none">Severity</p>
                                   <p className="text-sm capitalize">{submission.severity}</p>
                                 </div>
                               )}
 
                               <div>
-                                <Label>Description</Label>
+                                <p className="text-sm font-medium leading-none">Description</p>
                                 <p className="text-sm whitespace-pre-wrap">{submission.description}</p>
                               </div>
 
                               {submission.sources && (
                                 <div>
-                                  <Label>Sources</Label>
+                                  <p className="text-sm font-medium leading-none">Sources</p>
                                   <ul className="text-sm list-disc list-inside">
                                     {submission.sources.map((source: string, idx: number) => (
                                       <li key={idx}>
@@ -249,21 +249,21 @@ export default function ModerationDashboard() {
                               )}
 
                               <div>
-                                <Label>Submitted By</Label>
+                                <p className="text-sm font-medium leading-none">Submitted By</p>
                                 <p className="text-sm">{submission.submittedBy}</p>
                               </div>
 
                               <div>
-                                <Label>Submitted Date</Label>
+                                <p className="text-sm font-medium leading-none">Submitted Date</p>
                                 <p className="text-sm">{submission.submittedDate}</p>
                               </div>
 
                               {/* Moderation Actions */}
                               <div className="space-y-4 pt-4 border-t">
                                 <div>
-                                  <Label>Assign Status</Label>
+                                  <Label htmlFor={`moderation-status-${submission.id}`}>Assign Status</Label>
                                   <Select defaultValue="pending">
-                                    <SelectTrigger>
+                                    <SelectTrigger id={`moderation-status-${submission.id}`}>
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -275,8 +275,9 @@ export default function ModerationDashboard() {
                                 </div>
 
                                 <div>
-                                  <Label>Moderation Notes (Internal)</Label>
+                                  <Label htmlFor={`moderation-notes-${submission.id}`}>Moderation Notes (Internal)</Label>
                                   <Textarea
+                                    id={`moderation-notes-${submission.id}`}
                                     placeholder="Add notes for other moderators..."
                                     rows={3}
                                   />

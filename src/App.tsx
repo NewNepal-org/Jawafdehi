@@ -1,7 +1,8 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import Cases from "./pages/Cases";
 import Entities from "./pages/Entities";
@@ -26,45 +27,60 @@ import CaseworkerLogin from "./pages/CaseworkerLogin";
 import CaseworkerDashboard from "./pages/CaseworkerDashboard";
 import CaseworkerSettings from "./pages/CaseworkerSettings";
 
+const GuestChat = lazy(() => import("./pages/GuestChat"));
+
+const RouteLoadingFallback = () => (
+  <div
+    className="flex min-h-screen items-center justify-center px-4"
+    role="status"
+    aria-live="polite"
+  >
+    <span className="text-sm text-muted-foreground">Loading...</span>
+  </div>
+);
+
 const App = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/cases" element={<Cases />} />
-      <Route path="/case/:id" element={<CaseDetail />} />
-      <Route path="/entities" element={<Entities />} />
-      <Route path="/entity/:id" element={<EntityProfile />} />
-      <Route path="/report" element={<ReportAllegation />} />
-      <Route path="/entity-response/:id" element={<EntityResponse />} />
-      <Route path="/moderation" element={<ModerationDashboard />} />
-      <Route path="/feedback" element={<Feedback />} />
-      <Route path="/updates" element={<Updates />} />
-      <Route path="/updates/:id" element={<UpdateDetail />} />
-      <Route path="/information" element={<Information />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/commitment" element={<Commitment />} />
-      <Route path="/our-process" element={<OurProcess />} />
-      <Route path="/team" element={<OurTeam />} />
-      <Route path="/volunteer" element={<Volunteer />} />
-      <Route path="/products" element={<OurProducts />} />
-      {/* Caseworker portal */}
-      <Route
-        path="/caseworker/*"
-        element={
-          <CaseworkerAuthProvider>
-            <Routes>
-              <Route path="login" element={<CaseworkerLogin />} />
-              <Route path="dashboard" element={<CaseworkerDashboard />} />
-              <Route path="settings" element={<CaseworkerSettings />} />
-            </Routes>
-          </CaseworkerAuthProvider>
-        }
-      />
-      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <Suspense fallback={<RouteLoadingFallback />}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/cases" element={<Cases />} />
+        <Route path="/case/:id" element={<CaseDetail />} />
+        <Route path="/entities" element={<Entities />} />
+        <Route path="/entity/:id" element={<EntityProfile />} />
+        <Route path="/ask" element={<GuestChat />} />
+        <Route path="/report" element={<ReportAllegation />} />
+        <Route path="/entity-response/:id" element={<EntityResponse />} />
+        <Route path="/moderation" element={<ModerationDashboard />} />
+        <Route path="/feedback" element={<Feedback />} />
+        <Route path="/updates" element={<Updates />} />
+        <Route path="/updates/:id" element={<UpdateDetail />} />
+        <Route path="/information" element={<Information />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/commitment" element={<Commitment />} />
+        <Route path="/our-process" element={<OurProcess />} />
+        <Route path="/team" element={<OurTeam />} />
+        <Route path="/volunteer" element={<Volunteer />} />
+        <Route path="/products" element={<OurProducts />} />
+        {/* Caseworker portal */}
+        <Route
+          path="/caseworker/*"
+          element={
+            <CaseworkerAuthProvider>
+              <Routes>
+                <Route path="login" element={<CaseworkerLogin />} />
+                <Route path="dashboard" element={<CaseworkerDashboard />} />
+                <Route path="settings" element={<CaseworkerSettings />} />
+              </Routes>
+            </CaseworkerAuthProvider>
+          }
+        />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   </TooltipProvider>
 );
 

@@ -6,6 +6,12 @@
     "cases": "Cases",
     "information": "Information",
     "about": "About",
+    "team": "Our Team",
+    "products": "Our Products",
+    "ourProcess": "Our Process",
+    "volunteer": "Volunteer",
+    "ourCommitment": "Our Commitment",
+    "skipToContent": "Skip to content",
     "searchCases": "Search cases",
     "menu": "Menu"
   },
@@ -13,6 +19,7 @@
     "title": "Jawafdehi.org",
     "subtitle": "Nepal",
     "reportCase": "Report Case",
+    "askJawafdehi": "Ask Jawafdehi",
     "viewCases": "View Cases"
   },
   "footer": {
@@ -118,6 +125,7 @@
     "timeline": "Case Timeline",
     "partiesInvolved": "Related Persons/Organizations",
     "evidence": "Evidence & Sources",
+    "missingDetails": "Missing Details",
     "notes": "Notes",
     "failedToLoad": "Failed to load case details",
     "notFound": "Case not found",
@@ -128,6 +136,10 @@
     "contactDesc": "You can also reach us via email or WhatsApp for any inquiries or to provide additional information.",
     "emailLabel": "Email",
     "whatsappLabel": "WhatsApp",
+    "hideChat": "Hide chat",
+    "askJawafdehi": "Ask Jawafdehi",
+    "askPopupTitle": "Ask Jawafdehi about this case",
+    "askPopupDescription": "Get a quick summary, timeline, or source-based answer.",
     "inReviewBanner": "This case is currently under review by Jawafdehi. Information may be incomplete or subject to revision.",
     "status": {
       "ongoing": "Ongoing",
@@ -140,6 +152,92 @@
       "joinDiscussion": "Join the discussion and share your thoughts on this case.",
       "loadComments": "Load Comments"
     }
+  },
+  "guestCommon": {
+    "assistantAlt": "Jawafdehi assistant",
+    "assistantTyping": "Jawafdehi assistant is typing"
+  },
+  "guestChatInput": {
+    "submit": "Ask",
+    "searching": "Searching…",
+    "answering": "Answering…",
+    "askQuestionPlaceholder": "Ask a question...",
+    "askAnotherPlaceholder": "Ask another public question",
+    "askCasePlaceholder": "Ask a question about this case..."
+  },
+  "guestAnswerBlock": {
+    "resultSummary_one": "{{count}} matching public case result shown below.",
+    "resultSummary_other": "{{count}} matching public case results shown below."
+  },
+  "guestCaseResults": {
+    "empty": "No public cases matched this question yet.",
+    "title": "Related public cases",
+    "description": "Open any case to continue on the public case page.",
+    "openCase": "Open case"
+  },
+  "guestCaseChatDrawer": {
+    "title": "Ask about this case",
+    "closeChat": "Close case chat",
+    "emptyTitle": "How can I help you today?",
+    "emptyDescription": "Ask for a quick summary, supporting sources, a timeline recap, or who appears in this public case record.",
+    "allegationCount": "{{count}} allegations",
+    "timelineCount": "{{count}} timeline items",
+    "sourceCount": "{{count}} sources",
+    "chatTab": "Chat",
+    "timelineTab": "Timeline",
+    "disclaimer": "AI-generated content may contain errors. Verify with original sources.",
+    "prompts": {
+      "keyAllegations": "What are the key allegations?",
+      "timeline": "Summarize the timeline",
+      "sources": "Which sources support this case?",
+      "relatedEntities": "Who are the related entities?",
+      "evidence": "What does the evidence say?"
+    },
+    "errors": {
+      "answerFailed": "We could not answer that case question right now. Please try again.",
+      "answerFailedMessage": "I could not answer that case-specific question right now. Please try again in a moment."
+    }
+  },
+  "guestChat": {
+    "metaTitle": "Ask Jawafdehi",
+    "metaDescription": "Ask questions about Jawafdehi cases.",
+    "title": "Ask Jawafdehi",
+    "newChat": "New chat",
+    "demoBadge": "Demo",
+    "prompts": {
+      "procurementCorruption": "What kinds of procurement-related corruption take place in Nepal?",
+      "ciaaProcess": "Show me how CIAA handles corruption cases in Nepal.",
+      "bigCorruptionCases": "Show me some big corruption cases in Nepal.",
+      "casesRegistered20812082Bs": "How many corruption cases were registered in the year 2081/82 BS?"
+    },
+    "errors": {
+      "loadFailed": "We could not load public case results right now. Please try again."
+    }
+  },
+  "heroChatDemo": {
+    "subtitle": "Public case archive",
+    "demoCta": "Demo",
+    "answerIntro": "CIAA typically becomes visible to the public during investigation and court filing. Earlier complaint stages are often not publicly documented.",
+    "answerSummary": "In short: the public usually sees the case clearly only once CIAA has investigated enough to file it in court.",
+    "tryItYourself": "Try it yourself",
+    "timeline": [
+      {
+        "title": "Complaint registered",
+        "detail": "A complaint is filed, but most reports are not publicly accessible unless the case escalates."
+      },
+      {
+        "title": "CIAA investigates",
+        "detail": "CIAA collects documents, interviews officials, and may track assets or financial records."
+      },
+      {
+        "title": "Charge sheet filed",
+        "detail": "If the case is strong enough, CIAA files a formal charge sheet in the Special Court."
+      },
+      {
+        "title": "Court process follows",
+        "detail": "After filing, the case moves through hearings, rulings, appeals, delays, or long pauses."
+      }
+    ]
   },
   "documentSource": {
     "fallbackTitle": "Source {{id}}",
@@ -460,7 +558,14 @@
     "changeLanguage": "Change language",
     "english": "English",
     "nepali": "नेपाली (Nepali)",
+    "loading": "Loading…",
+    "notAvailable": "N/A",
     "viewDetails": "View Details →"
+  },
+  "themeToggle": {
+    "toggleTheme": "Toggle theme",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
   },
   "caseCard": {
     "status": {
@@ -473,6 +578,10 @@
       "medium": "Medium",
       "high": "High",
       "critical": "Critical"
+    },
+    "entitySummary": {
+      "withOthers_one": "{{name}} with {{count}} other",
+      "withOthers_other": "{{name}} with {{count}} others"
     }
   },
   "entityCard": {

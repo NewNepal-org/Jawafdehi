@@ -80,7 +80,7 @@ const OurProcess = () => (
     </Helmet>
     <Header />
 
-    <main className="flex-1">
+    <main id="main-content" className="flex-1">
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary via-navy-dark to-slate-800 py-16 md:py-24">
         <div className="container mx-auto px-4">
@@ -99,7 +99,7 @@ const OurProcess = () => (
       </section>
 
       {/* Pipeline */}
-      <section className="py-16 border-b border-border">
+      <section className="py-12 md:py-16 border-b border-border">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold text-foreground mb-12">The Case Pipeline</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -124,7 +124,7 @@ const OurProcess = () => (
       </section>
 
       {/* External sources */}
-      <section className="py-16 bg-muted/20">
+      <section className="py-12 md:py-16 bg-muted/20">
         <div className="container mx-auto px-4">
           <div className="mb-10">
             <h2 className="text-2xl font-bold text-foreground mb-2">Where Our Data Comes From</h2>
