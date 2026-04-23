@@ -1,14 +1,18 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import type { TFunction } from "i18next";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, User } from "lucide-react";
+
+const nepaliDigits = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
 
 interface CaseCardProps {
   id: string;
   title: string;
   entity: string;
+  entityNames?: string[];
   location: string;
   date: string;
   status: "ongoing" | "resolved" | "under-investigation";
@@ -20,8 +24,34 @@ interface CaseCardProps {
   thumbnailUrl?: string; //Thumbnail image
 }
 
-export const CaseCard = ({ id, title, entity, location, date, status, tags = [], description, allegations, entityIds, locationIds, thumbnailUrl }: CaseCardProps) => {
-  const { t } = useTranslation();
+function formatEntityCount(count: number, language: string) {
+  if (!language.startsWith("ne")) {
+    return count.toString();
+  }
+
+  return count.toString().replace(/\d/g, (digit) => nepaliDigits[Number(digit)]);
+}
+
+function getEntitySummary(entity: string, entityNames: string[] | undefined, language: string, t: TFunction) {
+  const names = entityNames?.filter(Boolean) ?? entity.split(",").map((name) => name.trim()).filter(Boolean);
+  const firstName = names[0] || entity;
+  const remainingCount = Math.max(names.length - 1, 0);
+  const countLabel = formatEntityCount(remainingCount, language);
+
+  if (remainingCount === 0) {
+    return firstName;
+  }
+
+  if (language.startsWith("ne")) {
+    return t("caseCard.entitySummary.withOthersNepali", { name: firstName, count: remainingCount, countLabel });
+  }
+
+  return t("caseCard.entitySummary.withOthers", { count: remainingCount, name: firstName });
+}
+
+export const CaseCard = ({ id, title, entity, entityNames, location, date, status, tags = [], description, allegations, entityIds, locationIds, thumbnailUrl }: CaseCardProps) => {
+  const { t, i18n } = useTranslation();
+  const entitySummary = getEntitySummary(entity, entityNames, i18n.language, t);
   
   // Check if we have a valid thumbnail URL
   const hasValidThumbnail = thumbnailUrl && thumbnailUrl.trim() !== '';
@@ -84,7 +114,7 @@ export const CaseCard = ({ id, title, entity, location, date, status, tags = [],
           <CardHeader className="space-y-2 px-4 pb-0 pt-4 sm:px-5 sm:pt-5">
             {/* NOTE: Dynamic case content (title, description, entity names) from Entity API
                 remains in English until API-side i18n is implemented. See GitHub issue for i18n. */}
-            <h3 className="line-clamp-2 text-lg font-semibold text-foreground">
+            <h3 className="line-clamp-2 text-lg font-semibold leading-8 text-foreground">
               <Link to={`/case/${id}`} className="rounded-sm outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 {title}
               </Link>
@@ -93,26 +123,29 @@ export const CaseCard = ({ id, title, entity, location, date, status, tags = [],
 
           <CardContent className="flex flex-1 flex-col px-4 pb-0 pt-4 sm:px-5">
             {allegations && allegations.length > 0 ? (
-              <p className="line-clamp-3 text-sm text-muted-foreground">
+              <p className="line-clamp-3 text-sm leading-7 text-muted-foreground">
                 {allegations[0]}
               </p>
             ) : (
-              <p className="line-clamp-3 text-sm text-muted-foreground">{description}</p>
+              <p className="line-clamp-3 text-sm leading-7 text-muted-foreground">{description}</p>
             )}
 
             <div className="mt-5 border-t border-border/70 pt-4">
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center">
+              <div className="space-y-2 text-sm leading-7 text-muted-foreground">
+                <div className="flex min-w-0 items-center">
                   <User className="mr-2 h-4 w-4 flex-shrink-0" aria-hidden="true" />
                   {entityIds && entityIds.length > 0 ? (
                     <Link
                       to={`/entity/${entityIds[0]}`}
-                      className="line-clamp-1 rounded-sm transition-colors hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="block min-w-0 truncate rounded-sm transition-colors hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      title={entity}
                     >
-                      {entity}
+                      {entitySummary}
                     </Link>
                   ) : (
-                    <span className="line-clamp-1">{entity}</span>
+                    <span className="block min-w-0 truncate" title={entity}>
+                      {entitySummary}
+                    </span>
                   )}
                 </div>
 

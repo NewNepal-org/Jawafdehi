@@ -201,7 +201,8 @@ const Cases = () => {
                     return entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id;
                   }
                   return e.display_name || e.nes_id || translateDynamicText('Unknown Entity', currentLang);
-                }).join(', ') || translateDynamicText('Unknown Entity', currentLang);
+                });
+                const entityDisplayName = entityNames.join(', ') || translateDynamicText('Unknown Entity', currentLang);
 
                 // Translate location names
                 const locationNames = locationEntities.map(e => {
@@ -219,7 +220,8 @@ const Cases = () => {
                     key={caseItem.id}
                     id={caseItem.id.toString()}
                     title={caseItem.title}
-                    entity={entityNames}
+                    entity={entityDisplayName}
+                    entityNames={entityNames}
                     location={locationNames}
                     date={formatDateWithBS(caseItem.created_at, 'PPP')}
                     status="ongoing"

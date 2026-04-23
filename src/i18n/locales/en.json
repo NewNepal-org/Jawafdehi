@@ -569,6 +569,10 @@
       "medium": "Medium",
       "high": "High",
       "critical": "Critical"
+    },
+    "entitySummary": {
+      "withOthers_one": "{{name}} with {{count}} other",
+      "withOthers_other": "{{name}} with {{count}} others"
     }
   },
   "entityCard": {

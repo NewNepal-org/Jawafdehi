@@ -568,6 +568,9 @@
       "medium": "मध्यम",
       "high": "उच्च",
       "critical": "गम्भीर"
+    },
+    "entitySummary": {
+      "withOthersNepali": "{{name}} समेत {{countLabel}}"
     }
   },
   "entityCard": {
