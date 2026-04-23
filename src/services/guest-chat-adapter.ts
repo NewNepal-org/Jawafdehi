@@ -963,6 +963,7 @@ async function buildEntitySearchResponse(
 ): Promise<GuestAskResponse> {
   const phrase = extractSearchPhrase(query);
   const normalizedPhrase = normalize(phrase);
+  const hasNormalizedPhrase = normalizedPhrase.trim().length > 0;
 
   const entitySearch = phrase ? await searchEntities(phrase, { limit: 8 }) : { entities: [] };
   const entityMatches: GuestEntityMatch[] = entitySearch.entities.slice(0, 5).map((entity) => ({
@@ -975,52 +976,56 @@ async function buildEntitySearchResponse(
         : "Matched from the public entity directory",
   }));
 
-  const entityLinkedCases = publicCases
-    .filter((caseItem) =>
-      caseItem.entities.some(
-        (entity) =>
-          normalize(entity.display_name || "") === normalizedPhrase ||
-          normalize(entity.nes_id || "").includes(normalizedPhrase) ||
-          entityMatches.some((match) => match.nes_id === entity.nes_id)
-      )
-    )
-    .map((caseItem) => {
-      const matchedEntities = caseItem.entities.filter(
-        (entity) =>
-          normalize(entity.display_name || "") === normalizedPhrase ||
-          entityMatches.some((match) => match.nes_id === entity.nes_id)
-      );
+  const entityLinkedCases = hasNormalizedPhrase
+    ? publicCases
+        .filter((caseItem) =>
+          caseItem.entities.some(
+            (entity) =>
+              normalize(entity.display_name || "") === normalizedPhrase ||
+              normalize(entity.nes_id || "").includes(normalizedPhrase) ||
+              entityMatches.some((match) => match.nes_id === entity.nes_id)
+          )
+        )
+        .map((caseItem) => {
+          const matchedEntities = caseItem.entities.filter(
+            (entity) =>
+              normalize(entity.display_name || "") === normalizedPhrase ||
+              entityMatches.some((match) => match.nes_id === entity.nes_id)
+          );
 
-      return buildCaseResult(
-        caseItem,
-        matchedEntities.length > 0
-          ? language === "ne"
-            ? `सम्बन्धित इकाइ मिलान: ${matchedEntities
-                .map((entity) => entity.display_name)
-                .filter(Boolean)
-                .join(", ")}`
-            : `Matched related entity${matchedEntities.length === 1 ? "" : "ies"}: ${matchedEntities
-                .map((entity) => entity.display_name)
-                .filter(Boolean)
-                .join(", ")}`
-          : language === "ne"
-          ? "सार्वजनिक इकाइ डाइरेक्टरीमार्फत मिलान भयो"
-          : "Matched through the public entity directory",
-        matchedEntities.map((entity) => entity.display_name || entity.nes_id || "Unnamed entity"),
-        matchedEntities.map((entity) => entity.id)
-      );
-    });
+          return buildCaseResult(
+            caseItem,
+            matchedEntities.length > 0
+              ? language === "ne"
+                ? `सम्बन्धित इकाइ मिलान: ${matchedEntities
+                    .map((entity) => entity.display_name)
+                    .filter(Boolean)
+                    .join(", ")}`
+                : `Matched related entity${matchedEntities.length === 1 ? "" : "ies"}: ${matchedEntities
+                    .map((entity) => entity.display_name)
+                    .filter(Boolean)
+                    .join(", ")}`
+              : language === "ne"
+              ? "सार्वजनिक इकाइ डाइरेक्टरीमार्फत मिलान भयो"
+              : "Matched through the public entity directory",
+            matchedEntities.map((entity) => entity.display_name || entity.nes_id || "Unnamed entity"),
+            matchedEntities.map((entity) => entity.id)
+          );
+        })
+    : [];
 
-  const keywordCases = publicCases
-    .filter((caseItem) => getCaseSearchText(caseItem).includes(normalizedPhrase))
-    .map((caseItem) =>
-      buildCaseResult(
-        caseItem,
-        language === "ne"
-          ? `"${phrase}" का लागि सार्वजनिक केस-पाठ मिल्यो`
-          : `Matched public case text for "${phrase}"`
-      )
-    );
+  const keywordCases = hasNormalizedPhrase
+    ? publicCases
+        .filter((caseItem) => getCaseSearchText(caseItem).includes(normalizedPhrase))
+        .map((caseItem) =>
+          buildCaseResult(
+            caseItem,
+            language === "ne"
+              ? `"${phrase}" का लागि सार्वजनिक केस-पाठ मिल्यो`
+              : `Matched public case text for "${phrase}"`
+          )
+        )
+    : [];
 
   const caseResults = dedupeCaseResults([...entityLinkedCases, ...keywordCases]);
 
