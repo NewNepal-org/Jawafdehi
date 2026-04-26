@@ -122,22 +122,7 @@ export function CaseDetailBanner({
         </h1>
 
         <div className="mt-6 grid gap-3 text-sm text-white/80">
-          <div className="flex items-start gap-3">
-            <User className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/70" />
-            <div className="flex flex-wrap gap-1">
-              <span className="sr-only">{t("entityCard.alleged")}: </span>
-              {accusedEntities.length > 0
-                ? accusedEntities.map((entity, index) => (
-                    <span key={entity.id}>
-                      <Link to={`/entity/${entity.id}`} className="text-white hover:underline">
-                        {getEntityDisplayName(entity)}
-                      </Link>
-                      {index < accusedEntities.length - 1 && ", "}
-                    </span>
-                  ))
-                : notAvailableLabel}
-            </div>
-          </div>
+
 
           <div className="flex items-start gap-3">
             <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/70" />
@@ -145,13 +130,13 @@ export function CaseDetailBanner({
               <span className="sr-only">{t("entityCard.location")}: </span>
               {locationEntities.length > 0
                 ? locationEntities.map((entity, index) => (
-                    <span key={entity.id}>
-                      <Link to={`/entity/${entity.id}`} className="text-white hover:underline">
-                        {getEntityDisplayName(entity)}
-                      </Link>
-                      {index < locationEntities.length - 1 && ", "}
-                    </span>
-                  ))
+                  <span key={entity.id}>
+                    <Link to={`/entity/${entity.id}`} className="text-white hover:underline">
+                      {getEntityDisplayName(entity)}
+                    </Link>
+                    {index < locationEntities.length - 1 && ", "}
+                  </span>
+                ))
                 : notAvailableLabel}
             </div>
           </div>
