@@ -354,7 +354,7 @@ const CaseDetail = () => {
                   "grid gap-8 transition-[grid-template-columns] duration-300 ease-out print:block",
                   caseData.timeline.length > 0 && !isAskDrawerOpen && "lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_24rem]"
                 )}>
-                  <div className="min-w-0">
+                  <div className="min-w-0 lg:col-start-1">
                     <Card className="mb-6 sm:mb-8">
                       <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
                         <CardTitle className="flex items-center text-xl sm:text-2xl">
@@ -414,7 +414,18 @@ const CaseDetail = () => {
                         </div>
                       </section>
                     )}
+                  </div>
 
+                  <CaseTimeline
+                    timeline={caseData.timeline}
+                    title={t("caseDetail.timeline")}
+                    className={cn(
+                      "print:static print:mb-8 lg:col-start-2 lg:row-start-1 lg:row-span-2",
+                      isAskDrawerOpen ? "hidden print:block" : "mb-8 text-foreground"
+                    )}
+                  />
+
+                  <div className="min-w-0 lg:col-start-1">
                     <Card className="mb-8">
                       <CardHeader>
                         <CardTitle className="flex items-center">
@@ -478,15 +489,6 @@ const CaseDetail = () => {
                       </section>
                     )}
                   </div>
-
-                  <CaseTimeline
-                    timeline={caseData.timeline}
-                    title={t("caseDetail.timeline")}
-                    className={cn(
-                      "print:static print:mb-8",
-                      isAskDrawerOpen ? "hidden print:block" : "mb-8"
-                    )}
-                  />
                 </div>
               </div>
 
