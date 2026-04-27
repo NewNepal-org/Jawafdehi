@@ -108,6 +108,8 @@ export function CaseEntityChips({
       {hasMore && (
         <div className="flex justify-center sm:justify-start px-3">
           <button
+            type="button"
+            aria-expanded={isExpanded}
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-xs font-semibold text-primary hover:underline transition-all"
           >
