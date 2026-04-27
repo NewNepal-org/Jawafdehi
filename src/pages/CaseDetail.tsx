@@ -388,16 +388,18 @@ const CaseDetail = () => {
                         </h2>
 
                         <div className="space-y-8">
-                          {Object.entries(groupedEntities)
-                            .sort(([typeA], [typeB]) => (RELATION_PRIORITY[typeA] || 99) - (RELATION_PRIORITY[typeB] || 99))
-                            .map(([type, entities]) => {
-                              // Define order and labels for types
-                              const typeKey = `caseDetail.relationTypes.${type}`;
-                              const label = t(typeKey, { defaultValue: t("caseDetail.relationTypes.unknown") });
+                          {(() => {
+                            const unknownLabel = t("caseDetail.relationTypes.unknown");
+                            return Object.entries(groupedEntities)
+                              .sort(([typeA], [typeB]) => (RELATION_PRIORITY[typeA] ?? 99) - (RELATION_PRIORITY[typeB] ?? 99))
+                              .map(([type, entities]) => {
+                                // Compute label for each relation type
+                                const typeKey = `caseDetail.relationTypes.${type}`;
+                                const label = t(typeKey, { defaultValue: unknownLabel });
 
-                              return (
-                                <div key={type} className="space-y-4">
-                                  <div className="flex items-center gap-3">
+                                return (
+                                  <div key={type} className="space-y-4">
+                                    <div className="flex items-center gap-3">
                                     <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
                                       {label}
                                     </h3>
@@ -410,7 +412,8 @@ const CaseDetail = () => {
                                   />
                                 </div>
                               );
-                            })}
+                            });
+                          })()}
                         </div>
                       </section>
                     )}
