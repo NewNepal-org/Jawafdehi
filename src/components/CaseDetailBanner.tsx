@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ChevronRight, MapPin, User } from "lucide-react";
+import { Calendar, ChevronRight, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CaseDetail, JawafEntity } from "@/types/jds";
 import type { Entity } from "@/types/nes";
@@ -56,7 +56,6 @@ export function CaseDetailBanner({
     return translateDynamicText(displayName, currentLang);
   };
 
-  const accusedEntities = caseData.entities.filter((entity) => entity.type === "accused");
   const locationEntities = caseData.entities.filter((entity) => entity.type === "location");
 
   return (
