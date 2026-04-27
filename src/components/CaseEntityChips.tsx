@@ -62,7 +62,14 @@ export function CaseEntityChips({
   
   const displayedEntities = isExpanded ? entities : entities.slice(0, initialLimit);
   const hasMore = entities.length > initialLimit;
+  const remainingCount = entities.length - initialLimit;
 
+  let toggleLabel = "";
+  if (isExpanded) {
+    toggleLabel = language === "ne" ? "थोरै हेर्नुहोस्" : "View less";
+  } else {
+    toggleLabel = language === "ne" ? `थप ${remainingCount} हेर्नुहोस्` : `View ${remainingCount} more`;
+  }
 
   if (entities.length === 0) {
     return null;
@@ -104,7 +111,7 @@ export function CaseEntityChips({
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-xs font-semibold text-primary hover:underline transition-all"
           >
-            {isExpanded ? (language === "ne" ? "थोरै हेर्नुहोस्" : "View less") : (language === "ne" ? `थप ${entities.length - initialLimit} हेर्नुहोस्` : `View ${entities.length - initialLimit} more`)}
+            {toggleLabel}
           </button>
         </div>
       )}
