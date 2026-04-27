@@ -122,8 +122,6 @@ export function CaseDetailBanner({
         </h1>
 
         <div className="mt-6 grid gap-3 text-sm text-white/80">
-
-
           <div className="flex items-start gap-3">
             <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/70" />
             <div className="flex flex-wrap gap-1">
@@ -140,7 +138,6 @@ export function CaseDetailBanner({
                 : notAvailableLabel}
             </div>
           </div>
-
           <div className="flex items-center gap-3">
             <Calendar className="h-4 w-4 flex-shrink-0 text-white/70" />
             <span>
