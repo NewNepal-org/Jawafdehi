@@ -83,9 +83,10 @@ export function CaseEntityChips({
           const displayName = getDisplayName(jawafEntity, entity, language);
           const imageUrl = getEntityImage(entity);
 
-          const strippedNotes = jawafEntity.notes
+          const rawNotes = jawafEntity.notes
             ? jawafEntity.notes.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
             : "";
+          const strippedNotes = rawNotes ? translateDynamicText(rawNotes, language) : "";
 
           return (
             <Link
