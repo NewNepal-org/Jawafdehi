@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CaseCardSkeleton } from "@/components/CaseCardSkeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Search, AlertCircle, Filter } from "lucide-react";
 import { getCases } from "@/services/jds-api";
@@ -73,9 +74,11 @@ const Cases = () => {
   );
 
   const filteredCases = cases.filter((caseItem) => {
+    const query = searchQuery.toLowerCase();
     const matchesSearch =
-      caseItem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      caseItem.description.toLowerCase().includes(searchQuery.toLowerCase());
+      caseItem.title.toLowerCase().includes(query) ||
+      caseItem.description.toLowerCase().includes(query) ||
+      (caseItem.tags || []).some(tag => tag.toLowerCase().includes(query));
     
     const caseStatus = getCaseStatus(caseItem);
     const matchesStatus = statusFilter === "all" || caseStatus === statusFilter;
@@ -175,14 +178,9 @@ const Cases = () => {
           ) : null}
 
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div role="status" aria-label={t("cases.loading")} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="border rounded-lg p-6 space-y-4">
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                  <Skeleton className="h-8 w-24" />
-                </div>
+                <CaseCardSkeleton key={i} />
               ))}
             </div>
           ) : filteredCases.length > 0 ? (

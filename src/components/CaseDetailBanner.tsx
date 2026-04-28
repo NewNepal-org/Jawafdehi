@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ChevronRight, MapPin, User } from "lucide-react";
+import { Calendar, ChevronRight, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CaseDetail, JawafEntity } from "@/types/jds";
 import type { Entity } from "@/types/nes";
@@ -56,7 +56,6 @@ export function CaseDetailBanner({
     return translateDynamicText(displayName, currentLang);
   };
 
-  const accusedEntities = caseData.entities.filter((entity) => entity.type === "accused");
   const locationEntities = caseData.entities.filter((entity) => entity.type === "location");
 
   return (
@@ -123,39 +122,21 @@ export function CaseDetailBanner({
 
         <div className="mt-6 grid gap-3 text-sm text-white/80">
           <div className="flex items-start gap-3">
-            <User className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/70" />
-            <div className="flex flex-wrap gap-1">
-              <span className="sr-only">{t("entityCard.alleged")}: </span>
-              {accusedEntities.length > 0
-                ? accusedEntities.map((entity, index) => (
-                    <span key={entity.id}>
-                      <Link to={`/entity/${entity.id}`} className="text-white hover:underline">
-                        {getEntityDisplayName(entity)}
-                      </Link>
-                      {index < accusedEntities.length - 1 && ", "}
-                    </span>
-                  ))
-                : notAvailableLabel}
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
             <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/70" />
             <div className="flex flex-wrap gap-1">
               <span className="sr-only">{t("entityCard.location")}: </span>
               {locationEntities.length > 0
                 ? locationEntities.map((entity, index) => (
-                    <span key={entity.id}>
-                      <Link to={`/entity/${entity.id}`} className="text-white hover:underline">
-                        {getEntityDisplayName(entity)}
-                      </Link>
-                      {index < locationEntities.length - 1 && ", "}
-                    </span>
-                  ))
+                  <span key={entity.id}>
+                    <Link to={`/entity/${entity.id}`} className="text-white hover:underline">
+                      {getEntityDisplayName(entity)}
+                    </Link>
+                    {index < locationEntities.length - 1 && ", "}
+                  </span>
+                ))
                 : notAvailableLabel}
             </div>
           </div>
-
           <div className="flex items-center gap-3">
             <Calendar className="h-4 w-4 flex-shrink-0 text-white/70" />
             <span>

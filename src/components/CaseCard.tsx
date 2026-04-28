@@ -53,11 +53,11 @@ function getEntitySummary(entity: string, entityNames: string[] | undefined, lan
 export const CaseCard = ({ id, title, entity, entityNames, location, date, status, tags = [], description, allegations, entityIds, locationIds, thumbnailUrl }: CaseCardProps) => {
   const { t, i18n } = useTranslation();
   const entitySummary = getEntitySummary(entity, entityNames, i18n.language, t);
-  
+
   // Check if we have a valid thumbnail URL
   const hasValidThumbnail = thumbnailUrl && thumbnailUrl.trim() !== '';
   const [imageSrc, setImageSrc] = useState(hasValidThumbnail ? thumbnailUrl : null);
-  
+
   // Handle image load errors by hiding the image
   const handleImageError = () => {
     setImageSrc(null);
@@ -96,23 +96,32 @@ export const CaseCard = ({ id, title, entity, entityNames, location, date, statu
               {statusConfig[status].label}
             </Badge>
 
-            <div className="flex flex-wrap justify-end gap-1">
-              {tags?.slice(0, 2).map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs shadow-sm bg-background/50 backdrop-blur-md">
-                  {tag}
-                </Badge>
-              ))}
-              {tags && tags.length > 2 && (
-                <Badge variant="secondary" className="text-xs shadow-sm bg-background/50 backdrop-blur-md">
-                  +{tags.length - 2}
-                </Badge>
-              )}
-            </div>
           </div>
         </div>
 
         <div className="flex flex-1 flex-col bg-card">
           <CardHeader className="space-y-2 px-4 pb-0 pt-4 sm:px-5 sm:pt-5">
+            {tags && tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-1">
+                {tags.slice(0, 2).map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="secondary"
+                    className="bg-secondary text-secondary-foreground border border-border/50 px-2.5 py-0.5 text-xs shadow-sm hover:bg-secondary/80"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+                {tags.length > 2 && (
+                  <Badge
+                    variant="secondary"
+                    className="bg-secondary text-secondary-foreground border border-border/50 px-2 py-0.5 text-xs shadow-sm"
+                  >
+                    +{tags.length - 2}
+                  </Badge>
+                )}
+              </div>
+            )}
             {/* NOTE: Dynamic case content (title, description, entity names) from Entity API
                 remains in English until API-side i18n is implemented. See GitHub issue for i18n. */}
             <h3 className="line-clamp-2 text-lg font-semibold leading-8 text-foreground">

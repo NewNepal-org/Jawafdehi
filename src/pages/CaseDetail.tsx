@@ -31,21 +31,29 @@ import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
 import "@/styles/print.css";
 
-function getRelatedSectionEntities(entities: JawafEntity[]) {
-  const seen = new Set<number>();
-  const orderedEntities = [
-    ...entities.filter((entity) => entity.type === "accused"),
-    ...entities.filter((entity) => entity.type === "related"),
-  ];
+const RELATION_PRIORITY: Record<string, number> = {
+  accused: 1,
+  alleged: 2,
+  victim: 3,
+  witness: 4,
+  related: 5,
+  opposition: 6,
+  unknown: 10,
+};
 
-  return orderedEntities.filter((entity) => {
-    if (seen.has(entity.id)) {
-      return false;
-    }
+function getGroupedEntities(entities: JawafEntity[]) {
+  const seen = new Set<number>();
+  return entities.reduce((groups, entity) => {
+    if (seen.has(entity.id) || entity.type === "location") return groups;
 
     seen.add(entity.id);
-    return true;
-  });
+    const type = entity.type || "unknown";
+
+    if (!groups[type]) groups[type] = [];
+    groups[type].push(entity);
+
+    return groups;
+  }, {} as Record<string, JawafEntity[]>);
 }
 
 const CaseDetail = () => {
@@ -55,7 +63,9 @@ const CaseDetail = () => {
   const caseId = id ? parseInt(id) : undefined;
   const trackedCaseIdRef = useRef<string | null>(null);
   const [isAskDrawerOpen, setIsAskDrawerOpen] = useState(false);
-  const [showAskPopup, setShowAskPopup] = useState(false);
+  const [showAskPopup, setShowAskPopup] = useState(true);
+  const [isAskCondensed, setIsAskCondensed] = useState(false);
+  const [isIntroFinished, setIsIntroFinished] = useState(false);
 
   const { data: caseData, isLoading, isError } = useQuery({
     queryKey: ['case', caseId],
@@ -102,21 +112,20 @@ const CaseDetail = () => {
 
   useEffect(() => {
     if (isAskDrawerOpen) {
-      setShowAskPopup(false);
+      setIsAskCondensed(false);
+      setIsIntroFinished(false);
       return;
     }
 
-    const handleScroll = () => {
-      setShowAskPopup(window.scrollY > 40);
-    };
+    const timer = setTimeout(() => {
+      setIsAskCondensed(true);
+      setIsIntroFinished(true);
+    }, 2000);
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => clearTimeout(timer);
   }, [isAskDrawerOpen]);
+
+
 
   const resolvedSources: Record<number, DocumentSource> = {};
   (caseData?.evidence ?? []).forEach((evidence, i) => {
@@ -130,9 +139,11 @@ const CaseDetail = () => {
     if (data) resolvedEntities[nesId] = data;
   });
 
-  const relatedSectionEntities = caseData
-    ? getRelatedSectionEntities(caseData.entities)
-    : [];
+  const groupedEntities = caseData
+    ? getGroupedEntities(caseData.entities)
+    : {};
+
+  const hasInvolvedParties = Object.keys(groupedEntities).length > 0;
 
   const chatSources = (caseData?.evidence ?? []).map((evidence) => ({
     sourceId: evidence.source_id,
@@ -161,7 +172,7 @@ const CaseDetail = () => {
             </div>
           </div>
         </main>
-  
+
       </div>
     );
   }
@@ -186,7 +197,7 @@ const CaseDetail = () => {
             </Alert>
           </div>
         </main>
-  
+
       </div>
     );
   }
@@ -337,7 +348,7 @@ const CaseDetail = () => {
                   "grid gap-8 transition-[grid-template-columns] duration-300 ease-out print:block",
                   caseData.timeline.length > 0 && !isAskDrawerOpen && "lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_24rem]"
                 )}>
-                  <div className="min-w-0">
+                  <div className="min-w-0 lg:col-start-1">
                     <Card className="mb-6 sm:mb-8">
                       <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
                         <CardTitle className="flex items-center text-xl sm:text-2xl">
@@ -364,19 +375,54 @@ const CaseDetail = () => {
                       </CardContent>
                     </Card>
 
-                    {relatedSectionEntities.length > 0 && (
+                    {hasInvolvedParties && (
                       <section className="mb-8">
                         <h2 className="mb-5 text-2xl font-semibold text-foreground">
                           {t("caseDetail.partiesInvolved")}
                         </h2>
-                        <CaseEntityChips
-                          entities={relatedSectionEntities}
-                          resolvedEntities={resolvedEntities}
-                          language={currentLang}
-                        />
+
+                        <div className="space-y-8">
+                          {(() => {
+                            const unknownLabel = t("caseDetail.relationTypes.unknown");
+                            return Object.entries(groupedEntities)
+                              .sort(([typeA], [typeB]) => (RELATION_PRIORITY[typeA] ?? 99) - (RELATION_PRIORITY[typeB] ?? 99))
+                              .map(([type, entities]) => {
+                                // Compute label for each relation type
+                                const typeKey = `caseDetail.relationTypes.${type}`;
+                                const label = t(typeKey, { defaultValue: unknownLabel });
+
+                                return (
+                                  <div key={type} className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                    <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+                                      {label}
+                                    </h3>
+                                    <div className="h-px w-full bg-border/60" />
+                                  </div>
+                                  <CaseEntityChips
+                                    entities={entities}
+                                    resolvedEntities={resolvedEntities}
+                                    language={currentLang}
+                                  />
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
                       </section>
                     )}
+                  </div>
 
+                  <CaseTimeline
+                    timeline={caseData.timeline}
+                    title={t("caseDetail.timeline")}
+                    className={cn(
+                      "print:static print:mb-8 lg:col-start-2 lg:row-start-1 lg:row-span-2",
+                      isAskDrawerOpen ? "hidden print:block" : "mb-8 text-foreground"
+                    )}
+                  />
+
+                  <div className="min-w-0 lg:col-start-1">
                     <Card className="mb-8">
                       <CardHeader>
                         <CardTitle className="flex items-center">
@@ -440,15 +486,6 @@ const CaseDetail = () => {
                       </section>
                     )}
                   </div>
-
-                  <CaseTimeline
-                    timeline={caseData.timeline}
-                    title={t("caseDetail.timeline")}
-                    className={cn(
-                      "print:static print:mb-8",
-                      isAskDrawerOpen ? "hidden print:block" : "mb-8"
-                    )}
-                  />
                 </div>
               </div>
 
@@ -504,7 +541,7 @@ const CaseDetail = () => {
 
       <div
         className={cn(
-          "pointer-events-none fixed inset-x-4 bottom-5 z-40 flex justify-center transition-all duration-300 no-print sm:inset-x-auto sm:right-6 sm:justify-end xl:right-10",
+          "pointer-events-none fixed bottom-5 z-40 flex transition-all duration-300 no-print right-4 sm:right-6 xl:right-10",
           isAskPopupVisible
             ? "translate-y-0 opacity-100"
             : "translate-y-4 opacity-0"
@@ -514,13 +551,24 @@ const CaseDetail = () => {
         <button
           type="button"
           onClick={() => setIsAskDrawerOpen(true)}
+          onMouseEnter={() => isIntroFinished && setIsAskCondensed(false)}
+          onMouseLeave={() => isIntroFinished && setIsAskCondensed(true)}
+          aria-label={t("caseDetail.askPopupTitle")}
           tabIndex={isAskPopupVisible ? 0 : -1}
-          className="pointer-events-auto flex w-full max-w-[24rem] items-center gap-3 rounded-full border border-primary  bg-background/95 px-3 py-3 text-left shadow-[0_18px_40px_rgba(15,23,42,0.14),0_0_0_1px_rgba(37,99,235,0.06),0_0_24px_rgba(37,99,235,0.12)] ring-1 ring-primary backdrop-blur transition-[box-shadow,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_22px_44px_rgba(15,23,42,0.16),0_0_0_1px_rgba(37,99,235,0.08),0_0_30px_rgba(37,99,235,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:shadow-[0_22px_44px_rgba(15,23,42,0.16),0_0_0_1px_rgba(37,99,235,0.1),0_0_0_6px_rgba(37,99,235,0.14),0_0_34px_rgba(37,99,235,0.2)] supports-[backdrop-filter]:bg-background/90 sm:w-auto sm:min-w-[22rem]"
+          className={cn(
+            "pointer-events-auto flex items-center rounded-full border border-primary bg-background/95 p-3 text-left shadow-[0_18px_40px_rgba(15,23,42,0.14),0_0_0_1px_rgba(37,99,235,0.06),0_0_24px_rgba(37,99,235,0.12)] ring-1 ring-primary backdrop-blur transition-all duration-500 ease-in-out hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_22px_44px_rgba(15,23,42,0.16),0_0_0_1px_rgba(37,99,235,0.08),0_0_30px_rgba(37,99,235,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:shadow-[0_22px_44px_rgba(15,23,42,0.16),0_0_0_1px_rgba(37,99,235,0.1),0_0_0_6px_rgba(37,99,235,0.14),0_0_34px_rgba(37,99,235,0.2)] supports-[backdrop-filter]:bg-background/90",
+            isAskCondensed 
+              ? "w-[74px] h-[74px] overflow-hidden justify-center" 
+              : "w-[calc(100vw-2rem)] max-w-[24rem] sm:w-[22rem]"
+          )}
         >
           <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
             <MessageCircle className="h-5 w-5" />
           </span>
-          <span className="min-w-0 flex-1">
+          <span className={cn(
+            "min-w-0 flex-1 transition-all duration-500 ease-in-out",
+            isAskCondensed ? "max-w-0 opacity-0 invisible" : "max-w-[18rem] opacity-100 visible pl-3"
+          )}>
             <span className="block truncate text-sm font-semibold text-foreground">
               {t("caseDetail.askPopupTitle")}
             </span>
