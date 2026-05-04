@@ -97,7 +97,7 @@ export function CaseEntityChips({
                   {getFallbackIcon(jawafEntity, entity)}
                 </AvatarFallback>
               </Avatar>
-              <span className="line-clamp-2 text-xs font-medium leading-tight text-foreground group-hover:text-primary transition-colors">
+              <span className="line-clamp-2 text-xs font-medium leading-normal pt-1 text-foreground group-hover:text-primary transition-colors">
                 {displayName}
               </span>
             </Link>
