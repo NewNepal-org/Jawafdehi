@@ -203,7 +203,7 @@ export const FloatingShareSidebar = ({
   return (
     <TooltipProvider>
       <div
-        className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-2 p-2 bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg animate-in slide-in-from-left-4 fade-in duration-300 no-print"
+        className="fixed left-2 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-2 p-2 bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg animate-in slide-in-from-left-4 fade-in duration-300 no-print"
         role="region"
         aria-label={t("share.share")}
       >
