@@ -29,6 +29,7 @@ import { JAWAFDEHI_WHATSAPP_NUMBER, JAWAFDEHI_EMAIL } from "@/config/constants";
 import { translateDynamicText } from "@/lib/translate-dynamic-content";
 import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
+import { formatNPR } from "@/utils/number";
 import "@/styles/print.css";
 
 const RELATION_PRIORITY: Record<string, number> = {
@@ -441,7 +442,7 @@ const CaseDetail = () => {
                 <div className="flex items-center text-muted-foreground">
                   <Banknote className="mr-2 h-5 w-5" />
                   <span className="text-sm">
-                    {t("caseDetail.embezzledAmount")}: NPR {caseData.bigo.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                    {t("caseDetail.embezzledAmount")}: {formatNPR(caseData.bigo)}
                   </span>
                 </div>
               )}
@@ -550,7 +551,7 @@ const CaseDetail = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {renderOrder.map((group) => {
                     const evidenceInGroup = groupedEvidence[group];
                     if (evidenceInGroup.length === 0) return null;
@@ -562,7 +563,7 @@ const CaseDetail = () => {
                           count={evidenceInGroup.length} 
                           t={t} 
                         />
-                        <div className="space-y-3">
+                        <div>
                           {evidenceInGroup.map((evidence, index) => {
                             const source = resolvedSources[evidence.source_id] ?? null;
                             return (
