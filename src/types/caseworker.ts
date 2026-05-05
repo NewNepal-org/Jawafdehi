@@ -81,6 +81,17 @@ export interface LLMProvider {
   updated_at: string;
 }
 
+export interface KnowledgeCollection {
+  id: number;
+  name: string;
+  display_name: string;
+  description: string;
+  access_level: "private" | "public";
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PublicChatConfig {
   id: number;
   name: string;
@@ -97,6 +108,9 @@ export interface PublicChatConfig {
   max_mcp_results: number;
   max_tool_calls: number;
   max_evidence_chars: number;
+  knowledge_rag_enabled: boolean;
+  knowledge_collections: number[];
+  max_knowledge_results: number;
   created_at: string;
   updated_at: string;
 }
