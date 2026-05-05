@@ -72,11 +72,19 @@ export interface Draft {
 
 export interface LLMProvider {
   id: number;
+  name: string;
+  display_name: string;
   provider_type: "openai" | "anthropic" | "google" | "ollama" | "azure" | "custom";
   model: string;
+  base_url: string;
+  api_version: string;
+  deployment_name: string;
+  extra_config: Record<string, unknown>;
   temperature: number;
   max_tokens: number;
   is_active: boolean;
+  is_default: boolean;
+  structured_output_mode: "auto" | "provider_native" | "tool_calling";
   created_at: string;
   updated_at: string;
 }
@@ -99,6 +107,7 @@ export interface PublicChatConfig {
   enabled: boolean;
   prompt: number;
   llm_provider: number | null;
+  classifier_llm_provider: number | null;
   quota_scope: "ip_session" | "session" | "ip";
   quota_limit: number;
   quota_window_seconds: number;
