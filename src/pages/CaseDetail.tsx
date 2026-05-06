@@ -17,7 +17,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, ChevronDown, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, Scale, StickyNote, User } from "lucide-react";
+import { Banknote, Calendar, ChevronDown, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, Scale, StickyNote, User } from "lucide-react";
 import { getCaseById, getCourtCase, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import type { CourtCase, CourtCaseHearing, DocumentSource, JawafEntity } from "@/types/jds";
