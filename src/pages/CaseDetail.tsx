@@ -13,13 +13,14 @@ import { CaseTimeline } from "@/components/CaseTimeline";
 import { CaseEntityChips } from "@/components/CaseEntityChips";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, StickyNote, User } from "lucide-react";
-import { getCaseById, getDocumentSourceById } from "@/services/jds-api";
+import { Calendar, ChevronDown, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, Scale, StickyNote, User } from "lucide-react";
+import { getCaseById, getCourtCase, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
-import type { DocumentSource, JawafEntity } from "@/types/jds";
+import type { CourtCase, CourtCaseHearing, DocumentSource, JawafEntity } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { formatCaseDateRange } from "@/utils/date";
@@ -91,6 +92,15 @@ const CaseDetail = () => {
     queries: uniqueNesIds.map((nesId) => ({
       queryKey: ['nes-entity', nesId],
       queryFn: () => getEntityById(nesId),
+      staleTime: 10 * 60 * 1000,
+      retry: false,
+    })),
+  });
+
+  const courtCaseQueries = useQueries({
+    queries: (caseData?.court_cases ?? []).map((courtCaseId) => ({
+      queryKey: ['court-case', courtCaseId],
+      queryFn: () => getCourtCase(courtCaseId),
       staleTime: 10 * 60 * 1000,
       retry: false,
     })),
@@ -434,6 +444,100 @@ const CaseDetail = () => {
                         <ResponsiveTable html={caseData.description} />
                       </CardContent>
                     </Card>
+
+                    {(caseData.court_cases ?? []).length > 0 && (
+                      <Card className="mb-8">
+                        <CardHeader>
+                          <CardTitle className="flex items-center">
+                            <Scale className="mr-2 h-5 w-5" />
+                            {t("caseDetail.courtCase", "Court Case")}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {(caseData.court_cases ?? []).map((courtCaseId, index) => {
+                              const query = courtCaseQueries[index];
+                              const courtCase = query?.data as CourtCase | undefined;
+                              const isLoading = query?.isLoading;
+                              return (
+                                <div key={courtCaseId} className="rounded-lg border border-border p-4">
+                                  <div className="mb-2 flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                                    <Scale className="h-3 w-3" />
+                                    {courtCaseId}
+                                  </div>
+                                  {isLoading ? (
+                                    <div className="space-y-2">
+                                      <Skeleton className="h-4 w-3/4" />
+                                      <Skeleton className="h-4 w-1/2" />
+                                    </div>
+                                  ) : courtCase ? (
+                                    <div className="space-y-3 text-sm">
+                                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
+                                        {courtCase.case_type && (
+                                          <span><span className="font-medium text-foreground">Case Type:</span> {courtCase.case_type}</span>
+                                        )}
+                                        {courtCase.category && (
+                                          <span><span className="font-medium text-foreground">Category:</span> {courtCase.category}</span>
+                                        )}
+                                        {courtCase.division && (
+                                          <span><span className="font-medium text-foreground">Division:</span> {courtCase.division}</span>
+                                        )}
+                                        {courtCase.registration_date_ad && (
+                                          <span><span className="font-medium text-foreground">Registered:</span> {courtCase.registration_date_ad} ({courtCase.registration_date_bs})</span>
+                                        )}
+                                        {courtCase.case_status && (
+                                          <span><span className="font-medium text-foreground">Status:</span> {courtCase.case_status}</span>
+                                        )}
+                                      </div>
+                                      {(courtCase.plaintiff || courtCase.defendant) && (
+                                        <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
+                                          {courtCase.plaintiff && (
+                                            <span><span className="font-medium text-foreground">Plaintiff:</span> {courtCase.plaintiff}</span>
+                                          )}
+                                          {courtCase.defendant && (
+                                            <span><span className="font-medium text-foreground">Defendant:</span> {courtCase.defendant}</span>
+                                          )}
+                                        </div>
+                                      )}
+                                      {courtCase.hearings.length > 0 && (
+                                        <Collapsible className="mt-3">
+                                          <CollapsibleTrigger className="flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                                            <ChevronDown className="h-4 w-4 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+                                            <span>Hearings ({courtCase.hearings.length})</span>
+                                          </CollapsibleTrigger>
+                                          <CollapsibleContent className="mt-2">
+                                            <ResponsiveTable html={`<table>
+                                              <thead><tr>
+                                                <th>Date (AD)</th>
+                                                <th>Date (BS)</th>
+                                                <th>Status</th>
+                                                <th>Decision</th>
+                                                <th>Judges</th>
+                                              </tr></thead>
+                                              <tbody>
+                                                ${courtCase.hearings.map((hearing: CourtCaseHearing) => `<tr>
+                                                  <td>${hearing.hearing_date_ad}</td>
+                                                  <td>${hearing.hearing_date_bs}</td>
+                                                  <td>${hearing.case_status}</td>
+                                                  <td>${hearing.decision_type || ''}</td>
+                                                  <td>${hearing.judge_names ? hearing.judge_names.replace(/\n/g, '<br/>') : ''}</td>
+                                                </tr>`).join('')}
+                                              </tbody>
+                                            </table>`} />
+                                          </CollapsibleContent>
+                                        </Collapsible>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <p className="text-sm text-muted-foreground">{t("caseDetail.courtCaseUnavailable", "Court case details unavailable.")}</p>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
 
                     {caseData.evidence.length > 0 && (
                       <Card className="mb-8">

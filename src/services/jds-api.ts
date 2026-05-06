@@ -15,6 +15,7 @@ import type {
   CaseDetail,
   CaseSearchParams,
   CaseStatistics,
+  CourtCase,
   DocumentSource,
   DocumentSourceSearchParams,
   PaginatedCaseList,
@@ -229,6 +230,19 @@ export async function getDocumentSources(params?: DocumentSourceSearchParams): P
     return response.data;
   } catch (error) {
     handleApiError(error, '/sources/');
+  }
+}
+
+/**
+ * Retrieve court case details from the NGM endpoint.
+ */
+export async function getCourtCase(caseId: string): Promise<CourtCase> {
+  try {
+    const encoded = encodeURIComponent(caseId);
+    const response = await apiClient.get<CourtCase>(`/ngm/court_case/${encoded}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, `/ngm/court_case/${caseId}`);
   }
 }
 
