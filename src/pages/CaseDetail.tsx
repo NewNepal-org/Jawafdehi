@@ -474,28 +474,28 @@ const CaseDetail = () => {
                                     <div className="space-y-3 text-sm">
                                       <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
                                         {courtCase.case_type && (
-                                          <span><span className="font-medium text-foreground">Case Type:</span> {courtCase.case_type}</span>
+                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtCaseType", "Case Type")}:</span> {courtCase.case_type}</span>
                                         )}
                                         {courtCase.category && (
-                                          <span><span className="font-medium text-foreground">Category:</span> {courtCase.category}</span>
+                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtCategory", "Category")}:</span> {courtCase.category}</span>
                                         )}
                                         {courtCase.division && (
-                                          <span><span className="font-medium text-foreground">Division:</span> {courtCase.division}</span>
+                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtDivision", "Division")}:</span> {courtCase.division}</span>
                                         )}
                                         {courtCase.registration_date_ad && (
-                                          <span><span className="font-medium text-foreground">Registered:</span> {courtCase.registration_date_ad} ({courtCase.registration_date_bs})</span>
+                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtRegistered", "Registered")}:</span> {courtCase.registration_date_ad} ({courtCase.registration_date_bs})</span>
                                         )}
                                         {courtCase.case_status && (
-                                          <span><span className="font-medium text-foreground">Status:</span> {courtCase.case_status}</span>
+                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtStatus", "Status")}:</span> {courtCase.case_status}</span>
                                         )}
                                       </div>
                                       {(courtCase.plaintiff || courtCase.defendant) && (
                                         <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
                                           {courtCase.plaintiff && (
-                                            <span><span className="font-medium text-foreground">Plaintiff:</span> {courtCase.plaintiff}</span>
+                                            <span><span className="font-medium text-foreground">{t("caseDetail.courtPlaintiff", "Plaintiff")}:</span> {courtCase.plaintiff}</span>
                                           )}
                                           {courtCase.defendant && (
-                                            <span><span className="font-medium text-foreground">Defendant:</span> {courtCase.defendant}</span>
+                                            <span><span className="font-medium text-foreground">{t("caseDetail.courtDefendant", "Defendant")}:</span> {courtCase.defendant}</span>
                                           )}
                                         </div>
                                       )}
@@ -503,27 +503,39 @@ const CaseDetail = () => {
                                         <Collapsible className="mt-3">
                                           <CollapsibleTrigger className="flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
                                             <ChevronDown className="h-4 w-4 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
-                                            <span>Hearings ({courtCase.hearings.length})</span>
+                                            <span>{t("caseDetail.courtHearings", "Hearings")} ({courtCase.hearings.length})</span>
                                           </CollapsibleTrigger>
                                           <CollapsibleContent className="mt-2">
-                                            <ResponsiveTable html={`<table>
-                                              <thead><tr>
-                                                <th>Date (AD)</th>
-                                                <th>Date (BS)</th>
-                                                <th>Status</th>
-                                                <th>Decision</th>
-                                                <th>Judges</th>
-                                              </tr></thead>
-                                              <tbody>
-                                                ${courtCase.hearings.map((hearing: CourtCaseHearing) => `<tr>
-                                                  <td>${hearing.hearing_date_ad}</td>
-                                                  <td>${hearing.hearing_date_bs}</td>
-                                                  <td>${hearing.case_status}</td>
-                                                  <td>${hearing.decision_type || ''}</td>
-                                                  <td>${hearing.judge_names ? hearing.judge_names.replace(/\n/g, '<br/>') : ''}</td>
-                                                </tr>`).join('')}
-                                              </tbody>
-                                            </table>`} />
+                                            <div className="table-scroll-wrapper overflow-x-auto">
+                                              <table className="w-full border-collapse text-xs">
+                                                <thead>
+                                                  <tr className="border-b border-border bg-muted/50">
+                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingDateAD", "Date (AD)")}</th>
+                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingDateBS", "Date (BS)")}</th>
+                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingStatus", "Status")}</th>
+                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingDecision", "Decision")}</th>
+                                                    <th className="px-3 py-2 text-left font-semibold text-foreground">{t("caseDetail.courtHearingJudges", "Judges")}</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {courtCase.hearings.map((hearing: CourtCaseHearing) => (
+                                                    <tr key={hearing.id} className="border-b border-border/50 last:border-0">
+                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.hearing_date_ad}</td>
+                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.hearing_date_bs}</td>
+                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.case_status}</td>
+                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.decision_type || ''}</td>
+                                                      <td className="px-3 py-2 text-muted-foreground">
+                                                        {hearing.judge_names
+                                                          ? hearing.judge_names.split('\n').map((line, i, arr) => (
+                                                              <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+                                                            ))
+                                                          : null}
+                                                      </td>
+                                                    </tr>
+                                                  ))}
+                                                </tbody>
+                                              </table>
+                                            </div>
                                           </CollapsibleContent>
                                         </Collapsible>
                                       )}
