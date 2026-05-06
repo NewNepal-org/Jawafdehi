@@ -176,6 +176,13 @@
       "loading": "Loading comments...",
       "joinDiscussion": "Join the discussion and share your thoughts on this case.",
       "loadComments": "Load Comments"
+    },
+    "evidenceGroups": {
+      "primary": "Primary Evidence",
+      "legal": "Legal Documents",
+      "secondary": "Secondary Sources",
+      "documentCount": "{{count}} document",
+      "documentCount_plural": "{{count}} documents"
     }
   },
   "guestCommon": {
@@ -761,5 +768,9 @@
     "shareOnReddit": "Share on Reddit",
     "shareOnMessenger": "Share on Messenger",
     "shareOnThreads": "Share on Threads"
+  },
+  "courts": {
+    "supreme": "Supreme Court",
+    "special": "Special Court"
   }
 }
