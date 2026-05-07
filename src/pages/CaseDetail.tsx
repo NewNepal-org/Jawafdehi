@@ -7,20 +7,20 @@ import { Header } from "@/components/Header";
 import { GuestCaseChatDrawer } from "@/components/guest/GuestCaseChatDrawer";
 import { DocumentSourceCard } from "@/components/DocumentSourceCard";
 import { ResponsiveTable } from "@/components/ResponsiveTable";
+import { CourtCaseCard } from "@/components/CourtCaseCard";
 import { FloatingShareSidebar } from "@/components/FloatingShareSidebar";
 import { CaseDetailBanner } from "@/components/CaseDetailBanner";
 import { CaseTimeline } from "@/components/CaseTimeline";
 import { CaseEntityChips } from "@/components/CaseEntityChips";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Banknote, Calendar, ChevronDown, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, Scale, StickyNote, User } from "lucide-react";
+import { Banknote, Calendar, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, Scale, StickyNote, User } from "lucide-react";
 import { getCaseById, getCourtCase, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
-import type { CourtCase, CourtCaseHearing, DocumentSource, JawafEntity } from "@/types/jds";
+import type { CourtCase, DocumentSource, JawafEntity } from "@/types/jds";
 import type { Entity } from "@/types/nes";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { formatCaseDateRange } from "@/utils/date";
@@ -564,93 +564,13 @@ const CaseDetail = () => {
                           <div className="space-y-4">
                             {(caseData.court_cases ?? []).map((courtCaseId, index) => {
                               const query = courtCaseQueries[index];
-                              const courtCase = query?.data as CourtCase | undefined;
-                              const isLoading = query?.isLoading;
                               return (
-                                <div key={courtCaseId} className="rounded-lg border border-border p-4">
-                                  <div className="mb-2 flex items-center gap-2 text-xs font-mono text-muted-foreground">
-                                    <Scale className="h-3 w-3" />
-                                    {courtCaseId}
-                                  </div>
-                                  {isLoading ? (
-                                    <div className="space-y-2">
-                                      <Skeleton className="h-4 w-3/4" />
-                                      <Skeleton className="h-4 w-1/2" />
-                                    </div>
-                                  ) : courtCase ? (
-                                    <div className="space-y-3 text-sm">
-                                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
-                                        {courtCase.case_type && (
-                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtCaseType", "Case Type")}:</span> {courtCase.case_type}</span>
-                                        )}
-                                        {courtCase.category && (
-                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtCategory", "Category")}:</span> {courtCase.category}</span>
-                                        )}
-                                        {courtCase.division && (
-                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtDivision", "Division")}:</span> {courtCase.division}</span>
-                                        )}
-                                        {courtCase.registration_date_ad && (
-                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtRegistered", "Registered")}:</span> {courtCase.registration_date_ad} ({courtCase.registration_date_bs})</span>
-                                        )}
-                                        {courtCase.case_status && (
-                                          <span><span className="font-medium text-foreground">{t("caseDetail.courtStatus", "Status")}:</span> {courtCase.case_status}</span>
-                                        )}
-                                      </div>
-                                      {(courtCase.plaintiff || courtCase.defendant) && (
-                                        <div className="flex flex-wrap gap-x-6 gap-y-1 text-muted-foreground">
-                                          {courtCase.plaintiff && (
-                                            <span><span className="font-medium text-foreground">{t("caseDetail.courtPlaintiff", "Plaintiff")}:</span> {courtCase.plaintiff}</span>
-                                          )}
-                                          {courtCase.defendant && (
-                                            <span><span className="font-medium text-foreground">{t("caseDetail.courtDefendant", "Defendant")}:</span> {courtCase.defendant}</span>
-                                          )}
-                                        </div>
-                                      )}
-                                      {courtCase.hearings.length > 0 && (
-                                        <Collapsible className="mt-3">
-                                          <CollapsibleTrigger className="flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted transition-colors">
-                                            <ChevronDown className="h-4 w-4 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
-                                            <span>{t("caseDetail.courtHearings", "Hearings")} ({courtCase.hearings.length})</span>
-                                          </CollapsibleTrigger>
-                                          <CollapsibleContent className="mt-2">
-                                            <div className="table-scroll-wrapper overflow-x-auto">
-                                              <table className="w-full border-collapse text-xs">
-                                                <thead>
-                                                  <tr className="border-b border-border bg-muted/50">
-                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingDateAD", "Date (AD)")}</th>
-                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingDateBS", "Date (BS)")}</th>
-                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingStatus", "Status")}</th>
-                                                    <th className="px-3 py-2 text-left font-semibold text-foreground whitespace-nowrap">{t("caseDetail.courtHearingDecision", "Decision")}</th>
-                                                    <th className="px-3 py-2 text-left font-semibold text-foreground">{t("caseDetail.courtHearingJudges", "Judges")}</th>
-                                                  </tr>
-                                                </thead>
-                                                <tbody>
-                                                  {courtCase.hearings.map((hearing: CourtCaseHearing) => (
-                                                    <tr key={hearing.id} className="border-b border-border/50 last:border-0">
-                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.hearing_date_ad}</td>
-                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.hearing_date_bs}</td>
-                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.case_status}</td>
-                                                      <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">{hearing.decision_type || ''}</td>
-                                                      <td className="px-3 py-2 text-muted-foreground">
-                                                        {hearing.judge_names
-                                                          ? hearing.judge_names.split('\n').map((line, i, arr) => (
-                                                              <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
-                                                            ))
-                                                          : null}
-                                                      </td>
-                                                    </tr>
-                                                  ))}
-                                                </tbody>
-                                              </table>
-                                            </div>
-                                          </CollapsibleContent>
-                                        </Collapsible>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <p className="text-sm text-muted-foreground">{t("caseDetail.courtCaseUnavailable", "Court case details unavailable.")}</p>
-                                  )}
-                                </div>
+                                <CourtCaseCard
+                                  key={courtCaseId}
+                                  courtCaseId={courtCaseId}
+                                  courtCase={query?.data as CourtCase | undefined}
+                                  isLoading={query?.isLoading ?? false}
+                                />
                               );
                             })}
                           </div>
