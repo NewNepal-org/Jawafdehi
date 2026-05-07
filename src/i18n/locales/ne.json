@@ -563,7 +563,9 @@
     "otherContactMethod": "अन्य",
     "otherPlaceholder": "सम्पर्क विवरण प्रविष्ट गर्नुहोस्",
     "submitFeedback": "प्रतिक्रिया पेश गर्नुहोस्",
+    "rateLimitedButton": "{{time}} प्रतीक्षा गर्नुहोस्",
     "submitting": "पेश गर्दै...",
+    "addContactMethod": "सम्पर्क थप्नुहोस्",
     "submitted": {
       "title": "प्रतिक्रिया पेश गरियो",
       "description": "तपाईंको प्रतिक्रियाको लागि धन्यवाद! हामी यसलाई समीक्षा गर्नेछौं र यदि आवश्यक छ भने तपाईंसँग फर्कनेछौं।"
@@ -572,6 +574,10 @@
       "title": "त्रुटि",
       "validation": "कृपया त्रुटिहरूको लागि फर्म जाँच गर्नुहोस्",
       "rateLimit": "धेरै पेशहरू",
+      "rateLimitMessage": "धेरै पेशहरू। कृपया फेरि प्रयास गर्नु अघि {{time}} प्रतीक्षा गर्नुहोस्।",
+      "rateLimitWaitTime": "{{minutes}} मिनेट{{seconds, select, 0 {} other { र {{seconds}} सेकेन्ड}}}",
+      "rateLimitWaitTimeSeconds": "{{seconds}} सेकेन्ड",
+      "rateLimitCountdown": "बाँकी समय: {{time}}",
       "server": "सर्भर त्रुटि। कृपया पछि फेरि प्रयास गर्नुहोस्।",
       "network": "नेटवर्क त्रुटि। कृपया आफ्नो जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।"
     },

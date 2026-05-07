@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Mail, Phone, MessageCircle, HelpCircle, Loader2, AlertCircle, Plus, X, Instagram, Facebook, Paperclip } from "lucide-react";
+import { Mail, Phone, MessageCircle, HelpCircle, Loader2, AlertCircle, Plus, X, Instagram, Facebook, Paperclip, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -59,6 +59,8 @@ export function FeedbackForm({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [validationErrors, setValidationErrors] = useState<ValidationError | null>(null);
     const [generalError, setGeneralError] = useState<string | null>(null);
+    const [rateLimitedUntil, setRateLimitedUntil] = useState<number | null>(null);
+    const [countdown, setCountdown] = useState<number>(0);
 
     const addContactMethod = () => {
         if (contactMethods.length >= 5) {
@@ -85,6 +87,27 @@ export function FeedbackForm({
         }
         setContactMethods(updated);
     };
+
+    // Countdown timer effect for rate limiting
+    useEffect(() => {
+        if (!rateLimitedUntil) return;
+
+        const updateCountdown = () => {
+            const now = Date.now();
+            const remaining = Math.max(0, Math.ceil((rateLimitedUntil - now) / 1000));
+            setCountdown(remaining);
+
+            if (remaining === 0) {
+                setRateLimitedUntil(null);
+                setGeneralError(null);
+            }
+        };
+
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 1000);
+
+        return () => clearInterval(interval);
+    }, [rateLimitedUntil]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] ?? null;
@@ -156,7 +179,32 @@ export function FeedbackForm({
         } catch (error) {
             console.error('Feedback submission error:', error);
             if (error instanceof JDSApiError) {
-                if (error.statusCode === 400 && error.validationErrors) {
+                if (error.statusCode === 429 && error.retryAfter) {
+                    // Rate limited - set countdown timer
+                    const retryAfterMs = error.retryAfter * 1000;
+                    const unlockTime = Date.now() + retryAfterMs;
+                    setRateLimitedUntil(unlockTime);
+                    
+                    const minutes = Math.floor(error.retryAfter / 60);
+                    const seconds = error.retryAfter % 60;
+                    const timeString = minutes > 0 
+                        ? t("feedback.error.rateLimitWaitTime", { 
+                            minutes, 
+                            seconds,
+                            defaultValue: `${minutes} minute${minutes > 1 ? 's' : ''} ${seconds > 0 ? `and ${seconds} second${seconds > 1 ? 's' : ''}` : ''}`
+                          })
+                        : t("feedback.error.rateLimitWaitTimeSeconds", { 
+                            seconds,
+                            defaultValue: `${seconds} second${seconds > 1 ? 's' : ''}`
+                          });
+                    
+                    setGeneralError(
+                        t("feedback.error.rateLimitMessage", { 
+                            time: timeString,
+                            defaultValue: `Too many submissions. Please wait ${timeString} before trying again.`
+                        })
+                    );
+                } else if (error.statusCode === 400 && error.validationErrors) {
                     setValidationErrors(error.validationErrors);
                 } else {
                     setGeneralError(error.message);
@@ -176,12 +224,35 @@ export function FeedbackForm({
         return null;
     };
 
+    const formatCountdown = (seconds: number): string => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        if (mins > 0) {
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        return `${secs}s`;
+    };
+
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {generalError && (
                 <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{generalError}</AlertDescription>
+                    {rateLimitedUntil ? (
+                        <Clock className="h-4 w-4" />
+                    ) : (
+                        <AlertCircle className="h-4 w-4" />
+                    )}
+                    <AlertDescription>
+                        {generalError}
+                        {rateLimitedUntil && countdown > 0 && (
+                            <div className="mt-2 font-mono text-sm">
+                                {t("feedback.error.rateLimitCountdown", { 
+                                    time: formatCountdown(countdown),
+                                    defaultValue: `Time remaining: ${formatCountdown(countdown)}`
+                                })}
+                            </div>
+                        )}
+                    </AlertDescription>
                 </Alert>
             )}
 
@@ -346,9 +417,23 @@ export function FeedbackForm({
                 </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                {t("feedback.submitFeedback")}
+            <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting || (rateLimitedUntil !== null && countdown > 0)}
+            >
+                {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : rateLimitedUntil && countdown > 0 ? (
+                    <Clock className="h-4 w-4 mr-2" />
+                ) : null}
+                {rateLimitedUntil && countdown > 0 
+                    ? t("feedback.rateLimitedButton", { 
+                        time: formatCountdown(countdown),
+                        defaultValue: `Wait ${formatCountdown(countdown)}`
+                      })
+                    : t("feedback.submitFeedback")
+                }
             </Button>
         </form>
     );

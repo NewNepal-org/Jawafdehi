@@ -151,6 +151,8 @@
     "askPopupTitle": "Ask Jawafdehi about this case",
     "askPopupDescription": "Get a quick summary, timeline, or source-based answer.",
     "inReviewBanner": "This case is currently under review by Jawafdehi. Information may be incomplete or subject to revision.",
+    "embezzledAmount": "Embezzled / Irregular Amount",
+    "courtCases": "Related Court Cases",
     "courtCase": "Court Case",
     "courtCaseNumber": "Case No.",
     "courtCaseType": "Case Type",
@@ -564,6 +566,7 @@
     "otherContactMethod": "Other",
     "otherPlaceholder": "Enter contact details",
     "submitFeedback": "Submit Feedback",
+    "rateLimitedButton": "Wait {{time}}",
     "submitting": "Submitting...",
     "submitted": {
       "title": "Feedback Submitted",
@@ -573,6 +576,10 @@
       "title": "Error",
       "validation": "Please check the form for errors",
       "rateLimit": "Too Many Submissions",
+      "rateLimitMessage": "Too many submissions. Please wait {{time}} before trying again.",
+      "rateLimitWaitTime": "{{minutes}} minute{{minutes, plural, one {} other {s}}}{{seconds, select, 0 {} other { and {{seconds}} second{{seconds, plural, one {} other {s}}}}}",
+      "rateLimitWaitTimeSeconds": "{{seconds}} second{{seconds, plural, one {} other {s}}}",
+      "rateLimitCountdown": "Time remaining: {{time}}",
       "server": "Server error. Please try again later.",
       "network": "Network error. Please check your connection and try again."
     },
