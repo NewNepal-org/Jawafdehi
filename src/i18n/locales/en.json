@@ -168,6 +168,9 @@
     "courtHearingDecision": "Decision",
     "courtHearingJudges": "Judges",
     "courtCaseUnavailable": "Court case details unavailable.",
+    "outcomes": "Verdict & Outcomes",
+    "verdict": "Verdict",
+    "sentence": "Sentence",
     "status": {
       "ongoing": "Ongoing",
       "resolved": "Resolved",
