@@ -38,7 +38,7 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background backdrop-blur supports-[backdrop-filter]:bg-background/95">
       <div className="container mx-auto flex h-20 items-center justify-between px-6 lg:px-12">
         <Link to="/" className="flex items-center space-x-2.5">
-          <img src="/logo.png" alt="Jawafdehi Logo" className="h-[72px] w-[72px]" />
+          <img src="/logo.png" alt="Jawafdehi Logo" className="h-14 w-14" decoding="async" />
           <span className="text-lg font-bold text-foreground tracking-tight font-heading">
             Jawafdehi.org
           </span>

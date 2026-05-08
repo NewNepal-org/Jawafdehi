@@ -15,16 +15,16 @@ export const Footer = () => {
           {/* Brand + mission — spans 2 cols on desktop */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2.5 mb-4">
-              <img src="/logo.png" alt="Jawafdehi Logo" className="h-12 w-12" />
+              <img src="/logo.png" alt="Jawafdehi Logo" className="h-12 w-12" loading="lazy" />
               <span className="text-base font-bold text-white font-heading">Jawafdehi.org</span>
             </Link>
             <p className="text-sm font-semibold text-primary mb-1 italic">
               Accountability has no Expiry.
             </p>
-            <p className="text-sm text-white/60 max-w-sm leading-relaxed mb-5">
+            <p className="text-sm text-white/70 max-w-sm leading-relaxed mb-5">
               Nepal's permanent public archive of CIAA corruption cases — free forever, built by Nepali volunteers.
             </p>
-            <div className="flex flex-wrap gap-3 text-xs text-white/50">
+            <div className="flex flex-wrap gap-3 text-xs text-white/70">
               <span>🇳🇵 Built by Nepali</span>
               <span>·</span>
               <span>🔓 Public Domain</span>
@@ -36,7 +36,7 @@ export const Footer = () => {
           {/* Navigation — 2 sub-columns */}
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-3 font-heading">Platform</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-3 font-heading">Platform</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link to="/cases" className="text-white/70 hover:text-primary transition-colors">
@@ -61,7 +61,7 @@ export const Footer = () => {
               </ul>
             </div>
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-3 font-heading">About</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-3 font-heading">About</h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link to="/about" className="text-white/70 hover:text-primary transition-colors">
@@ -89,7 +89,7 @@ export const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-3 font-heading">Resources</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-3 font-heading">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
@@ -143,7 +143,7 @@ export const Footer = () => {
               href={JAWAFDEHI_SOCIALS.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-primary transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
               aria-label={t("footer.social.facebook")}
             >
               <FaFacebook className="h-5 w-5" />
@@ -152,7 +152,7 @@ export const Footer = () => {
               href={JAWAFDEHI_SOCIALS.youtube}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-primary transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
               aria-label={t("footer.social.youtube")}
             >
               <FaYoutube className="h-5 w-5" />
@@ -161,7 +161,7 @@ export const Footer = () => {
               href={JAWAFDEHI_SOCIALS.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-primary transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
               aria-label={t("footer.social.linkedin")}
             >
               <FaLinkedin className="h-5 w-5" />
@@ -170,7 +170,7 @@ export const Footer = () => {
               href={JAWAFDEHI_SOCIALS.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-primary transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
               aria-label={t("footer.social.whatsapp")}
             >
               <FaWhatsapp className="h-5 w-5" />
@@ -179,16 +179,16 @@ export const Footer = () => {
               href={JAWAFDEHI_SOCIALS.linktree}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/50 hover:text-primary transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
               aria-label={t("footer.social.linktree")}
             >
               <SiLinktree className="h-5 w-5" />
             </a>
           </div>
-          <p className="text-xs text-white/40 italic text-center max-w-4xl mx-auto mb-3">
+          <p className="text-xs text-white/60 italic text-center max-w-4xl mx-auto mb-3">
             {t("footer.disclaimer")}
           </p>
-          <p className="text-center text-xs text-white/40">
+          <p className="text-center text-xs text-white/60">
             © {new Date().getFullYear()} Jawafdehi. All data is in the public domain.
           </p>
         </div>

@@ -68,16 +68,16 @@ const Commitment = () => {
 
       <main className="flex-1">
         {/* Header */}
-        <section className="bg-gradient-to-br from-primary via-navy-dark to-slate-800 py-16 md:py-24">
+        <section className="bg-gradient-to-br from-navy via-navy-dark to-slate-800 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-widest text-primary-foreground/50 mb-4">
+              <p className="text-sm font-semibold uppercase tracking-widest text-primary-foreground/80 mb-4">
                 Our Commitment
               </p>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
                 Nepal's society deserves a permanent memory of accountability
               </h1>
-              <p className="text-lg text-primary-foreground/70 leading-relaxed">
+              <p className="text-lg text-primary-foreground/80 leading-relaxed">
                 Corruption cases disappear from public consciousness. Officials retire, change portfolios, or simply wait for people to forget. We are building the infrastructure to make sure that never happens again.
               </p>
             </div>
