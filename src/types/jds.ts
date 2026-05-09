@@ -78,27 +78,6 @@ export interface EvidenceEntry {
   description: string;
 }
 
-export interface NarrativeData {
-  core_claim: string | null;
-  impact: string | null;
-  expected_service: string | null;
-  alleged_irregularity: string | null;
-}
-
-export interface FinancialData {
-  alleged_amount_npr: number | null;
-  recovered_amount_npr: number | null;
-  fines_npr: number | null;
-  currency: string;
-  bigo_display: string | null;
-}
-
-export interface OutcomeData {
-  verdict: 'GUILTY' | 'ACQUITTED' | 'PENDING' | string | null;
-  sentence_months: number | null;
-  notes: string | null;
-}
-
 export interface CourtCaseHearing {
   id: number;
   case_number: string;
@@ -167,9 +146,6 @@ export interface Case {
   key_allegations: string[]; // List of key allegation statements
   timeline: TimelineEntry[];
   evidence: EvidenceEntry[];
-  narrative?: NarrativeData | null;
-  financials?: FinancialData | null;
-  outcomes?: OutcomeData | null;
   court_cases: string[]; // Court case IDs (e.g., "special:081-CR-0060")
   notes: string; // Internal notes (HTML from TinyMCE)
   missing_details?: string | null;
@@ -181,9 +157,6 @@ export interface Case {
 export interface CaseDetail extends Case {
   bigo: number | null; // Embezzled/irregular amount in NPR (null if not applicable)
   court_cases: string[] | null;
-  financials?: FinancialData | null;
-  narrative?: NarrativeData | null;
-  outcomes?: OutcomeData | null;
 }
 
 export interface DocumentSource {

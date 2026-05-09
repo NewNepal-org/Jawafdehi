@@ -30,7 +30,7 @@ import { JAWAFDEHI_WHATSAPP_NUMBER, JAWAFDEHI_EMAIL } from "@/config/constants";
 import { translateDynamicText } from "@/lib/translate-dynamic-content";
 import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
-import { formatNPR, formatBigo } from "@/utils/number";
+import { formatNPR } from "@/utils/number";
 import "@/styles/print.css";
 
 const RELATION_PRIORITY: Record<string, number> = {
@@ -328,7 +328,7 @@ const CaseDetail = () => {
     .replace(/\s+/g, ' ')
     .trim()
     .substring(0, 160);
-  const metaDescription = caseData.narrative?.core_claim || plainDescription || caseData.key_allegations?.slice(0, 2).join('. ').substring(0, 160) || "";
+  const metaDescription = plainDescription || caseData.key_allegations.slice(0, 2).join('. ').substring(0, 160);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -448,11 +448,11 @@ const CaseDetail = () => {
                   {formatCaseDateRange(caseData.case_start_date, caseData.case_end_date, t("cases.status.ongoing"))}
                 </span>
               </div>
-              {(caseData.financials?.bigo_display || caseData.financials?.alleged_amount_npr != null || (caseData.bigo != null && caseData.bigo > 0)) && (
+              {caseData.bigo != null && caseData.bigo > 0 && (
                 <div className="flex items-center text-muted-foreground">
                   <Banknote className="mr-2 h-5 w-5" />
                   <span className="text-sm">
-                    {t("caseDetail.embezzledAmount")}: {caseData.financials?.bigo_display || formatBigo(caseData.financials?.alleged_amount_npr || caseData.bigo)}
+                    {t("caseDetail.embezzledAmount")}: {formatNPR(caseData.bigo)}
                   </span>
                 </div>
               )}
@@ -463,7 +463,7 @@ const CaseDetail = () => {
 
                 <div className={cn(
                   "grid gap-8 transition-[grid-template-columns] duration-300 ease-out print:block",
-                  (caseData.timeline || []).length > 0 && !isAskDrawerOpen && "lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_24rem]"
+                  caseData.timeline.length > 0 && !isAskDrawerOpen && "lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_24rem]"
                 )}>
                   <div className="min-w-0 lg:col-start-1">
                     <Card className="mb-6 sm:mb-8">
@@ -475,7 +475,7 @@ const CaseDetail = () => {
                       </CardHeader>
                       <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6">
                         <ul className="space-y-3 sm:space-y-4">
-                          {(caseData.key_allegations || []).map((allegation, index) => (
+                          {caseData.key_allegations.map((allegation, index) => (
                             <li
                               key={index}
                               className="flex items-start gap-3 rounded-2xl bg-muted/35 p-3 sm:bg-transparent sm:p-0"
@@ -488,54 +488,9 @@ const CaseDetail = () => {
                               </p>
                             </li>
                           ))}
-                          {(caseData.key_allegations || []).length === 0 && (
-                            <li className="text-sm text-muted-foreground italic">
-                              {t("common.notAvailable")}
-                            </li>
-                          )}
                         </ul>
                       </CardContent>
                     </Card>
-
-                    {caseData.outcomes && (
-                      <Card className="mb-8 border-l-4 border-l-primary">
-                        <CardHeader>
-                          <CardTitle className="flex items-center text-primary">
-                            <Scale className="mr-2 h-5 w-5" />
-                            {t("caseDetail.outcomes", "Verdict & Outcomes")}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid gap-6 sm:grid-cols-2">
-                            <div>
-                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                                {t("caseDetail.verdict", "Verdict")}
-                              </p>
-                              <p className="text-lg font-bold">
-                                {caseData.outcomes.verdict || t("common.pending", "Pending")}
-                              </p>
-                            </div>
-                            {caseData.outcomes.sentence_months ? (
-                              <div>
-                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                                  {t("caseDetail.sentence", "Sentence")}
-                                </p>
-                                <p className="text-lg font-bold">
-                                  {caseData.outcomes.sentence_months} {t("common.months", "Months")}
-                                </p>
-                              </div>
-                            ) : null}
-                          </div>
-                          {caseData.outcomes.notes && (
-                            <div className="mt-4 pt-4 border-t border-border/60">
-                              <p className="text-sm text-muted-foreground leading-relaxed">
-                                {caseData.outcomes.notes}
-                              </p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    )}
 
                     {hasInvolvedParties && (
                       <section className="mb-8">
@@ -576,7 +531,7 @@ const CaseDetail = () => {
                   </div>
 
                   <CaseTimeline
-                    timeline={caseData.timeline || []}
+                    timeline={caseData.timeline}
                     title={t("caseDetail.timeline")}
                     className={cn(
                       "print:static print:mb-8 lg:col-start-2 lg:row-start-1 lg:row-span-2",

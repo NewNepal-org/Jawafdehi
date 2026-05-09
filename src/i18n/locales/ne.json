@@ -166,10 +166,6 @@
     "courtHearingDecision": "आदेश / फैसलाको किसिम",
     "courtHearingJudges": "न्यायधिसहरु",
     "courtCaseUnavailable": "अदालती मुद्दाको विवरण उपलब्ध छैन।",
-    "embezzledAmount": "बिगो (हिनामिना रकम)",
-    "outcomes": "फैसला र परिणाम",
-    "verdict": "फैसला",
-    "sentence": "सजाय",
     "status": {
       "ongoing": "चलिरहेको",
       "resolved": "समाधान भएको",

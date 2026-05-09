@@ -56,30 +56,3 @@ export function formatNPR(value: number, includeDecimals: boolean = false): stri
   const formatted = formatIndianNumber(includeDecimals ? value : Math.round(value));
   return `NRs. ${formatted}`;
 }
-
-/**
- * Formats large amounts into readable strings (Billion, Crore, Lakh)
- * Example: 3620000000 -> "Rs 3.62 Billion"
- * Example: 24940110 -> "Rs 2.49 Crore"
- * 
- * @param amount - The amount in NPR
- * @returns Formatted string
- */
-export function formatBigo(amount: number | null | undefined): string {
-  if (amount === null || amount === undefined || amount === 0) return "Rs 0";
-
-  const absAmount = Math.abs(amount);
-  const prefix = amount < 0 ? "-" : "";
-
-  if (absAmount >= 1_000_000_000) {
-    return `${prefix}Rs ${(absAmount / 1_000_000_000).toFixed(2)} Billion`;
-  }
-  if (absAmount >= 10_000_000) {
-    return `${prefix}Rs ${(absAmount / 10_000_000).toFixed(2)} Crore`;
-  }
-  if (absAmount >= 100_000) {
-    return `${prefix}Rs ${(absAmount / 100_000).toFixed(2)} Lakh`;
-  }
-  
-  return `${prefix}Rs ${formatIndianNumber(absAmount)}`;
-}
