@@ -56,9 +56,10 @@ export const CaseCard = ({ id, slug, title, entity, entityNames, location, date,
   const navigate = useNavigate();
   const entitySummary = getEntitySummary(entity, entityNames, i18n.language, t);
 
-  // Slug-only API: navigation uses the slug. Cards without a slug render as
-  // non-clickable (the API would 404 on /case/<numeric-id>); a missing slug
-  // signals stale data that needs a backend backfill.
+  // Slug-only navigation: never fall back to numeric id. The slug-only API
+  // would 404 on /case/<numeric>, and the worker.ts edge redirect only fires
+  // in production. Cards without a slug render as non-clickable — the missing
+  // slug is a data signal that the row needs a backend backfill.
   const normalizedSlug = typeof slug === "string" ? slug.trim() : "";
   const caseSlug = normalizedSlug && normalizedSlug.toLowerCase() !== "null" ? normalizedSlug : null;
 

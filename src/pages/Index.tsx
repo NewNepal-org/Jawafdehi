@@ -111,6 +111,7 @@ const Index = () => {
 
       return {
         id: caseItem.id.toString(),
+        slug: caseItem.slug,
         title: caseItem.title,
         entity: primaryEntity,
         entityNames,

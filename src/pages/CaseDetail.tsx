@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Footer } from "@/components/Footer";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Header } from "@/components/Header";
@@ -31,6 +31,7 @@ import { translateDynamicText } from "@/lib/translate-dynamic-content";
 import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
 import { formatBigo } from "@/utils/number";
+import { resolveLegacyCaseSlug } from "@/utils/legacyCaseMap";
 import "@/styles/print.css";
 
 const RELATION_PRIORITY: Record<string, number> = {
@@ -151,10 +152,15 @@ const CaseDetail = () => {
   const [isAskCondensed, setIsAskCondensed] = useState(false);
   const [isIntroFinished, setIsIntroFinished] = useState(false);
 
+  // Legacy /case/<numeric> URLs: resolve to canonical slug and replace.
+  // Mirrors worker.ts behaviour for environments without the Cloudflare edge
+  // (local dev, preview deploys, direct hits that bypass the worker).
+  const legacyTargetSlug = resolveLegacyCaseSlug(id);
+
   const { data: caseData, isLoading, isError } = useQuery({
     queryKey: ['case', id],
     queryFn: () => getCaseById(id!),
-    enabled: id != null,
+    enabled: id != null && legacyTargetSlug == null,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -259,6 +265,12 @@ const CaseDetail = () => {
 
   // Render order: primary -> legal -> secondary
   const renderOrder: EvidenceGroup[] = ['primary', 'legal', 'secondary'];
+
+  // Legacy /case/<numeric> URLs: replace with the canonical slug. This must
+  // happen after all hooks have run so we don't violate rules-of-hooks.
+  if (legacyTargetSlug) {
+    return <Navigate to={`/case/${legacyTargetSlug}`} replace />;
+  }
 
   if (isLoading) {
     return (

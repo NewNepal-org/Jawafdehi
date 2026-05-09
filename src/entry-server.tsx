@@ -34,13 +34,13 @@ async function prefetch(url: string, queryClient: QueryClient): Promise<void> {
     return;
   }
 
-  // Case detail page
-  const caseMatch = url.match(/^\/case\/(\d+)/);
+  // Case detail page (slug-only API; slug is everything after /case/ up to /?#)
+  const caseMatch = url.match(/^\/case\/([^/?#]+)/);
   if (caseMatch) {
-    const caseId = parseInt(caseMatch[1]);
+    const slug = decodeURIComponent(caseMatch[1]);
     await queryClient.prefetchQuery({
-      queryKey: ['case', caseId],
-      queryFn: () => getCaseById(caseId),
+      queryKey: ['case', slug],
+      queryFn: () => getCaseById(slug),
     });
     return;
   }

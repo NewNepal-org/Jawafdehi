@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ClientOnly } from "@/components/ClientOnly";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import Cases from "./pages/Cases";
@@ -41,8 +42,10 @@ const RouteLoadingFallback = () => (
 
 const App = () => (
   <TooltipProvider>
-    <Toaster />
-    <Sonner />
+    <ClientOnly>
+      <Toaster />
+      <Sonner />
+    </ClientOnly>
     <Suspense fallback={<RouteLoadingFallback />}>
       <Routes>
         <Route path="/" element={<Index />} />
