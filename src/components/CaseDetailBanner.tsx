@@ -9,7 +9,7 @@ import type { Entity } from "@/types/nes";
 import { formatCaseDateRange } from "@/utils/date";
 import { getPrimaryName } from "@/utils/nes-helpers";
 import { translateDynamicText } from "@/lib/translate-dynamic-content";
-import { formatNPR } from "@/utils/number";
+import { formatBigo } from "@/utils/number";
 
 interface CaseDetailBannerProps {
   caseData: CaseDetail;
@@ -148,7 +148,7 @@ export function CaseDetailBanner({
             <div className="flex items-center gap-3">
               <Banknote className="h-4 w-4 flex-shrink-0 text-white/70" />
               <span>
-                {t("caseDetail.embezzledAmount")}: {formatNPR(caseData.bigo)}
+                {t("caseDetail.embezzledAmount")}: {formatBigo(caseData.bigo)}
               </span>
             </div>
           )}

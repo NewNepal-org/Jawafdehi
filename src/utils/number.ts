@@ -56,3 +56,31 @@ export function formatNPR(value: number, includeDecimals: boolean = false): stri
   const formatted = formatIndianNumber(includeDecimals ? value : Math.round(value));
   return `NRs. ${formatted}`;
 }
+
+/**
+ * Formats large NPR amounts using Nepali numeric units (Lakh, Crore, Arab, Kharab).
+ * Example: 24_940_110         -> "Rs 2.49 Crore"
+ * Example: 3_620_000_000      -> "Rs 3.62 Arab"
+ * Example: 250_000_000_000    -> "Rs 2.50 Kharab"
+ */
+export function formatBigo(amount: number | null | undefined): string {
+  if (amount === null || amount === undefined || amount === 0) return "Rs 0";
+
+  const absAmount = Math.abs(amount);
+  const prefix = amount < 0 ? "-" : "";
+
+  if (absAmount >= 100_000_000_000) {
+    return `${prefix}Rs ${(absAmount / 100_000_000_000).toFixed(2)} Kharab`;
+  }
+  if (absAmount >= 1_000_000_000) {
+    return `${prefix}Rs ${(absAmount / 1_000_000_000).toFixed(2)} Arab`;
+  }
+  if (absAmount >= 10_000_000) {
+    return `${prefix}Rs ${(absAmount / 10_000_000).toFixed(2)} Crore`;
+  }
+  if (absAmount >= 100_000) {
+    return `${prefix}Rs ${(absAmount / 100_000).toFixed(2)} Lakh`;
+  }
+
+  return `${prefix}Rs ${formatIndianNumber(absAmount)}`;
+}
