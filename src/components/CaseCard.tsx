@@ -56,9 +56,11 @@ export const CaseCard = ({ id, slug, title, entity, entityNames, location, date,
   const navigate = useNavigate();
   const entitySummary = getEntitySummary(entity, entityNames, i18n.language, t);
 
-  // Normalize case identifier once for all navigation paths
+  // Slug-only API: navigation uses the slug. Cards without a slug render as
+  // non-clickable (the API would 404 on /case/<numeric-id>); a missing slug
+  // signals stale data that needs a backend backfill.
   const normalizedSlug = typeof slug === "string" ? slug.trim() : "";
-  const caseIdentifier = normalizedSlug && normalizedSlug.toLowerCase() !== "null" ? normalizedSlug : id;
+  const caseSlug = normalizedSlug && normalizedSlug.toLowerCase() !== "null" ? normalizedSlug : null;
 
   // Check if we have a valid thumbnail URL
   const hasValidThumbnail = thumbnailUrl && thumbnailUrl.trim() !== '';
@@ -76,9 +78,10 @@ export const CaseCard = ({ id, slug, title, entity, entityNames, location, date,
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
+    if (!caseSlug) return;
     // Only navigate if not clicking on an inner link
     if (!(e.target as HTMLElement).closest("a")) {
-      navigate(`/case/${caseIdentifier}`);
+      navigate(`/case/${caseSlug}`);
     }
   };
 
@@ -139,13 +142,17 @@ export const CaseCard = ({ id, slug, title, entity, entityNames, location, date,
             {/* NOTE: Dynamic case content (title, description, entity names) from Entity API
                 remains in English until API-side i18n is implemented. See GitHub issue for i18n. */}
             <h3 className="line-clamp-2 text-lg font-semibold leading-8 text-foreground">
-              <Link 
-                to={`/case/${caseIdentifier}`} 
-                className="rounded-sm outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {title}
-              </Link>
+              {caseSlug ? (
+                <Link
+                  to={`/case/${caseSlug}`}
+                  className="rounded-sm outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {title}
+                </Link>
+              ) : (
+                title
+              )}
             </h3>
           </CardHeader>
 
@@ -202,8 +209,12 @@ export const CaseCard = ({ id, slug, title, entity, entityNames, location, date,
           </CardContent>
 
           <CardFooter className="mt-auto px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
-            <Button variant="primary" asChild className="w-full rounded-2xl py-3">
-              <Link to={`/case/${caseIdentifier}`} onClick={(e) => e.stopPropagation()}>{t("common.viewDetails")}</Link>
+            <Button variant="primary" asChild className="w-full rounded-2xl py-3" disabled={!caseSlug}>
+              {caseSlug ? (
+                <Link to={`/case/${caseSlug}`} onClick={(e) => e.stopPropagation()}>{t("common.viewDetails")}</Link>
+              ) : (
+                <span>{t("common.viewDetails")}</span>
+              )}
             </Button>
           </CardFooter>
         </div>

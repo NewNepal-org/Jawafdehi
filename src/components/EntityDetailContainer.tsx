@@ -289,9 +289,13 @@ export function EntityDetailContainer({
                   {accusedCaseRelations.map(({ caseItem, relations }) => (
                     <div key={caseItem.id} className="border-b border-border pb-4 last:border-0">
                       <div className="flex justify-between items-start mb-2">
-                        <Link to={`/case/${caseItem.id}`} className="font-medium hover:text-primary hover:underline">
-                          {caseItem.title}
-                        </Link>
+                        {caseItem.slug ? (
+                          <Link to={`/case/${caseItem.slug}`} className="font-medium hover:text-primary hover:underline">
+                            {caseItem.title}
+                          </Link>
+                        ) : (
+                          <span className="font-medium">{caseItem.title}</span>
+                        )}
                         <span className="text-xs text-muted-foreground">
                           {formatDate(caseItem.created_at)}
                         </span>
@@ -341,9 +345,13 @@ export function EntityDetailContainer({
                   {nonAccusedCaseRelations.map(({ caseItem, relations }) => (
                     <div key={caseItem.id} className="border-b border-border pb-4 last:border-0">
                       <div className="flex justify-between items-start mb-2">
-                        <Link to={`/case/${caseItem.id}`} className="font-medium hover:text-primary hover:underline">
-                          {caseItem.title}
-                        </Link>
+                        {caseItem.slug ? (
+                          <Link to={`/case/${caseItem.slug}`} className="font-medium hover:text-primary hover:underline">
+                            {caseItem.title}
+                          </Link>
+                        ) : (
+                          <span className="font-medium">{caseItem.title}</span>
+                        )}
                         <span className="text-xs text-muted-foreground">
                           {formatDate(caseItem.created_at)}
                         </span>
