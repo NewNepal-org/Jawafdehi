@@ -52,16 +52,16 @@
     },
     "stats": {
       "totalCases": "कुल दस्तावेजीकृत मुद्दाहरू",
-      "totalCasesValue": "127",
+      "totalCasesValue": "१२७",
       "totalCasesDesc": "प्रमाणित भ्रष्टाचारका मुद्दाहरू",
       "entitiesTracked": "ट्र्याक गरिएका व्यक्ति/संस्थाहरू",
-      "entitiesTrackedValue": "89",
+      "entitiesTrackedValue": "८९",
       "entitiesTrackedDesc": "निगरानी गरिएका सार्वजनिक व्यक्ति/संस्थाहरू",
       "underInvestigation": "अनुसन्धानमा रहेका मुद्दाहरू",
-      "underInvestigationValue": "43",
+      "underInvestigationValue": "४३",
       "underInvestigationDesc": "सक्रिय अनुसन्धानहरू",
       "resolved": "समाधान भएका मुद्दाहरू",
-      "resolvedValue": "31",
+      "resolvedValue": "३१",
       "resolvedDesc": "सफलतापूर्वक निष्कर्ष",
       "trend": "↑ यो त्रैमासिकमा 12%"
     },
@@ -166,6 +166,7 @@
     "courtHearingDecision": "आदेश / फैसलाको किसिम",
     "courtHearingJudges": "न्यायधिसहरु",
     "courtCaseUnavailable": "अदालती मुद्दाको विवरण उपलब्ध छैन।",
+    "courtCases": "सम्बन्धित अदालती मुद्दाहरू",
     "embezzledAmount": "बिगो (हिनामिना रकम)",
     "status": {
       "ongoing": "चलिरहेको",
@@ -318,7 +319,7 @@
     "aboutUs": {
       "title": "हाम्रो बारेमा",
       "description": "Jawafdehi.org नेपालका लागि एक open-source नागरिक प्रविधि प्लेटफर्म हो, जसले भ्रष्टाचारसम्बन्धी आरोपहरू व्यवस्थित रूपमा अभिलेख गर्छ। Gen-Z पुस्ताको पारदर्शिता र जवाफदेहीताको मागमा आधारित यस पहलले नेपालमा संस्थागत उत्तरदायित्व प्रणाली विकास गर्ने लक्ष्य राखेको छ, जसले दीर्घकालीन दण्डहीनताको संस्कृतिको अन्त्यतर्फ योगदान पुर्‍याउनेछ। स्वतन्त्र, प्रमाण-आधारित र नागरिक–संचालित प्रक्रियामार्फत भ्रष्ट राजनीतिज्ञ, व्यक्ति तथा अन्य सरोकारवालालाई उत्तरदायी बनाउनु यसको उद्देश्य हो। सरकारी कागजातहरूको डिजिटाइजेसन (digitization), समाचार स्रोतहरूको अनुगमन र विस्तृत अनुसन्धान प्रतिवेदन तयार पार्न AI प्रविधिको उपयोग गर्दै Jawafdehi.org ले प्रविधिमार्फत भ्रष्टाचारविरुद्धको पहललाई विस्तार र सुदृढ बनाउने प्रयास गर्दछ।",
-      "openSource": "open-source"
+      "openSource": "खुला स्रोत"
     },
     "mission": {
       "title": "हाम्रो मिशन",
@@ -588,7 +589,7 @@
     "attachmentTooLarge": "फाइल धेरै ठूलो छ। अधिकतम साइज १० MB हो।"
   },
   "notFound": {
-    "title": "404",
+    "title": "४०४",
     "message": "ओह! पृष्ठ फेला परेन",
     "returnHome": "घर फर्कनुहोस्"
   },
@@ -618,7 +619,8 @@
       "critical": "गम्भीर"
     },
     "entitySummary": {
-      "withOthersNepali": "{{name}} समेत {{countLabel}}"
+      "withOthers_one": "{{name}} समेत {{count}} अन्य",
+      "withOthers_other": "{{name}} समेत {{count}} अन्यहरू"
     }
   },
   "entityCard": {

@@ -7,45 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, User } from "lucide-react";
 
-const nepaliDigits = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
-
-interface CaseCardProps {
-  id: string;
-  slug?: string | null; // URL-friendly slug for navigation
-  title: string;
-  entity: string;
-  entityNames?: string[];
-  location: string;
-  date: string;
-  status: "ongoing" | "resolved" | "under-investigation";
-  tags?: string[];
-  description: string;
-  allegations?: string[]; // Key allegations array
-  entityIds?: number[]; // Jawaf entity IDs
-  locationIds?: number[]; // Jawaf entity IDs
-  thumbnailUrl?: string; //Thumbnail image
-}
-
-function formatEntityCount(count: number, language: string) {
-  if (!language.startsWith("ne")) {
-    return count.toString();
-  }
-
-  return count.toString().replace(/\d/g, (digit) => nepaliDigits[Number(digit)]);
-}
-
-function getEntitySummary(entity: string, entityNames: string[] | undefined, language: string, t: TFunction) {
+function getEntitySummary(entity: string, entityNames: string[] | undefined, _language: string, t: TFunction) {
   const names = entityNames?.filter(Boolean) ?? entity.split(",").map((name) => name.trim()).filter(Boolean);
   const firstName = names[0] || entity;
   const remainingCount = Math.max(names.length - 1, 0);
-  const countLabel = formatEntityCount(remainingCount, language);
 
   if (remainingCount === 0) {
     return firstName;
-  }
-
-  if (language.startsWith("ne")) {
-    return t("caseCard.entitySummary.withOthersNepali", { name: firstName, count: remainingCount, countLabel });
   }
 
   return t("caseCard.entitySummary.withOthers", { count: remainingCount, name: firstName });
