@@ -119,6 +119,9 @@
       "location": "स्थानहरू",
       "unknown": "अन्य सम्बद्ध पक्षहरू"
     },
+    "showAllAccused": "सबै अभियुक्तहरू देखाउनुहोस् ({{count}})",
+    "showLessAccused": "घटाएर देखाउनुहोस्",
+    "andMoreAccused": "र {{count}} थप",
     "evidence": "प्रमाण र स्रोतहरू",
     "missingDetails": "हराइरहेका विवरणहरू",
     "notes": "टिप्पणीहरू",

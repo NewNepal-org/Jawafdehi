@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link2, Check, Share2, QrCode, Printer, Download } from "lucide-react";
+import { Link2, Check, Share2, QrCode, Printer, Download, X } from "lucide-react";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -32,31 +32,21 @@ interface FloatingShareSidebarProps {
   url: string;
   title: string;
   description?: string;
-  scrollThreshold?: number;
+  isOpen?: boolean;
+  onToggle?: (isOpen: boolean) => void;
 }
 
 export const FloatingShareSidebar = ({
   url,
   title,
   description = "",
-  scrollThreshold = 220,
+  isOpen = false,
+  onToggle,
 }: FloatingShareSidebarProps) => {
   const { t } = useTranslation();
-  const [isVisible, setIsVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const [moreDialogOpen, setMoreDialogOpen] = useState(false);
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > scrollThreshold);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrollThreshold]);
 
   const shareText = `${title}${description ? ` - ${description}` : ""}`;
   const encodedUrl = encodeURIComponent(url);
@@ -198,7 +188,13 @@ export const FloatingShareSidebar = ({
     },
   ];
 
-  if (!isVisible) return null;
+  if (!isOpen) return null;
+
+  const handleClose = () => {
+    if (onToggle) {
+      onToggle(false);
+    }
+  };
 
   return (
     <TooltipProvider>
@@ -207,6 +203,27 @@ export const FloatingShareSidebar = ({
         role="region"
         aria-label={t("share.share")}
       >
+        {/* Close Button */}
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="transition-all hover:bg-muted"
+              onClick={handleClose}
+              aria-label={t("share.close")}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>{t("share.close")}</p>
+          </TooltipContent>
+        </Tooltip>
+
+        {/* Divider */}
+        <div className="h-px bg-border my-1" />
+
         {primaryPlatforms.map(({ key, icon: Icon, label, color, bg }) => (
           <Tooltip key={key} delayDuration={200}>
             <TooltipTrigger asChild>

@@ -9,6 +9,7 @@ import { DocumentSourceCard } from "@/components/DocumentSourceCard";
 import { ResponsiveTable } from "@/components/ResponsiveTable";
 import { CourtCaseCard } from "@/components/CourtCaseCard";
 import { FloatingShareSidebar } from "@/components/FloatingShareSidebar";
+import { ShareButton } from "@/components/ShareButton";
 import { CaseDetailBanner } from "@/components/CaseDetailBanner";
 import { CaseTimeline } from "@/components/CaseTimeline";
 import { CaseEntityChips } from "@/components/CaseEntityChips";
@@ -17,7 +18,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Banknote, Calendar, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, Scale, StickyNote, User } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Banknote, Calendar, FileText, AlertTriangle, ArrowLeft, ExternalLink, AlertCircle, Info, Mail, MapPin, MessageCircle, Scale, StickyNote, User, Share2 } from "lucide-react";
 import { getCaseById, getCourtCase, getDocumentSourceById } from "@/services/jds-api";
 import { getEntityById } from "@/services/api";
 import type { CourtCase, DocumentSource, JawafEntity } from "@/types/jds";
@@ -32,6 +39,7 @@ import { trackEvent } from "@/utils/analytics";
 import { cn } from "@/lib/utils";
 import { formatBigo } from "@/utils/number";
 import { resolveLegacyCaseSlug } from "@/utils/legacyCaseMap";
+import { useIsMobile } from "@/hooks/use-mobile";
 import "@/styles/print.css";
 
 const RELATION_PRIORITY: Record<string, number> = {
@@ -151,6 +159,9 @@ const CaseDetail = () => {
   const [showAskPopup, setShowAskPopup] = useState(true);
   const [isAskCondensed, setIsAskCondensed] = useState(false);
   const [isIntroFinished, setIsIntroFinished] = useState(false);
+  const [showAllAccused, setShowAllAccused] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   // Legacy /case/<numeric> URLs: resolve to canonical slug and replace.
   // Mirrors worker.ts behaviour for environments without the Cloudflare edge
@@ -163,6 +174,12 @@ const CaseDetail = () => {
     enabled: id != null && legacyTargetSlug == null,
     staleTime: 5 * 60 * 1000,
   });
+
+  const accusedEntities = caseData?.entities.filter(e => e.type === 'accused') ?? [];
+  const accusedCount = accusedEntities.length;
+  const collapsedAccused = accusedCount > 3 && !showAllAccused;
+  const visibleAccusedEntities = collapsedAccused ? accusedEntities.slice(0, 3) : accusedEntities;
+  const hiddenAccusedCount = accusedCount - visibleAccusedEntities.length;
 
   const sourceQueries = useQueries({
     queries: (caseData?.evidence ?? []).map((evidence) => ({
@@ -387,6 +404,8 @@ const CaseDetail = () => {
                 url={canonicalUrl}
                 title={caseData.title}
                 description={plainDescription}
+                isOpen={isShareOpen}
+                onToggle={setIsShareOpen}
               />
 
               <Alert className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 no-print">
@@ -421,7 +440,7 @@ const CaseDetail = () => {
               <div className="flex items-start text-muted-foreground">
                 <User className="mr-2 h-5 w-5 flex-shrink-0" />
                 <div className="text-sm flex flex-wrap gap-1">
-                  {caseData.entities.filter(e => e.type === 'accused').map((e, index, arr) => {
+                  {visibleAccusedEntities.map((e, index, arr) => {
                     const entity = e.nes_id ? resolvedEntities[e.nes_id] : null;
                     let displayName = entity?.names?.[0]?.en?.full || entity?.names?.[0]?.ne?.full || e.display_name || e.nes_id || t('common.notAvailable');
                     displayName = translateDynamicText(displayName, currentLang);
@@ -432,8 +451,23 @@ const CaseDetail = () => {
                       </span>
                     );
                   })}
+                  {collapsedAccused && (
+                    <span className="text-muted-foreground">
+                      {t('caseDetail.andMoreAccused', { count: hiddenAccusedCount })}
+                    </span>
+                  )}
                 </div>
               </div>
+              {accusedCount > 3 && (
+                <div className="mt-2">
+                  <Button variant="ghost" size="sm" onClick={() => setShowAllAccused((prev) => !prev)}>
+                    {showAllAccused 
+                      ? t('caseDetail.showLessAccused') 
+                      : t('caseDetail.showAllAccused', { count: accusedCount })
+                    }
+                  </Button>
+                </div>
+              )}
               <div className="flex items-center text-muted-foreground">
                 <MapPin className="mr-2 h-5 w-5" />
                 <div className="text-sm flex flex-wrap gap-1">
@@ -524,6 +558,12 @@ const CaseDetail = () => {
                                 // Compute label for each relation type
                                 const typeKey = `caseDetail.relationTypes.${type}`;
                                 const label = t(typeKey, { defaultValue: unknownLabel });
+                                
+                                // Limit accused entities to 3 initially
+                                const limitedEntities = type === 'accused' && entities.length > 3 && !showAllAccused 
+                                  ? entities.slice(0, 3) 
+                                  : entities;
+                                const hasMoreAccused = type === 'accused' && entities.length > 3;
 
                                 return (
                                   <div key={type} className="space-y-4">
@@ -534,10 +574,28 @@ const CaseDetail = () => {
                                     <div className="h-px w-full bg-border/60" />
                                   </div>
                                   <CaseEntityChips
-                                    entities={entities}
+                                    entities={limitedEntities}
                                     resolvedEntities={resolvedEntities}
                                     language={currentLang}
                                   />
+                                  {hasMoreAccused && !showAllAccused && (
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => setShowAllAccused(true)}
+                                    >
+                                      {t('caseDetail.showAllAccused', { count: accusedCount })}
+                                    </Button>
+                                  )}
+                                  {hasMoreAccused && showAllAccused && (
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => setShowAllAccused(false)}
+                                    >
+                                      {t('caseDetail.showLessAccused')}
+                                    </Button>
+                                  )}
                                 </div>
                               );
                             });
@@ -738,6 +796,45 @@ const CaseDetail = () => {
           </span>
         </button>
       </div>
+
+      {/* Mobile Share Button */}
+      {isMobile && (
+        <div className="pointer-events-auto fixed bottom-5 left-4 sm:left-6 z-40 no-print">
+          <ShareButton
+            url={canonicalUrl}
+            title={caseData.title}
+            description={plainDescription}
+            variant="outline"
+            size="lg"
+            showLabel={true}
+            className="shadow-lg border-2 hover:shadow-xl"
+          />
+        </div>
+      )}
+
+      {/* Share Sidebar Toggle Button (Desktop) */}
+      {!isMobile && (
+        <div className="pointer-events-auto fixed left-4 top-1/2 -translate-y-1/2 z-39 hidden lg:flex no-print">
+          {!isShareOpen && (
+            <Tooltip delayDuration={200}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-lg shadow-lg border-2 hover:shadow-xl transition-all"
+                  onClick={() => setIsShareOpen(true)}
+                  aria-label={t("share.share")}
+                >
+                  <Share2 className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{t("share.share")}</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+      )}
 
       <Footer />
 
