@@ -45,6 +45,17 @@ async function prefetch(url: string, queryClient: QueryClient): Promise<void> {
     return;
   }
 
+  // Embed case card route
+  const embedMatch = url.match(/^\/embed\/case\/([^/?#]+)/);
+  if (embedMatch) {
+    const slug = decodeURIComponent(embedMatch[1]);
+    await queryClient.prefetchQuery({
+      queryKey: ['case', slug],
+      queryFn: () => getCaseById(slug),
+    });
+    return;
+  }
+
   // Entity profile page
   const entityMatch = url.match(/^\/entity\/(\d+)/);
   if (entityMatch) {

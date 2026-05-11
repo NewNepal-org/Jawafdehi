@@ -24,6 +24,7 @@ import ModerationDashboard from "./pages/ModerationDashboard";
 import Feedback from "./pages/Feedback";
 import Updates from "./pages/Updates";
 import UpdateDetail from "./pages/UpdateDetail";
+import EmbedCaseCard from "./pages/EmbedCaseCard";
 import NotFound from "./pages/NotFound";
 import { CaseworkerAuthProvider } from "./context/CaseworkerAuthContext";
 import CaseworkerLogin from "./pages/CaseworkerLogin";
@@ -70,6 +71,8 @@ const App = () => (
           <Route path="/team" element={<OurTeam />} />
           <Route path="/volunteer" element={<Volunteer />} />
           <Route path="/products" element={<OurProducts />} />
+          {/* Embed route for oEmbed iframe */}
+          <Route path="/embed/case/:id" element={<EmbedCaseCard />} />
           {/* Caseworker portal */}
           <Route
             path="/caseworker/*"
