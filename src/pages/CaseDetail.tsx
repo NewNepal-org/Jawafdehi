@@ -461,7 +461,10 @@ const CaseDetail = () => {
               {accusedCount > 3 && (
                 <div className="mt-2">
                   <Button variant="ghost" size="sm" onClick={() => setShowAllAccused((prev) => !prev)}>
-                    {showAllAccused ? 'View less' : 'View more'}
+                    {showAllAccused 
+                      ? t('caseDetail.showLessAccused') 
+                      : t('caseDetail.showAllAccused', { count: accusedCount })
+                    }
                   </Button>
                 </div>
               )}
@@ -581,7 +584,7 @@ const CaseDetail = () => {
                                       size="sm"
                                       onClick={() => setShowAllAccused(true)}
                                     >
-                                      View more
+                                      {t('caseDetail.showAllAccused', { count: accusedCount })}
                                     </Button>
                                   )}
                                   {hasMoreAccused && showAllAccused && (
@@ -590,7 +593,7 @@ const CaseDetail = () => {
                                       size="sm"
                                       onClick={() => setShowAllAccused(false)}
                                     >
-                                      View less
+                                      {t('caseDetail.showLessAccused')}
                                     </Button>
                                   )}
                                 </div>
