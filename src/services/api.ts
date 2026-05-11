@@ -403,39 +403,21 @@ export async function getEntityCases(idOrSlug: string): Promise<Case[]> {
 export async function getEntityIdsWithCases(): Promise<string[]> {
   try {
     const { getCases } = await import('@/services/jds-api');
-    console.log('Fetching cases from JDS API...');
     const casesResponse = await getCases({ page: 1 });
-    console.log('Cases response:', casesResponse);
-    console.log('Number of cases:', casesResponse.results?.length || 0);
 
-    // Extract all entity IDs from cases
     const entityIds = new Set<string>();
 
     if (casesResponse.results && casesResponse.results.length > 0) {
-      casesResponse.results.forEach((caseItem, index) => {
-        console.log(`Case ${index + 1}:`, {
-          id: caseItem.id,
-          title: caseItem.title,
-          entities: caseItem.entities?.length || 0
-        });
-
-        // Add all entities from unified entities array
+      casesResponse.results.forEach((caseItem) => {
         caseItem.entities?.forEach(entity => {
           if (entity.nes_id) {
-            console.log(`  Adding entity (${entity.type}): ${entity.nes_id}`);
             entityIds.add(entity.nes_id);
-          } else {
-            console.log(`  Skipping entity without nes_id:`, entity);
           }
         });
       });
-    } else {
-      console.warn('No cases found in response');
     }
 
-    const entityIdsArray = Array.from(entityIds);
-    console.log(`Total unique entity IDs with cases: ${entityIdsArray.length}`, entityIdsArray);
-    return entityIdsArray;
+    return Array.from(entityIds);
   } catch (error) {
     console.error('Failed to fetch entity IDs with cases:', error);
     return [];

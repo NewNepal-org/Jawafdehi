@@ -11,6 +11,13 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    const securityHeaders: Record<string, string> = {
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://jawafdehi.org https://nes.jawafdehi.org https://api.jawafdehi.org;",
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    };
+
     // Handle legacy numeric case redirects (301)
     const caseMatch = path.match(/^\/case\/(\d+)\/?$/);
     if (caseMatch) {
@@ -22,6 +29,7 @@ export default {
           headers: {
             'Location': `/case/${targetSlug}`,
             'Cache-Control': 'public, max-age=3600',
+            ...securityHeaders,
           },
         });
       }
@@ -29,15 +37,25 @@ export default {
 
     // Try to serve pre-rendered static asset
     const asset = await env.ASSETS.fetch(request);
-    if (asset.status !== 404) return asset;
+    if (asset.status !== 404) {
+      const response = new Response(asset.body, asset);
+      for (const [key, value] of Object.entries(securityHeaders)) {
+        response.headers.set(key, value);
+      }
+      return response;
+    }
 
     // SPA fallback: serve index.html with 200
     if (request.method !== 'GET' && request.method !== 'HEAD') return asset;
     const indexRequest = new Request(new URL('/', request.url).toString(), request);
     const indexResponse = await env.ASSETS.fetch(indexRequest);
-    return new Response(indexResponse.body, {
+    const spaResponse = new Response(indexResponse.body, {
       status: 200,
       headers: indexResponse.headers,
     });
+    for (const [key, value] of Object.entries(securityHeaders)) {
+      spaResponse.headers.set(key, value);
+    }
+    return spaResponse;
   },
 };
