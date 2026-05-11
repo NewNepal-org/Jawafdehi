@@ -1,3 +1,5 @@
+import './lib/sentry';
+import ErrorBoundary from './components/ErrorBoundary';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -25,13 +27,15 @@ if (stateEl?.textContent) {
 
 hydrateRoot(
   document.getElementById('root')!,
-  <ThemeProvider>
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </HelmetProvider>
-  </ThemeProvider>
+  <ErrorBoundary>
+    <ThemeProvider>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ThemeProvider>
+  </ErrorBoundary>
 );
