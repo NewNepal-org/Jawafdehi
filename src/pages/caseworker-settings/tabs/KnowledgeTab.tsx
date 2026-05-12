@@ -254,11 +254,11 @@ export function KnowledgeTab({
   };
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-foreground">Knowledge Library</p>
-          <p className="text-sm text-muted-foreground">Manage the collections and documents the public chat agent can retrieve.</p>
+          <h2 className="text-base font-semibold text-foreground">Knowledge Library</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Manage the collections and documents the public chat agent can retrieve.</p>
         </div>
         <Button size="sm" variant="primary" onClick={() => setImportOpen(true)}>
           <Plus className="mr-1 h-4 w-4" />
@@ -269,10 +269,10 @@ export function KnowledgeTab({
       {error ? <AlertBanner tone="error">{error}</AlertBanner> : null}
       {success ? <AlertBanner tone="success">{success}</AlertBanner> : null}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
         <div className="space-y-3">
-          <div className="rounded-lg border border-border bg-muted/30 p-3">
-            <p className="text-sm font-medium text-foreground">Collections</p>
+          <div className="px-0.5">
+            <p className="text-sm font-semibold text-foreground">Collections</p>
             <p className="mt-1 text-xs text-muted-foreground">{publicCollections.length} public collection{publicCollections.length !== 1 ? "s" : ""} available for public chat RAG</p>
           </div>
           {collections.length === 0 ? (
@@ -290,7 +290,7 @@ export function KnowledgeTab({
                   type="button"
                   onClick={() => setSelectedCollectionId(collection.id)}
                   className={cn(
-                    "w-full rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    "w-full rounded-lg border px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     selectedCollectionId === collection.id ? "border-primary bg-primary/5 shadow-sm" : "border-border bg-background hover:bg-muted/40",
                   )}
                 >
@@ -302,10 +302,10 @@ export function KnowledgeTab({
                   <p className="font-mono text-xs text-muted-foreground">/{collection.name}</p>
                   {collection.description ? <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{collection.description}</p> : null}
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Button size="sm" variant="outline" onClick={(event) => { event.stopPropagation(); selectCollectionForImport(collection); }}>
+                    <Button size="sm" variant="outline" className="h-8 px-3" onClick={(event) => { event.stopPropagation(); selectCollectionForImport(collection); }}>
                       Use
                     </Button>
-                    <Button size="sm" variant="outline" onClick={(event) => { event.stopPropagation(); startEditCollection(collection); }}>
+                    <Button size="sm" variant="outline" className="h-8 px-3" onClick={(event) => { event.stopPropagation(); startEditCollection(collection); }}>
                       <Edit2 className="mr-1 h-3.5 w-3.5" />
                       Edit
                     </Button>
@@ -318,12 +318,12 @@ export function KnowledgeTab({
 
         <div className="space-y-3">
           <div className="min-w-0 overflow-hidden rounded-lg border border-border bg-background shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
-              <div>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3.5">
+              <div className="min-w-0">
                 <p className="text-sm font-medium">{selectedCollection?.display_name ?? "Documents"}</p>
                 <p className="text-xs text-muted-foreground">{sources.length} document{sources.length !== 1 ? "s" : ""}{selectedCollection ? ` in /${selectedCollection.name}` : ""}</p>
               </div>
-              <div className="relative w-full sm:w-72">
+              <div className="relative w-full sm:w-80">
                 <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input className="pl-9" value={sourceSearch} onChange={(event) => setSourceSearch(event.target.value)} placeholder="Search documents" />
               </div>
@@ -344,7 +344,7 @@ export function KnowledgeTab({
             ) : (
               <div className="divide-y divide-border">
                 {sources.map((source) => (
-                  <div key={source.id} className="flex flex-col gap-3 px-4 py-3 transition-colors hover:bg-muted/30 sm:flex-row sm:items-center">
+                  <div key={source.id} className="grid gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate text-sm font-medium">{source.title}</p>
@@ -355,16 +355,16 @@ export function KnowledgeTab({
                       <p className="mt-1 truncate text-xs text-muted-foreground">{source.source_url || "No public URL"}</p>
                       <p className="mt-1 text-xs text-muted-foreground">{source.chunk_count ?? 0} chunk{source.chunk_count === 1 ? "" : "s"}</p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 sm:justify-end">
                       {source.source_url ? (
-                        <Button size="sm" variant="outline" asChild>
+                        <Button size="sm" variant="outline" className="h-8 px-3" asChild>
                           <a href={source.source_url} target="_blank" rel="noreferrer">
                             <ExternalLink className="mr-1 h-3.5 w-3.5" />
                             Open
                           </a>
                         </Button>
                       ) : null}
-                      <Button size="sm" variant="outline" onClick={() => startEditSource(source)}>
+                      <Button size="sm" variant="outline" className="h-8 px-3" onClick={() => startEditSource(source)}>
                         <Edit2 className="mr-1 h-3.5 w-3.5" />
                         Edit
                       </Button>
