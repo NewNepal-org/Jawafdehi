@@ -122,3 +122,100 @@ export async function askPublicQuestion(input: {
     handleError(error);
   }
 }
+
+type PublicChatStreamFinal = {
+  status: number;
+  data: PublicChatResponse | { detail?: string; error?: string };
+};
+
+function parseSseEvents(buffer: string) {
+  const rawEvents = buffer.split("\n\n");
+  const remainder = rawEvents.pop() ?? "";
+  const parsed = rawEvents
+    .map((rawEvent) => {
+      const lines = rawEvent.split("\n");
+      const event = lines
+        .find((line) => line.startsWith("event:"))
+        ?.replace("event:", "")
+        .trim();
+      const data = lines
+        .filter((line) => line.startsWith("data:"))
+        .map((line) => line.replace("data:", "").trim())
+        .join("\n");
+      return { event, data };
+    })
+    .filter((item) => item.event && item.data);
+  return { parsed, remainder };
+}
+
+export async function askPublicQuestionStream(input: {
+  question: string;
+  language?: string;
+  sessionId?: string;
+  history?: PublicChatHistoryItem[];
+}): Promise<PublicChatResponse> {
+  const sessionId = input.sessionId || getPublicChatSessionId();
+  let response: Response;
+  try {
+    response = await fetch(`${PUBLIC_CHAT_API_BASE_URL}/chat/public/stream/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: input.question,
+        session_id: sessionId,
+        history: input.history || [],
+        language: input.language || "auto",
+      }),
+    });
+  } catch {
+    return askPublicQuestion(input);
+  }
+
+  if (!response.ok || !response.body) {
+    return askPublicQuestion(input);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done });
+    const { parsed, remainder } = parseSseEvents(buffer);
+    buffer = remainder;
+
+    for (const item of parsed) {
+      if (item.event !== "final") {
+        continue;
+      }
+      const finalPayload = JSON.parse(item.data) as PublicChatStreamFinal;
+      if (finalPayload.status === 429) {
+        return {
+          answer_text:
+            "detail" in finalPayload.data && finalPayload.data.detail
+              ? finalPayload.data.detail
+              : "Public chat query limit reached.",
+          session_id: sessionId,
+          sources: [],
+          related_cases: [],
+          follow_up_questions: [],
+        };
+      }
+      if (finalPayload.status >= 400) {
+        const detail =
+          "detail" in finalPayload.data
+            ? finalPayload.data.detail || finalPayload.data.error
+            : undefined;
+        throw new PublicChatApiError(detail || "Public chat request failed", finalPayload.status);
+      }
+      return finalPayload.data as PublicChatResponse;
+    }
+
+    if (done) {
+      break;
+    }
+  }
+
+  throw new PublicChatApiError("Public chat stream ended before a final response.");
+}
