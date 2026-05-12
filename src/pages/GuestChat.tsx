@@ -23,6 +23,22 @@ interface GuestChatTurn {
 
 const PUBLIC_CHAT_TURNS_KEY = "jawafdehi_public_chat_turns";
 
+function buildContextualQuestion(question: string, history: GuestChatTurn[]) {
+  const latestTurn = history[history.length - 1];
+  const relatedCase = latestTurn?.response.related_cases?.[0];
+  if (!relatedCase || latestTurn.response.related_cases.length !== 1) {
+    return question;
+  }
+
+  const lowered = question.toLowerCase();
+  if (!/\b(this|that|the)\s+case\b/.test(lowered)) {
+    return question;
+  }
+
+  const identifier = relatedCase.case_id || relatedCase.slug || String(relatedCase.id);
+  return `For case ${identifier} (${relatedCase.title}), ${question}`;
+}
+
 function GuestPromptGrid({
   prompts,
   onPromptClick,
@@ -106,7 +122,10 @@ export default function GuestChat() {
     ]);
 
     setSubmittedQuestion(question);
-    const nextResponse = await submitQuestion(question, requestHistory);
+    const nextResponse = await submitQuestion(
+      buildContextualQuestion(question, history),
+      requestHistory,
+    );
     if (nextResponse) {
       setHistory((current) => [
         ...current,
