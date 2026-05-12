@@ -8,14 +8,7 @@ import Markdown from "react-markdown";
 import NotFound from "./NotFound";
 import { Header } from "@/components/Header";
 import { useTranslation } from "react-i18next";
-
-const stripMarkdown = (markdown: string) => {
-    return markdown
-        .replace(/!\[.*?\]\(.*?\)/g, "") // remove images
-        .replace(/[#*`]/g, "") // remove formatting chars
-        .replace(/\n/g, " ") // replace newlines with spaces
-        .trim();
-};
+import { stripMarkdown } from "@/utils/markdown";
 
 const UpdateDetail = () => {
     const { id } = useParams();
