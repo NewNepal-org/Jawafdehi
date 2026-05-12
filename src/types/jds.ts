@@ -12,8 +12,7 @@
 // ============================================================================
 
 export type CaseType = 
-  | 'CORRUPTION'
-  | 'PROMISES';
+  | 'CORRUPTION';
 
 export type CaseState =
   | 'DRAFT'

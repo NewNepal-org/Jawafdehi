@@ -39,7 +39,7 @@ export function CaseDetailBanner({
   };
   const statusKey = caseData.state ? stateMap[caseData.state] : "caseDetail.status.ongoing";
   const statusLabel = t(statusKey || "caseDetail.status.ongoing");
-  const caseTypeLabel = caseData.case_type === "CORRUPTION" ? t("cases.type.corruption") : t("cases.type.brokenPromise");
+  const caseTypeLabel = t("cases.type.corruption");
   const dateRange = formatCaseDateRange(caseData.case_start_date, caseData.case_end_date, t("cases.status.ongoing"));
   const notAvailableLabel = t("common.notAvailable");
 
@@ -102,10 +102,7 @@ export function CaseDetailBanner({
           <Badge
             variant="outline"
             className={cn(
-              "rounded-full border-white/15 px-3 py-1 text-xs backdrop-blur",
-              caseData.case_type === "CORRUPTION"
-                ? "bg-destructive/80 text-white"
-                : "bg-orange-500/80 text-white"
+              "rounded-full border-white/15 px-3 py-1 text-xs backdrop-blur bg-destructive/80 text-white"
             )}
           >
             {caseTypeLabel}

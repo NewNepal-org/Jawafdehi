@@ -90,8 +90,6 @@ const COMMON_TERMS: Record<string, { en: string; ne: string }> = {
   'corruption': { en: 'Corruption', ne: 'भ्रष्टाचार' },
   'misconduct': { en: 'Misconduct', ne: 'दुर्व्यवहार' },
   'breach_of_trust': { en: 'Breach of Trust', ne: 'विश्वासको उल्लङ्घन' },
-  'broken_promise': { en: 'Broken Promise', ne: 'भाँचिएको वाचा' },
-  'promises': { en: 'Promises', ne: 'वाचा' },
   'media_trial': { en: 'Media Trial', ne: 'मिडिया ट्रायल' },
   'abuse_of_power': { en: 'Abuse of Power', ne: 'शक्तिको दुरुपयोग' },
   'embezzlement': { en: 'Embezzlement', ne: 'गबन' },
