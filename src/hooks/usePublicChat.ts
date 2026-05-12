@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import {
-  askPublicQuestion,
+  askPublicQuestionStream,
   getPublicChatSessionId,
   resetPublicChatSession,
 } from "@/services/public-chat";
@@ -13,13 +13,15 @@ interface SubmitQuestionInput {
 
 export function usePublicChat(language?: string) {
   const mutation = useMutation({
-    mutationFn: async ({ question, history }: SubmitQuestionInput) =>
-      askPublicQuestion({
+    mutationFn: async ({ question, history }: SubmitQuestionInput) => {
+      const sessionId = getPublicChatSessionId();
+      return askPublicQuestionStream({
         question,
         history,
         language,
-        sessionId: getPublicChatSessionId(),
-      }),
+        sessionId,
+      });
+    },
   });
 
   const submitQuestion = async (question: string, history?: PublicChatHistoryItem[]) => {
