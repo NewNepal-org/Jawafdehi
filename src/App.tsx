@@ -25,6 +25,8 @@ import Feedback from "./pages/Feedback";
 import Updates from "./pages/Updates";
 import UpdateDetail from "./pages/UpdateDetail";
 import EmbedCaseCard from "./pages/EmbedCaseCard";
+import Privacy from "./pages/Privacy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import { CaseworkerAuthProvider } from "./context/CaseworkerAuthContext";
 import CaseworkerLogin from "./pages/CaseworkerLogin";
@@ -71,6 +73,8 @@ const App = () => (
           <Route path="/team" element={<OurTeam />} />
           <Route path="/volunteer" element={<Volunteer />} />
           <Route path="/products" element={<OurProducts />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<TermsOfService />} />
           {/* Embed route for oEmbed iframe */}
           <Route path="/embed/case/:id" element={<EmbedCaseCard />} />
           {/* Caseworker portal */}
