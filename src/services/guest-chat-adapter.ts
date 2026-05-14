@@ -10,8 +10,6 @@ import type {
   GuestCaseResultItem,
   GuestEntityMatch,
 } from "@/types/guest-chat";
-import { stripMarkdown } from "@/utils/markdown";
-
 const MAX_CASE_PAGES = 50;
 const DEFAULT_FOLLOWUPS_EN = [
   "Open the most relevant case",

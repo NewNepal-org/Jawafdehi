@@ -80,7 +80,7 @@ function prepareHtml(content: string): string {
   return convertMarkdownToHtml(content);
 }
 
-const PROSE_BASE = 'prose prose-sm sm:prose-base max-w-none text-foreground';
+const PROSE_BASE = 'prose prose-sm sm:prose-base max-w-none text-foreground leading-relaxed';
 
 export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({ html }) => {
   const processedHtml = useMemo(() => prepareHtml(html), [html]);
