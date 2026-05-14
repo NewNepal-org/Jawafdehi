@@ -25,8 +25,70 @@ function parseHtmlContent(html: string): ParsedContent {
   return { before, table, after };
 }
 
+function convertMarkdownToHtml(markdown: string): string {
+  let html = markdown;
+
+  html = html.replace(/&/g, '&amp;');
+  html = html.replace(/</g, '&lt;');
+  html = html.replace(/>/g, '&gt;');
+
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+
+  html = html.replace(/#### (.+)/g, '<h4>$1</h4>');
+  html = html.replace(/### (.+)/g, '<h3>$1</h3>');
+  html = html.replace(/## (.+)/g, '<h2>$1</h2>');
+  html = html.replace(/# (.+)/g, '<h1>$1</h1>');
+
+  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  html = html.replace(/^- (.+)/gm, '<li>$1</li>');
+  html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+
+  html = html.replace(/^\d+\. (.+)/gm, '<li>$1</li>');
+  html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, (match) => {
+    if (match.includes('<ul>')) return match;
+    return `<ol>${match}</ol>`;
+  });
+
+  html = html.replace(/^>\s?(.+)/gm, '<blockquote>$1</blockquote>');
+
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  html = html.replace(/\n\n+/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+
+  html = '<p>' + html + '</p>';
+
+  html = html.replace(/<p>\s*<\/p>/g, '');
+
+  return html;
+}
+
+function isHtmlContent(content: string): boolean {
+  return /<\s*[a-zA-Z][a-zA-Z0-9]*[\s>]/.test(content);
+}
+
+function prepareHtml(content: string): string {
+  if (!content) return '';
+
+  if (isHtmlContent(content)) {
+    return content;
+  }
+
+  return convertMarkdownToHtml(content);
+}
+
+const PROSE_BASE = 'prose prose-sm sm:prose-base max-w-none text-foreground';
+
 export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({ html }) => {
-  const { before, table, after } = useMemo(() => parseHtmlContent(html), [html]);
+  const processedHtml = useMemo(() => prepareHtml(html), [html]);
+
+  const { before, table, after } = useMemo(
+    () => parseHtmlContent(processedHtml),
+    [processedHtml]
+  );
 
   return (
     <div className="w-full">
@@ -51,31 +113,28 @@ export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({ html }) => {
         }
       `}</style>
 
-      {/* Text content before table */}
       {before && (
         <div
-          className="prose-content text-foreground leading-relaxed mb-4 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:space-y-2 [&_ul]:my-4 [&_li]:ml-6 [&_li]:pl-2 [&_a]:underline [&_strong]:font-semibold [&_em]:italic [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1 [&_br]:block"
+          className={`${PROSE_BASE} mb-4`}
           dangerouslySetInnerHTML={{ __html: before }}
         />
       )}
 
-      {/* Responsive table wrapper */}
       {table && (
         <div
           className="table-scroll-wrapper overflow-x-auto -mx-4 px-4"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div
-            className="[&_table]:my-4 [&_table]:w-full [&_table]:border-collapse [&_table]:border [&_table]:border-border [&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:bg-gradient-to-b [&_th]:from-muted [&_th]:to-muted/80 [&_th]:font-semibold [&_th]:text-xs [&_th]:text-foreground [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1.5 [&_td]:text-xs [&_td]:text-foreground [&_tr:nth-child(even)]:bg-muted/40 [&_tr:hover]:bg-muted/60 [&_tr]:transition-colors [&_caption]:text-sm [&_caption]:font-semibold [&_caption]:mb-3 [&_caption]:text-foreground [&_p]:mb-0 [&_p]:text-sm sm:[&_th]:px-3 sm:[&_th]:py-3 sm:[&_th]:text-sm sm:[&_td]:px-3 sm:[&_td]:py-2.5 sm:[&_td]:text-sm"
+            className="[&_table]:my-4 [&_table]:w-full [&_table]:border-collapse [&_table]:border [&_table]:border-border [&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:bg-gradient-to-b [&_th]:from-muted [&_th]:to-muted/80 [&_th]:font-semibold [&_th]:text-xs [&_th]:text-foreground [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1.5 [&_td]:text-xs [&_td]:text-foreground [&_tr:nth-child(even)]:bg-muted/40 [&_tr:hover]:bg-muted/60 [&_tr]:transition-colors [&_caption]:text-sm [&_caption]:font-semibold [&_caption]:mb-3 [&_caption]:text-foreground sm:[&_th]:px-3 sm:[&_th]:py-3 sm:[&_th]:text-sm sm:[&_td]:px-3 sm:[&_td]:py-2.5 sm:[&_td]:text-sm"
             dangerouslySetInnerHTML={{ __html: table }}
           />
         </div>
       )}
 
-      {/* Text content after table */}
       {after && (
         <div
-          className="prose-content text-foreground leading-relaxed mt-4 [&_p]:mb-3 [&_p:last-child]:mb-0 [&_ul]:space-y-2 [&_ul]:my-4 [&_li]:ml-6 [&_li]:pl-2 [&_a]:underline [&_strong]:font-semibold [&_em]:italic [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1"
+          className={`${PROSE_BASE} mt-4`}
           dangerouslySetInnerHTML={{ __html: after }}
         />
       )}

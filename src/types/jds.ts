@@ -141,12 +141,12 @@ export interface Case {
   banner_url?: string | null; // URL for wide banner image on case detail page
   entities: JawafEntity[]; // Unified entity relationships with type field
   tags: string[]; // Tags for categorization (e.g., 'land-encroachment', 'national-interest')
-  description: string; // Rich text description
+  description: string; // Rich text description (HTML or Markdown)
   key_allegations: string[]; // List of key allegation statements
   timeline: TimelineEntry[];
   evidence: EvidenceEntry[];
   court_cases: string[]; // Court case IDs (e.g., "special:081-CR-0060")
-  notes: string; // Internal notes (HTML from TinyMCE)
+  notes: string; // Internal notes (HTML or Markdown)
   missing_details?: string | null;
   bigo?: number | null;
   created_at: string; // ISO datetime
