@@ -146,7 +146,7 @@ export interface Case {
   timeline: TimelineEntry[];
   evidence: EvidenceEntry[];
   court_cases: string[]; // Court case IDs (e.g., "special:081-CR-0060")
-  notes: string; // Internal notes (HTML from TinyMCE)
+  notes: string; // Case notes
   missing_details?: string | null;
   bigo?: number | null;
   created_at: string; // ISO datetime
