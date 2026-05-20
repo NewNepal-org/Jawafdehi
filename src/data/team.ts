@@ -153,7 +153,7 @@ export const teamMembers: TeamMember[] = [
   },
   {
     displayName: { en: "Sambhav Koirala", ne: "सम्भव कोइराला" },
-    thumb: "https://jawafdehi.org/assets/teammembers/sambhav.png",
+    thumb: "https://jawafdehi.org/assets/teammembers/sambhav.jpeg",
     description: "Case Documentation Intern, Jawafdehi.org. Future-Focused and Purpose-Driven.",
     contacts: [
       { type: "linkedin", value: "https://www.linkedin.com/in/sambhav-koirala-7a6b47368" },
@@ -161,7 +161,7 @@ export const teamMembers: TeamMember[] = [
   },
   {
     displayName: { en: "Subodh Kandel", ne: "सुबोध कँडेल" },
-    thumb: "https://jawafdehi.org/assets/teammembers/subodh.png",
+    thumb: "https://jawafdehi.org/assets/teammembers/subodh.jpeg",
     description: "Case Documentation Intern, Jawafdehi.org",
     contacts: [
       { type: "email", value: "kandelsubodh46@gmail.com" },
