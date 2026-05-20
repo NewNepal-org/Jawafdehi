@@ -1,7 +1,7 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Helmet } from "react-helmet-async";
-import { Mail, Linkedin, Facebook, Github, Globe, Users } from "lucide-react";
+import { Mail, Linkedin, Facebook, Github, Globe, Users, Instagram } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { teamMembers } from "@/data/team";
 import type { Contact } from "@/data/team";
@@ -14,6 +14,7 @@ const ContactIcon = ({ contact }: { contact: Contact }) => {
     facebook: <Facebook className="h-4 w-4" />,
     github: <Github className="h-4 w-4" />,
     website: <Globe className="h-4 w-4" />,
+    instagram: <Instagram className="h-4 w-4" />,
   }[contact.type];
 
   return (

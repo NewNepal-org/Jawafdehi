@@ -1,4 +1,4 @@
-export type ContactType = "email" | "facebook" | "linkedin" | "github" | "website";
+export type ContactType = "email" | "facebook" | "linkedin" | "github" | "website" | "instagram";
 
 export interface Contact {
   type: ContactType;
@@ -149,6 +149,23 @@ export const teamMembers: TeamMember[] = [
     description: "Software Engineer Intern, Jawafdehi.org",
     contacts: [
       { type: "github", value: "https://github.com/sjungthapa" },
+    ],
+  },
+  {
+    displayName: { en: "Sambhav Koirala", ne: "सम्भव कोइराला" },
+    thumb: "https://jawafdehi.org/assets/teammembers/sambhav.png",
+    description: "Case Documentation Intern, Jawafdehi.org. Future-Focused and Purpose-Driven.",
+    contacts: [
+      { type: "linkedin", value: "https://www.linkedin.com/in/sambhav-koirala-7a6b47368" },
+    ],
+  },
+  {
+    displayName: { en: "Subodh Kandel", ne: "सुबोध कँडेल" },
+    thumb: "https://jawafdehi.org/assets/teammembers/subodh.png",
+    description: "Case Documentation Intern, Jawafdehi.org",
+    contacts: [
+      { type: "email", value: "kandelsubodh46@gmail.com" },
+      { type: "instagram", value: "https://www.instagram.com/subodh_kandel" },
     ],
   },
 ];
